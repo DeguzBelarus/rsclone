@@ -1,3 +1,4 @@
+import { AuthPage } from 'pages/AuthPage/AuthPage';
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 
@@ -8,6 +9,7 @@ export const useRoutes = (): JSX.Element => {
     <Routes>
       <Route path="/" element={<MainPage />}></Route>
       <Route path="*" element={<MainPage />}></Route>
+      <Route path="login" element={<AuthPage />}></Route>
     </Routes>
   );
 };
