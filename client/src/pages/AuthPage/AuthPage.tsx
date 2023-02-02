@@ -6,13 +6,16 @@ import { RootState } from '../../app/store';
 import { Button, Card, CardActions, CardContent, TextField } from '@mui/material';
 import { Link } from 'react-router-dom';
 
-import { ILoginRequestData, CurrentLanguageType } from 'types/types';
-import { loginUserAsync, getCurrentLanguage } from 'app/mainSlice';
+import { CurrentLanguageType } from 'types/types';
+import { loginUserAsync, getCurrentLanguage, getIsAuthorized } from 'app/mainSlice';
 import { EMAIL_PATTERN } from 'consts';
 import styles from './AuthPage.module.scss';
+import { useAlert } from 'components/AlertProvider';
 
 export const AuthPage: FC = (): JSX.Element => {
   const thunkDispatch = useDispatch<ThunkDispatch<RootState, unknown, Action<string>>>();
+  const isAuthorized = useAppSelector(getIsAuthorized);
+  const alert = useAlert();
 
   const currentLanguage: CurrentLanguageType = useAppSelector(getCurrentLanguage);
   const [emailValue, setEmailValue] = useState('');
@@ -37,7 +40,7 @@ export const AuthPage: FC = (): JSX.Element => {
     setPasswordError(passwordValue === '');
   }
 
-  function handleSubmit(event: FormEvent) {
+  async function handleSubmit(event: FormEvent) {
     event.preventDefault();
     validateAll();
     if (!isValid()) return;
@@ -46,14 +49,19 @@ export const AuthPage: FC = (): JSX.Element => {
       email: emailValue.trim(),
       password: passwordValue,
     };
-    console.log(userData);
-    // const loginRequestData: ILoginRequestData = { email: userEmail, password: userPassword, lang: currentLanguage };
-    // thunkDispatch(loginUserAsync(loginRequestData));
+    const loginRequestData = { ...userData, lang: currentLanguage };
+    await thunkDispatch(loginUserAsync(loginRequestData));
+
+    if (isAuthorized) {
+      alert.success('You have bee successfully logged in');
+    } else {
+      alert.warning('Wrong username or password. Try again!');
+    }
   }
 
   return (
     <div className={styles.auth}>
-      <Card sx={{ padding: '1rem' }}>
+      <Card className={styles.card}>
         <form onSubmit={handleSubmit} noValidate>
           <CardContent className={styles.content}>
             <h3>Please enter your credentials to log in</h3>

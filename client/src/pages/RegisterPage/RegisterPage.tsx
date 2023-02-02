@@ -1,11 +1,11 @@
-import React, { ChangeEvent, FormEvent, useRef, useState, FC } from 'react';
+import React, { ChangeEvent, FormEvent, useState, FC } from 'react';
 import { useAppSelector } from 'app/hooks';
 import { useDispatch } from 'react-redux';
 import { Action, ThunkDispatch } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
 import { Button, Card, CardActions, CardContent, TextField } from '@mui/material';
 
-import { IRegistrationRequestData, CurrentLanguageType } from 'types/types';
+import { CurrentLanguageType } from 'types/types';
 import { registrationUserAsync, getCurrentLanguage } from 'app/mainSlice';
 import { EMAIL_PATTERN, NICKNAME_PATTERN, PASSWORD_PATTERN } from 'consts';
 import styles from './RegisterPage.module.scss';
@@ -63,12 +63,12 @@ export const RegisterPage: FC = (): JSX.Element => {
       password: passwordValue,
     };
     console.log(userData);
-    // const registrationRequestData: IRegistrationRequestData = { email: userEmail, password: userPassword, nickname: userNickname, lang: currentLanguage };
-    // thunkDispatch(registrationUserAsync(registrationRequestData));
+    const registrationRequestData = { ...userData, lang: currentLanguage };
+    thunkDispatch(registrationUserAsync(registrationRequestData));
   }
   return (
     <div className={styles.register}>
-      <Card sx={{ padding: '1rem' }}>
+      <Card className={styles.card}>
         <form onSubmit={handleSubmit} noValidate>
           <CardContent className={styles.content}>
             <h3>Create a new account</h3>
