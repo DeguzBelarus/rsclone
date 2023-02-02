@@ -22,17 +22,20 @@ export const AuthPage: FC = (): JSX.Element => {
   const [passwordValue, setPasswordValue] = useState('');
   const [emailError, setEmailError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
+  const [touched, setTouched] = useState(false);
 
-  const isValid = () => !(emailError || passwordError);
+  const isValid = () => touched && !(emailError || passwordError);
 
   function handleEmailChange(event: ChangeEvent<HTMLInputElement>) {
     setEmailValue(event.target.value);
     setEmailError(!EMAIL_PATTERN.test(event.target.value));
+    setTouched(true);
   }
 
   function handlePasswordChange(event: ChangeEvent<HTMLInputElement>) {
     setPasswordValue(event.target.value);
     setPasswordError(event.target.value === '');
+    setTouched(true);
   }
 
   function validateAll() {
@@ -53,7 +56,7 @@ export const AuthPage: FC = (): JSX.Element => {
     await thunkDispatch(loginUserAsync(loginRequestData));
 
     if (isAuthorized) {
-      alert.success('You have bee successfully logged in');
+      alert.success('You have been successfully logged in');
     } else {
       alert.warning('Wrong username or password. Try again!');
     }
