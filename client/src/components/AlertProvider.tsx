@@ -43,6 +43,7 @@ export function useAlert() {
   const { setOpen, setMessage, setSeverity } = useContext(AlertContext);
 
   function show(message?: string, severity: AlertColor = 'info') {
+    setOpen(false);
     setSeverity(severity);
     setMessage(message);
     setOpen(true);
