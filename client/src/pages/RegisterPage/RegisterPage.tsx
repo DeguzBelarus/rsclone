@@ -12,7 +12,7 @@ import { EMAIL_PATTERN, NICKNAME_PATTERN, PASSWORD_PATTERN } from 'consts';
 import styles from './RegisterPage.module.scss';
 
 export const RegisterPage: FC = (): JSX.Element => {
-  // const thunkDispatch = useDispatch<ThunkDispatch<RootState, unknown, Action<string>>>();
+  const thunkDispatch = useDispatch<ThunkDispatch<RootState, unknown, Action<string>>>();
   const alert = useAlert();
 
   const currentLanguage: CurrentLanguageType = useAppSelector(getCurrentLanguage);
@@ -72,8 +72,8 @@ export const RegisterPage: FC = (): JSX.Element => {
     };
     console.log(userData);
     const registrationRequestData = { ...userData, lang: currentLanguage };
-    // await thunkDispatch(registrationUserAsync(registrationRequestData));
-    alert.success('You have bee successfully logged in');
+    await thunkDispatch(registrationUserAsync(registrationRequestData));
+    alert.success('You have been registered');
   }
   return (
     <div className={styles.register}>
