@@ -1,22 +1,21 @@
-require("dotenv").config();
-const express = require("express");
-const {
-  createServer
-} = require("http");
-const {
-  Server
-} = require("socket.io");
-const path = require("path");
-const sequelizeConfig = require("./sequelizeConfig");
-const dbModels = require("./db-models/db-models");
-const errorHandlingMiddleware = require("./middleware/error-handling");
-const router = require("./routes/index");
+import dotenv from 'dotenv';
+import path from 'path';
+import express, { Express, Request, Response } from 'express';
+import { IClientToServerEvents, IInterServerEvents, IServerToClientEvents, ISocketData } from './types/types'
+import { createServer } from 'http';
+import { Server } from 'socket.io';
+
+import { sequelizeConfig } from './sequelizeConfig';
+import { errorHandlingMiddleware } from './middleware/error-handling';
+import { router } from './routes/index'
+
+dotenv.config();
 
 const PORT = process.env.PORT || 5000;
 
-const app = express();
+const app: Express = express();
 const server = createServer(app);
-const io = new Server(server, {
+const io = new Server<IClientToServerEvents, IServerToClientEvents, IInterServerEvents, ISocketData>(server, {
   maxHttpBufferSize: 1e8
 });
 app.use(express.json());
@@ -27,7 +26,7 @@ app.use(errorHandlingMiddleware);
 
 if (process.env.NODE_ENV === "production") {
   app.use("/", express.static(path.join(__dirname, "client", "build")));
-  app.get("*", (request, response) => {
+  app.get("*", (request: Request, response: Response) => {
     response.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
   });
 }
@@ -47,8 +46,10 @@ io.on("connection", (socket) => {
 
 (async function () {
   try {
-    await sequelizeConfig.authenticate();
-    await sequelizeConfig.sync();
+    if (sequelizeConfig) {
+      await sequelizeConfig.authenticate();
+      await sequelizeConfig.sync();
+    }
 
     server.listen(PORT, () => {
       console.log(
@@ -56,7 +57,9 @@ io.on("connection", (socket) => {
         `Server has been started on port ${PORT}...`
       );
     });
-  } catch (exception) {
-    console.log("\x1b[40m\x1b[31m\x1b[1m", exception.message);
+  } catch (exception: unknown) {
+    if (exception instanceof Error) {
+      console.error('\x1b[40m\x1b[31m\x1b[1m', exception.message);
+    }
   }
 })();
