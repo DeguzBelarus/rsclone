@@ -1,0 +1,8 @@
+@import '../../css_variables/variables';
+
+.post-wrapper {
+  width: 100%;
+  height: calc(100vh - #{($header-height + px)} - #{($footer-height + px)});
+  @include flex-all-center;
+  @include user-select-none;
+}

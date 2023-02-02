@@ -16,3 +16,29 @@ export interface IRequestMethods {
   put: string;
   patch: string;
 }
+
+export interface ILoginRequestData {
+  email: string;
+  password: string;
+  lang: string;
+}
+
+export interface IRegistrationRequestData extends ILoginRequestData {
+  nickname: string;
+}
+
+export interface IAuthResponse {
+  token?: string;
+  message: string;
+}
+
+export interface ITokenDecodeData {
+  id: number;
+  email: string;
+  nickname: string;
+  role: string;
+}
+
+export interface ILocalStorageSaveData {
+  token?: string;
+}

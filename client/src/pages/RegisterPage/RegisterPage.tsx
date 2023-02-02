@@ -1,9 +1,19 @@
-import React, { ChangeEvent, FormEvent, useRef, useState } from 'react';
-import styles from './RegisterPage.module.scss';
+import React, { ChangeEvent, FormEvent, useRef, useState, FC } from 'react';
+import { useAppSelector } from 'app/hooks';
+import { useDispatch } from 'react-redux';
+import { Action, ThunkDispatch } from '@reduxjs/toolkit';
+import { RootState } from '../../app/store';
 import { Button, Card, CardActions, CardContent, TextField } from '@mui/material';
-import { EMAIL_PATTERN, NICKNAME_PATTERN, PASSWORD_PATTERN } from 'consts';
 
-export const RegisterPage = () => {
+import { IRegistrationRequestData, CurrentLanguageType } from 'types/types';
+import { registrationUserAsync, getCurrentLanguage } from 'app/mainSlice';
+import { EMAIL_PATTERN, NICKNAME_PATTERN, PASSWORD_PATTERN } from 'consts';
+import styles from './RegisterPage.module.scss';
+
+export const RegisterPage: FC = (): JSX.Element => {
+  const thunkDispatch = useDispatch<ThunkDispatch<RootState, unknown, Action<string>>>();
+
+  const currentLanguage: CurrentLanguageType = useAppSelector(getCurrentLanguage);
   const [nicknameValue, setNicknameValue] = useState('');
   const [emailValue, setEmailValue] = useState('');
   const [passwordValue, setPasswordValue] = useState('');
@@ -53,6 +63,8 @@ export const RegisterPage = () => {
       password: passwordValue,
     };
     console.log(userData);
+    // const registrationRequestData: IRegistrationRequestData = { email: userEmail, password: userPassword, nickname: userNickname, lang: currentLanguage };
+    // thunkDispatch(registrationUserAsync(registrationRequestData));
   }
   return (
     <div className={styles.register}>

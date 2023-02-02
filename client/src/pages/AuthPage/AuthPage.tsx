@@ -1,10 +1,20 @@
-import React, { ChangeEvent, FormEvent, useState } from 'react';
-import styles from './AuthPage.module.scss';
+import React, { ChangeEvent, FormEvent, useState, FC } from 'react';
+import { useAppSelector } from 'app/hooks';
+import { useDispatch } from 'react-redux';
+import { Action, ThunkDispatch } from '@reduxjs/toolkit';
+import { RootState } from '../../app/store';
 import { Button, Card, CardActions, CardContent, TextField } from '@mui/material';
 import { Link } from 'react-router-dom';
-import { EMAIL_PATTERN } from 'consts';
 
-export const AuthPage = () => {
+import { ILoginRequestData, CurrentLanguageType } from 'types/types';
+import { loginUserAsync, getCurrentLanguage } from 'app/mainSlice';
+import { EMAIL_PATTERN } from 'consts';
+import styles from './AuthPage.module.scss';
+
+export const AuthPage: FC = (): JSX.Element => {
+  const thunkDispatch = useDispatch<ThunkDispatch<RootState, unknown, Action<string>>>();
+
+  const currentLanguage: CurrentLanguageType = useAppSelector(getCurrentLanguage);
   const [emailValue, setEmailValue] = useState('');
   const [passwordValue, setPasswordValue] = useState('');
   const [emailError, setEmailError] = useState(false);
@@ -37,6 +47,8 @@ export const AuthPage = () => {
       password: passwordValue,
     };
     console.log(userData);
+    // const loginRequestData: ILoginRequestData = { email: userEmail, password: userPassword, lang: currentLanguage };
+    // thunkDispatch(loginUserAsync(loginRequestData));
   }
 
   return (

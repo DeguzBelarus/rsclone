@@ -11,15 +11,21 @@ export const requestMethods: IRequestMethods = {
 export function requestData(
   url: string,
   method: string,
-  body?: string
+  body?: string,
+  token?: string
 ): Undefinable<Promise<Response>> {
   try {
     return fetch(url, {
       method,
       body,
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: token
+        ? {
+            'Content-Type': 'application/json',
+          }
+        : {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
     });
   } catch (exception: unknown) {
     if (exception instanceof Error) {

@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import path from 'path';
+import fileUpload from 'express-fileupload';
 import express, { Express, Request, Response } from 'express';
 import { IClientToServerEvents, IInterServerEvents, IServerToClientEvents, ISocketData } from './types/types'
 import { createServer } from 'http';
@@ -11,8 +12,6 @@ import { router } from './routes/index'
 
 dotenv.config();
 
-const PORT = process.env.PORT || 5000;
-
 const app: Express = express();
 const server = createServer(app);
 const io = new Server<IClientToServerEvents, IServerToClientEvents, IInterServerEvents, ISocketData>(server, {
@@ -20,6 +19,7 @@ const io = new Server<IClientToServerEvents, IServerToClientEvents, IInterServer
 });
 app.use(express.json());
 app.use("/api", router);
+app.use(fileUpload({ createParentPath: true }));
 app.use(express.static("./client/build"));
 app.use(express.static(path.resolve(__dirname, "static")));
 app.use(errorHandlingMiddleware);
@@ -51,10 +51,10 @@ io.on("connection", (socket) => {
       await sequelizeConfig.sync();
     }
 
-    server.listen(PORT, () => {
+    server.listen(process.env.PORT || 5000, () => {
       console.log(
         "\x1b[40m\x1b[32m\x1b[4m\x1b[1m",
-        `Server has been started on port ${PORT}...`
+        `Server has been started on port ${process.env.PORT || 5000}...`
       );
     });
   } catch (exception: unknown) {
