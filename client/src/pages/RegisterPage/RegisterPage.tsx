@@ -1,14 +1,17 @@
-import React, { ChangeEvent, FormEvent, useState } from 'react';
-import styles from './AuthPage.module.scss';
+import React, { ChangeEvent, FormEvent, useRef, useState } from 'react';
+import styles from './RegisterPage.module.scss';
 import { Button, Card, CardActions, CardContent, TextField } from '@mui/material';
-import { Link } from 'react-router-dom';
 import { EMAIL_PATTERN } from 'consts';
 
-export const AuthPage = () => {
+export const RegisterPage = () => {
   const [emailValue, setEmailValue] = useState('');
   const [passwordValue, setPasswordValue] = useState('');
+  const [repeatPasswordValue, setRepeatPasswordValue] = useState('');
   const [emailError, setEmailError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
+  const [repeatPasswordError, setRepeatPasswordError] = useState(false);
+
+  const isValid = () => !(emailError || passwordError || repeatPasswordError);
 
   function handleEmailChange(event: ChangeEvent<HTMLInputElement>) {
     setEmailValue(event.target.value);
@@ -19,13 +22,33 @@ export const AuthPage = () => {
     setPasswordValue(event.target.value);
     setPasswordError(event.target.value === '');
   }
+
+  function handleRepeatPasswordChange(event: ChangeEvent<HTMLInputElement>) {
+    setRepeatPasswordValue(event.target.value);
+    setRepeatPasswordError(passwordValue !== event.target.value);
+  }
+
+  function validateAll() {
+    setEmailError(!EMAIL_PATTERN.test(emailValue));
+    setPasswordError(passwordValue === '');
+    setRepeatPasswordError(passwordValue !== repeatPasswordValue);
+  }
+
   function submitHandle(event: FormEvent) {
     event.preventDefault();
+    validateAll();
+    if (!isValid()) return;
+
+    const userData = {
+      email: emailValue,
+      password: passwordValue,
+    };
+    console.log(userData);
   }
   return (
-    <div className={styles.auth}>
+    <div className={styles.register}>
       <Card sx={{ padding: '1rem' }}>
-        <form onSubmit={submitHandle}>
+        <form onSubmit={submitHandle} noValidate>
           <CardContent className={styles.content}>
             <div>Please enter your credentials to log in</div>
             <TextField
@@ -34,8 +57,8 @@ export const AuthPage = () => {
               required
               error={emailError}
               onChange={handleEmailChange}
-              helperText={emailError ? 'Please enter a correct email address' : ' '}
-              inputProps={{ inputMode: 'email', pattern: EMAIL_PATTERN.toString() }}
+              helperText={emailError ? 'Please enter a valid email address' : ' '}
+              inputProps={{ inputMode: 'email', pattern: EMAIL_PATTERN }}
             />
             <TextField
               type="password"
@@ -46,13 +69,19 @@ export const AuthPage = () => {
               onChange={handlePasswordChange}
               helperText={passwordError ? 'Please enter a password' : ' '}
             />
+            <TextField
+              type="password"
+              value={repeatPasswordValue}
+              label="Repeat password"
+              required
+              error={repeatPasswordError}
+              onChange={handleRepeatPasswordChange}
+              helperText={repeatPasswordError ? 'The passwords should match' : ' '}
+            />
           </CardContent>
           <CardActions sx={{ justifyContent: 'right' }}>
-            <Button>
-              <Link to="/register">Register </Link>
-            </Button>
             <Button type="submit" variant="contained">
-              Login
+              Register
             </Button>
           </CardActions>
         </form>

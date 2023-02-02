@@ -1,3 +1,4 @@
+import { RegisterPage } from 'pages/RegisterPage/RegisterPage';
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 
@@ -10,6 +11,7 @@ export const useRoutes = (): JSX.Element => {
     <Routes>
       <Route path="/" element={<MainPage />}></Route>
       <Route path="login" element={<AuthPage />}></Route>
+      <Route path="register" element={<RegisterPage />}></Route>
       <Route path="*" element={<Page404 />}></Route>
     </Routes>
   );
