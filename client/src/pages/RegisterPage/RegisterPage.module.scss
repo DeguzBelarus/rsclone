@@ -8,5 +8,6 @@
     display: flex;
     flex-direction: column;
     gap: 2em;
+    min-width: clamp(240px, 80vw, 380px);
   }
 }

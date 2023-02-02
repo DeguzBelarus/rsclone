@@ -1,17 +1,24 @@
 import React, { ChangeEvent, FormEvent, useRef, useState } from 'react';
 import styles from './RegisterPage.module.scss';
 import { Button, Card, CardActions, CardContent, TextField } from '@mui/material';
-import { EMAIL_PATTERN } from 'consts';
+import { EMAIL_PATTERN, NICKNAME_PATTERN, PASSWORD_PATTERN } from 'consts';
 
 export const RegisterPage = () => {
+  const [nicknameValue, setNicknameValue] = useState('');
   const [emailValue, setEmailValue] = useState('');
   const [passwordValue, setPasswordValue] = useState('');
   const [repeatPasswordValue, setRepeatPasswordValue] = useState('');
+  const [nicknameError, setNicknameError] = useState(false);
   const [emailError, setEmailError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
   const [repeatPasswordError, setRepeatPasswordError] = useState(false);
 
-  const isValid = () => !(emailError || passwordError || repeatPasswordError);
+  const isValid = () => !(nicknameError || emailError || passwordError || repeatPasswordError);
+
+  function handleNicknameChange(event: ChangeEvent<HTMLInputElement>) {
+    setNicknameValue(event.target.value);
+    setNicknameError(!NICKNAME_PATTERN.test(event.target.value));
+  }
 
   function handleEmailChange(event: ChangeEvent<HTMLInputElement>) {
     setEmailValue(event.target.value);
@@ -20,7 +27,7 @@ export const RegisterPage = () => {
 
   function handlePasswordChange(event: ChangeEvent<HTMLInputElement>) {
     setPasswordValue(event.target.value);
-    setPasswordError(event.target.value === '');
+    setPasswordError(!PASSWORD_PATTERN.test(event.target.value));
   }
 
   function handleRepeatPasswordChange(event: ChangeEvent<HTMLInputElement>) {
@@ -29,18 +36,20 @@ export const RegisterPage = () => {
   }
 
   function validateAll() {
+    setNicknameError(!NICKNAME_PATTERN.test(nicknameValue));
     setEmailError(!EMAIL_PATTERN.test(emailValue));
-    setPasswordError(passwordValue === '');
+    setPasswordError(!PASSWORD_PATTERN.test(passwordValue));
     setRepeatPasswordError(passwordValue !== repeatPasswordValue);
   }
 
-  function submitHandle(event: FormEvent) {
+  function handleSubmit(event: FormEvent) {
     event.preventDefault();
     validateAll();
     if (!isValid()) return;
 
     const userData = {
-      email: emailValue,
+      nickname: nicknameValue.trim(),
+      email: emailValue.trim(),
       password: passwordValue,
     };
     console.log(userData);
@@ -48,9 +57,17 @@ export const RegisterPage = () => {
   return (
     <div className={styles.register}>
       <Card sx={{ padding: '1rem' }}>
-        <form onSubmit={submitHandle} noValidate>
+        <form onSubmit={handleSubmit} noValidate>
           <CardContent className={styles.content}>
-            <div>Please enter your credentials to log in</div>
+            <h3>Create a new account</h3>
+            <TextField
+              value={nicknameValue}
+              label="Nickname"
+              required
+              error={nicknameError}
+              onChange={handleNicknameChange}
+              helperText={nicknameError ? 'At least 3 characters long' : ' '}
+            />
             <TextField
               value={emailValue}
               label="Email"
@@ -58,7 +75,7 @@ export const RegisterPage = () => {
               error={emailError}
               onChange={handleEmailChange}
               helperText={emailError ? 'Please enter a valid email address' : ' '}
-              inputProps={{ inputMode: 'email', pattern: EMAIL_PATTERN }}
+              inputProps={{ inputMode: 'email' }}
             />
             <TextField
               type="password"
@@ -67,7 +84,7 @@ export const RegisterPage = () => {
               required
               error={passwordError}
               onChange={handlePasswordChange}
-              helperText={passwordError ? 'Please enter a password' : ' '}
+              helperText={passwordError ? 'At least 8 characters long' : ' '}
             />
             <TextField
               type="password"

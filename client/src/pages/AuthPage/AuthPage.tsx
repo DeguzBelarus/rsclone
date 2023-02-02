@@ -10,6 +10,8 @@ export const AuthPage = () => {
   const [emailError, setEmailError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
 
+  const isValid = () => !(emailError || passwordError);
+
   function handleEmailChange(event: ChangeEvent<HTMLInputElement>) {
     setEmailValue(event.target.value);
     setEmailError(!EMAIL_PATTERN.test(event.target.value));
@@ -19,23 +21,38 @@ export const AuthPage = () => {
     setPasswordValue(event.target.value);
     setPasswordError(event.target.value === '');
   }
-  function submitHandle(event: FormEvent) {
-    event.preventDefault();
+
+  function validateAll() {
+    setEmailError(!EMAIL_PATTERN.test(emailValue));
+    setPasswordError(passwordValue === '');
   }
+
+  function handleSubmit(event: FormEvent) {
+    event.preventDefault();
+    validateAll();
+    if (!isValid()) return;
+
+    const userData = {
+      email: emailValue.trim(),
+      password: passwordValue,
+    };
+    console.log(userData);
+  }
+
   return (
     <div className={styles.auth}>
       <Card sx={{ padding: '1rem' }}>
-        <form onSubmit={submitHandle}>
+        <form onSubmit={handleSubmit} noValidate>
           <CardContent className={styles.content}>
-            <div>Please enter your credentials to log in</div>
+            <h3>Please enter your credentials to log in</h3>
             <TextField
               value={emailValue}
               label="Email"
               required
               error={emailError}
               onChange={handleEmailChange}
-              helperText={emailError ? 'Please enter a correct email address' : ' '}
-              inputProps={{ inputMode: 'email', pattern: EMAIL_PATTERN.toString() }}
+              helperText={emailError ? 'Please enter a valid email address' : ' '}
+              inputProps={{ inputMode: 'email' }}
             />
             <TextField
               type="password"
@@ -44,7 +61,7 @@ export const AuthPage = () => {
               required
               error={passwordError}
               onChange={handlePasswordChange}
-              helperText={passwordError ? 'Please enter a password' : ' '}
+              helperText={passwordError ? 'Please enter your password' : ' '}
             />
           </CardContent>
           <CardActions sx={{ justifyContent: 'right' }}>
