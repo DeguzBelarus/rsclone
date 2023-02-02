@@ -13,6 +13,10 @@
     "development": "concurrently \"yarn server\" \"yarn client\"",
     "heroku-postbuild": "yarn client:install && yarn client:build"
   },
+  "engines": {
+    "node": "18.13.0",
+    "yarn": "1.22.19"
+  },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.2",
     "@types/express": "^4.17.16",
