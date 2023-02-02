@@ -2,14 +2,15 @@ import React, { ChangeEvent, FormEvent, useState } from 'react';
 import styles from './AuthPage.module.scss';
 import { Button, Card, CardActions, CardContent, TextField } from '@mui/material';
 import { Link } from 'react-router-dom';
-
-const EMAIL_PATTERN = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,4}$/;
+import { EMAIL_PATTERN } from 'consts';
 
 export const AuthPage = () => {
   const [emailValue, setEmailValue] = useState('');
   const [passwordValue, setPasswordValue] = useState('');
   const [emailError, setEmailError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
+
+  const isValid = () => !(emailError || passwordError);
 
   function handleEmailChange(event: ChangeEvent<HTMLInputElement>) {
     setEmailValue(event.target.value);
@@ -20,30 +21,47 @@ export const AuthPage = () => {
     setPasswordValue(event.target.value);
     setPasswordError(event.target.value === '');
   }
-  function submitHandle(event: FormEvent) {
-    event.preventDefault();
+
+  function validateAll() {
+    setEmailError(!EMAIL_PATTERN.test(emailValue));
+    setPasswordError(passwordValue === '');
   }
+
+  function handleSubmit(event: FormEvent) {
+    event.preventDefault();
+    validateAll();
+    if (!isValid()) return;
+
+    const userData = {
+      email: emailValue.trim(),
+      password: passwordValue,
+    };
+    console.log(userData);
+  }
+
   return (
     <div className={styles.auth}>
       <Card sx={{ padding: '1rem' }}>
-        <form onSubmit={submitHandle}>
+        <form onSubmit={handleSubmit} noValidate>
           <CardContent className={styles.content}>
-            <div>Please enter your credentials to log in</div>
+            <h3>Please enter your credentials to log in</h3>
             <TextField
               value={emailValue}
               label="Email"
-              error={emailError}
               required
+              error={emailError}
               onChange={handleEmailChange}
-              inputProps={{ inputMode: 'email', pattern: EMAIL_PATTERN.toString() }}
+              helperText={emailError ? 'Please enter a valid email address' : ' '}
+              inputProps={{ inputMode: 'email' }}
             />
             <TextField
               type="password"
               value={passwordValue}
-              error={passwordError}
-              onChange={handlePasswordChange}
               label="Password"
               required
+              error={passwordError}
+              onChange={handlePasswordChange}
+              helperText={passwordError ? 'Please enter your password' : ' '}
             />
           </CardContent>
           <CardActions sx={{ justifyContent: 'right' }}>
