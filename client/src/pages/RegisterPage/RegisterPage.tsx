@@ -4,13 +4,16 @@ import { Action, ThunkDispatch } from '@reduxjs/toolkit';
 import { RootState, store } from '../../app/store';
 import { Button, Card, CardActions, CardContent, TextField } from '@mui/material';
 import { useAlert } from 'components/AlertProvider';
-import { registrationUserAsync } from 'app/mainSlice';
+import { getCurrentLanguage, registrationUserAsync } from 'app/mainSlice';
 import { EMAIL_PATTERN, NICKNAME_PATTERN, PASSWORD_PATTERN } from 'consts';
 import styles from './RegisterPage.module.scss';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAppSelector } from 'app/hooks';
 
 export const RegisterPage: FC = (): JSX.Element => {
   const thunkDispatch = useDispatch<ThunkDispatch<RootState, unknown, Action<string>>>();
+  const currentLanguage = useAppSelector(getCurrentLanguage);
+
   const alert = useAlert();
   const navigate = useNavigate();
 
@@ -67,12 +70,12 @@ export const RegisterPage: FC = (): JSX.Element => {
       nickname: nicknameValue.trim(),
       email: emailValue.trim(),
       password: passwordValue,
+      lang: currentLanguage,
     };
-    const state = store.getState().main;
+    await thunkDispatch(registrationUserAsync(userData));
 
-    const registrationRequestData = { ...userData, lang: state.currentLanguage };
-    await thunkDispatch(registrationUserAsync(registrationRequestData));
-    if (state.isAuthorized) {
+    const { isAuthorized } = store.getState().main;
+    if (isAuthorized) {
       alert.success('You have been registered');
       navigate('/settings');
     } else {
@@ -122,6 +125,9 @@ export const RegisterPage: FC = (): JSX.Element => {
             />
           </CardContent>
           <CardActions sx={{ justifyContent: 'right' }}>
+            <Button>
+              <Link to="/login">Log in</Link>
+            </Button>
             <Button type="submit" variant="contained">
               Register
             </Button>

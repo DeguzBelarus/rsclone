@@ -4,14 +4,21 @@ import { Action, ThunkDispatch } from '@reduxjs/toolkit';
 import { RootState, store } from '../../app/store';
 import { Button, Card, CardActions, CardContent, TextField } from '@mui/material';
 import { Link } from 'react-router-dom';
-import { loginUserAsync } from 'app/mainSlice';
+import { getCurrentLanguage, loginUserAsync } from 'app/mainSlice';
 import { EMAIL_PATTERN } from 'consts';
 import styles from './AuthPage.module.scss';
 import { useAlert } from 'components/AlertProvider';
+import useLanguage from 'hooks/useLanguage';
+import { useAppSelector } from 'app/hooks';
+import { lng } from 'hooks/useLanguage/types';
 
 export const AuthPage = () => {
   const thunkDispatch = useDispatch<ThunkDispatch<RootState, unknown, Action<string>>>();
   const alert = useAlert();
+  const currentLanguage = useAppSelector(getCurrentLanguage);
+
+  const langauge = useLanguage();
+
   const [emailValue, setEmailValue] = useState('');
   const [passwordValue, setPasswordValue] = useState('');
   const [emailError, setEmailError] = useState(false);
@@ -45,15 +52,16 @@ export const AuthPage = () => {
     const userData = {
       email: emailValue.trim(),
       password: passwordValue,
+      lang: currentLanguage,
     };
-    const state = store.getState().main;
-    const loginRequestData = { ...userData, lang: state.currentLanguage };
-    await thunkDispatch(loginUserAsync(loginRequestData));
 
-    if (state.isAuthorized) {
-      alert.success('You have been successfully logged in');
+    await thunkDispatch(loginUserAsync(userData));
+
+    const { isAuthorized } = store.getState().main;
+    if (isAuthorized) {
+      alert.success(langauge(lng.loginSuccess));
     } else {
-      alert.error('Wrong username or password. Try again!');
+      alert.error(langauge(lng.loginError));
     }
   }
 
@@ -62,32 +70,32 @@ export const AuthPage = () => {
       <Card className={styles.card}>
         <form onSubmit={handleSubmit} noValidate>
           <CardContent className={styles.content}>
-            <h3>Please enter your credentials to log in</h3>
+            <h3>{langauge(lng.loginWelcome)}</h3>
             <TextField
               value={emailValue}
-              label="Email"
+              label={langauge(lng.email)}
               required
               error={emailError}
               onChange={handleEmailChange}
-              helperText={emailError ? 'Please enter a valid email address' : ' '}
+              helperText={emailError ? langauge(lng.emailHint) : ' '}
               inputProps={{ inputMode: 'email' }}
             />
             <TextField
               type="password"
               value={passwordValue}
-              label="Password"
+              label={langauge(lng.password)}
               required
               error={passwordError}
               onChange={handlePasswordChange}
-              helperText={passwordError ? 'Please enter your password' : ' '}
+              helperText={passwordError ? langauge(lng.passwordHint) : ' '}
             />
           </CardContent>
           <CardActions sx={{ justifyContent: 'right' }}>
             <Button>
-              <Link to="/register">Register </Link>
+              <Link to="/register">{langauge(lng.register)}</Link>
             </Button>
             <Button type="submit" variant="contained">
-              Login
+              {langauge(lng.login)}
             </Button>
           </CardActions>
         </form>
