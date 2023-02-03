@@ -5,14 +5,13 @@ import { Action, ThunkDispatch } from '@reduxjs/toolkit';
 import { RootState, store } from '../../app/store';
 import { Button, Card, CardActions, CardContent, TextField } from '@mui/material';
 import { Link } from 'react-router-dom';
-
 import { CurrentLanguageType } from 'types/types';
 import { loginUserAsync, getCurrentLanguage } from 'app/mainSlice';
 import { EMAIL_PATTERN } from 'consts';
 import styles from './AuthPage.module.scss';
 import { useAlert } from 'components/AlertProvider';
 
-export const AuthPage: FC = (): JSX.Element => {
+export const AuthPage = () => {
   const thunkDispatch = useDispatch<ThunkDispatch<RootState, unknown, Action<string>>>();
   const alert = useAlert();
 

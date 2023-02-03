@@ -5,7 +5,6 @@ import { Action, ThunkDispatch } from '@reduxjs/toolkit';
 import { RootState, store } from '../../app/store';
 import { Button, Card, CardActions, CardContent, TextField } from '@mui/material';
 import { useAlert } from 'components/AlertProvider';
-
 import { CurrentLanguageType } from 'types/types';
 import { registrationUserAsync, getCurrentLanguage } from 'app/mainSlice';
 import { EMAIL_PATTERN, NICKNAME_PATTERN, PASSWORD_PATTERN } from 'consts';
