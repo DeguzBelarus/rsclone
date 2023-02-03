@@ -14,8 +14,9 @@ import { lng } from 'hooks/useLanguage/types';
 
 export const AuthPage = () => {
   const thunkDispatch = useDispatch<ThunkDispatch<RootState, unknown, Action<string>>>();
-  const alert = useAlert();
   const currentLanguage = useAppSelector(getCurrentLanguage);
+
+  const alert = useAlert();
 
   const langauge = useLanguage();
 

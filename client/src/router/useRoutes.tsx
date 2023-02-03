@@ -10,10 +10,12 @@ import { PostPage } from 'pages/PostPage/PostPage';
 import { PrivateRoutes } from 'components/PrivateRoutes';
 import { AlertProvider } from 'components/AlertProvider';
 import { PublicRoutes } from 'components/PublicRoutes';
+import { LanguageSwitch } from 'components/LanguageSwitch';
 
 export const useRoutes = (): JSX.Element => {
   return (
     <AlertProvider>
+      <LanguageSwitch />
       <Routes>
         <Route element={<PrivateRoutes />}>
           <Route path="/" element={<UserRoom />} />
