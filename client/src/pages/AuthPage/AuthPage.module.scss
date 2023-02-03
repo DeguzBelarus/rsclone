@@ -4,10 +4,14 @@
   justify-content: center;
   min-height: 100vh;
 
+  .card {
+    padding: 1rem;
+    min-width: clamp(240px, 80vw, 380px);
+  }
+
   .content {
     display: flex;
     flex-direction: column;
     gap: 2em;
-    min-width: clamp(240px, 80vw, 380px);
   }
 }

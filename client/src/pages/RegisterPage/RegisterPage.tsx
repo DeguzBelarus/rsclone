@@ -1,17 +1,20 @@
-import React, { ChangeEvent, FormEvent, useRef, useState, FC } from 'react';
+import React, { ChangeEvent, FormEvent, useState, FC } from 'react';
 import { useAppSelector } from 'app/hooks';
 import { useDispatch } from 'react-redux';
 import { Action, ThunkDispatch } from '@reduxjs/toolkit';
-import { RootState } from '../../app/store';
+import { RootState, store } from '../../app/store';
 import { Button, Card, CardActions, CardContent, TextField } from '@mui/material';
-
-import { IRegistrationRequestData, CurrentLanguageType } from 'types/types';
+import { useAlert } from 'components/AlertProvider';
+import { CurrentLanguageType } from 'types/types';
 import { registrationUserAsync, getCurrentLanguage } from 'app/mainSlice';
 import { EMAIL_PATTERN, NICKNAME_PATTERN, PASSWORD_PATTERN } from 'consts';
 import styles from './RegisterPage.module.scss';
+import { useNavigate } from 'react-router-dom';
 
 export const RegisterPage: FC = (): JSX.Element => {
   const thunkDispatch = useDispatch<ThunkDispatch<RootState, unknown, Action<string>>>();
+  const alert = useAlert();
+  const navigate = useNavigate();
 
   const currentLanguage: CurrentLanguageType = useAppSelector(getCurrentLanguage);
   const [nicknameValue, setNicknameValue] = useState('');
@@ -22,27 +25,33 @@ export const RegisterPage: FC = (): JSX.Element => {
   const [emailError, setEmailError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
   const [repeatPasswordError, setRepeatPasswordError] = useState(false);
+  const [touched, setTouched] = useState(false);
 
-  const isValid = () => !(nicknameError || emailError || passwordError || repeatPasswordError);
+  const isValid = () =>
+    touched && !(nicknameError || emailError || passwordError || repeatPasswordError);
 
   function handleNicknameChange(event: ChangeEvent<HTMLInputElement>) {
     setNicknameValue(event.target.value);
     setNicknameError(!NICKNAME_PATTERN.test(event.target.value));
+    setTouched(true);
   }
 
   function handleEmailChange(event: ChangeEvent<HTMLInputElement>) {
     setEmailValue(event.target.value);
     setEmailError(!EMAIL_PATTERN.test(event.target.value));
+    setTouched(true);
   }
 
   function handlePasswordChange(event: ChangeEvent<HTMLInputElement>) {
     setPasswordValue(event.target.value);
     setPasswordError(!PASSWORD_PATTERN.test(event.target.value));
+    setTouched(true);
   }
 
   function handleRepeatPasswordChange(event: ChangeEvent<HTMLInputElement>) {
     setRepeatPasswordValue(event.target.value);
     setRepeatPasswordError(passwordValue !== event.target.value);
+    setTouched(true);
   }
 
   function validateAll() {
@@ -52,7 +61,7 @@ export const RegisterPage: FC = (): JSX.Element => {
     setRepeatPasswordError(passwordValue !== repeatPasswordValue);
   }
 
-  function handleSubmit(event: FormEvent) {
+  async function handleSubmit(event: FormEvent) {
     event.preventDefault();
     validateAll();
     if (!isValid()) return;
@@ -62,13 +71,19 @@ export const RegisterPage: FC = (): JSX.Element => {
       email: emailValue.trim(),
       password: passwordValue,
     };
-    console.log(userData);
-    // const registrationRequestData: IRegistrationRequestData = { email: userEmail, password: userPassword, nickname: userNickname, lang: currentLanguage };
-    // thunkDispatch(registrationUserAsync(registrationRequestData));
+    const registrationRequestData = { ...userData, lang: currentLanguage };
+    await thunkDispatch(registrationUserAsync(registrationRequestData));
+    const state = store.getState();
+    if (state.main.isAuthorized) {
+      alert.success('You have been registered');
+      navigate('/settings');
+    } else {
+      alert.error('Regisration error. Try again later!');
+    }
   }
   return (
     <div className={styles.register}>
-      <Card sx={{ padding: '1rem' }}>
+      <Card className={styles.card}>
         <form onSubmit={handleSubmit} noValidate>
           <CardContent className={styles.content}>
             <h3>Create a new account</h3>

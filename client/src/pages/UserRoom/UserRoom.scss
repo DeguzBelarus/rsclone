@@ -5,4 +5,12 @@
   height: calc(100vh - #{($header-height + px)} - #{($footer-height + px)});
   @include flex-all-center;
   @include user-select-none;
+  flex-direction: column;
+
+  .user-data {
+    margin-top: 2em;
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+  }
 }
