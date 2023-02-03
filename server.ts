@@ -29,6 +29,9 @@ if (process.env.NODE_ENV === "production") {
   app.get("/*", (request: Request, response: Response) => {
     response.sendFile(path.join(__dirname, "client", "build", "index.html"));
   });
+  app.get("/login", (request: Request, response: Response) => {
+    response.sendFile(path.join(__dirname, "client", "build", "index.html"));
+  });
 }
 
 io.on("connection", (socket) => {
