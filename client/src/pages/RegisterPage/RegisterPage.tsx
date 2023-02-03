@@ -1,22 +1,25 @@
-import React, { ChangeEvent, FormEvent, useState, FC } from 'react';
-import { useAppSelector } from 'app/hooks';
+import React, { ChangeEvent, FormEvent, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Action, ThunkDispatch } from '@reduxjs/toolkit';
 import { RootState, store } from '../../app/store';
 import { Button, Card, CardActions, CardContent, TextField } from '@mui/material';
 import { useAlert } from 'components/AlertProvider';
-import { CurrentLanguageType } from 'types/types';
-import { registrationUserAsync, getCurrentLanguage } from 'app/mainSlice';
+import { getCurrentLanguage, registrationUserAsync } from 'app/mainSlice';
 import { EMAIL_PATTERN, NICKNAME_PATTERN, PASSWORD_PATTERN } from 'consts';
 import styles from './RegisterPage.module.scss';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAppSelector } from 'app/hooks';
+import useLanguage from 'hooks/useLanguage';
+import { lng } from 'hooks/useLanguage/types';
 
-export const RegisterPage: FC = (): JSX.Element => {
+export const RegisterPage = () => {
   const thunkDispatch = useDispatch<ThunkDispatch<RootState, unknown, Action<string>>>();
+  const currentLanguage = useAppSelector(getCurrentLanguage);
+
   const alert = useAlert();
+  const language = useLanguage();
   const navigate = useNavigate();
 
-  const currentLanguage: CurrentLanguageType = useAppSelector(getCurrentLanguage);
   const [nicknameValue, setNicknameValue] = useState('');
   const [emailValue, setEmailValue] = useState('');
   const [passwordValue, setPasswordValue] = useState('');
@@ -70,15 +73,16 @@ export const RegisterPage: FC = (): JSX.Element => {
       nickname: nicknameValue.trim(),
       email: emailValue.trim(),
       password: passwordValue,
+      lang: currentLanguage,
     };
-    const registrationRequestData = { ...userData, lang: currentLanguage };
-    await thunkDispatch(registrationUserAsync(registrationRequestData));
-    const state = store.getState();
-    if (state.main.isAuthorized) {
-      alert.success('You have been registered');
+    await thunkDispatch(registrationUserAsync(userData));
+
+    const { isAuthorized } = store.getState().main;
+    if (isAuthorized) {
+      alert.success(language(lng.registerSuccess));
       navigate('/settings');
     } else {
-      alert.error('Regisration error. Try again later!');
+      alert.error(language(lng.registerError));
     }
   }
   return (
@@ -86,46 +90,49 @@ export const RegisterPage: FC = (): JSX.Element => {
       <Card className={styles.card}>
         <form onSubmit={handleSubmit} noValidate>
           <CardContent className={styles.content}>
-            <h3>Create a new account</h3>
+            <h3>{language(lng.registerWelcome)}</h3>
             <TextField
               value={nicknameValue}
-              label="Nickname"
+              label={language(lng.nickname)}
               required
               error={nicknameError}
               onChange={handleNicknameChange}
-              helperText={nicknameError ? 'At least 3 characters long' : ' '}
+              helperText={nicknameError ? language(lng.nicknameHint) : ' '}
             />
             <TextField
               value={emailValue}
-              label="Email"
+              label={language(lng.email)}
               required
               error={emailError}
               onChange={handleEmailChange}
-              helperText={emailError ? 'Please enter a valid email address' : ' '}
+              helperText={emailError ? language(lng.emailHint) : ' '}
               inputProps={{ inputMode: 'email' }}
             />
             <TextField
               type="password"
               value={passwordValue}
-              label="Password"
+              label={language(lng.password)}
               required
               error={passwordError}
               onChange={handlePasswordChange}
-              helperText={passwordError ? 'At least 8 characters long' : ' '}
+              helperText={passwordError ? language(lng.passwordHint) : ' '}
             />
             <TextField
               type="password"
               value={repeatPasswordValue}
-              label="Repeat password"
+              label={language(lng.repeatPassword)}
               required
               error={repeatPasswordError}
               onChange={handleRepeatPasswordChange}
-              helperText={repeatPasswordError ? 'The passwords should match' : ' '}
+              helperText={repeatPasswordError ? language(lng.repeatPasswordHint) : ' '}
             />
           </CardContent>
           <CardActions sx={{ justifyContent: 'right' }}>
+            <Button>
+              <Link to="/login">{language(lng.login)}</Link>
+            </Button>
             <Button type="submit" variant="contained">
-              Register
+              {language(lng.register)}
             </Button>
           </CardActions>
         </form>
