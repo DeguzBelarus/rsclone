@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FormEvent, useState, FC } from 'react';
+import React, { ChangeEvent, FormEvent, useState } from 'react';
 import { useAppSelector } from 'app/hooks';
 import { useDispatch } from 'react-redux';
 import { Action, ThunkDispatch } from '@reduxjs/toolkit';
