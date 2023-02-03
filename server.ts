@@ -26,8 +26,13 @@ app.use(errorHandlingMiddleware);
 
 if (process.env.NODE_ENV === "production") {
   app.use("/", express.static(path.join(__dirname, "client", "build")));
-  app.get("*", (request: Request, response: Response) => {
-    response.sendFile(path.join(__dirname, "client", "build", "index.html"));
+  app.get("/*", (request: Request, response: Response) => {
+    let url = path.join(__dirname, '../client/build', 'index.html');
+    // response.sendFile(path.join(__dirname, "client", "build", "index.html"));
+    if (!url.startsWith('/app/')) {
+      url = url.substring(1);
+    }
+    response.sendFile(url);
   });
 }
 
