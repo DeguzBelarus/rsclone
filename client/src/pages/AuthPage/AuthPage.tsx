@@ -17,7 +17,6 @@ export const AuthPage = () => {
   const currentLanguage = useAppSelector(getCurrentLanguage);
 
   const alert = useAlert();
-
   const langauge = useLanguage();
 
   const [emailValue, setEmailValue] = useState('');

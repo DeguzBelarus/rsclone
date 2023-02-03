@@ -10,6 +10,15 @@ export enum lng {
   loginWelcome,
   loginSuccess,
   loginError,
+
+  nickname,
+  nicknameHint,
+  repeatPassword,
+  repeatPasswordHint,
+
+  registerWelcome,
+  registerSuccess,
+  registerError,
 }
 
 export type LangaugeData = {
