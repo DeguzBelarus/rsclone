@@ -1,12 +1,10 @@
 import React, { ChangeEvent, FormEvent, useState, FC } from 'react';
-import { useAppSelector } from 'app/hooks';
 import { useDispatch } from 'react-redux';
 import { Action, ThunkDispatch } from '@reduxjs/toolkit';
 import { RootState, store } from '../../app/store';
 import { Button, Card, CardActions, CardContent, TextField } from '@mui/material';
 import { useAlert } from 'components/AlertProvider';
-import { CurrentLanguageType } from 'types/types';
-import { registrationUserAsync, getCurrentLanguage } from 'app/mainSlice';
+import { registrationUserAsync } from 'app/mainSlice';
 import { EMAIL_PATTERN, NICKNAME_PATTERN, PASSWORD_PATTERN } from 'consts';
 import styles from './RegisterPage.module.scss';
 import { useNavigate } from 'react-router-dom';
@@ -16,7 +14,6 @@ export const RegisterPage: FC = (): JSX.Element => {
   const alert = useAlert();
   const navigate = useNavigate();
 
-  const currentLanguage: CurrentLanguageType = useAppSelector(getCurrentLanguage);
   const [nicknameValue, setNicknameValue] = useState('');
   const [emailValue, setEmailValue] = useState('');
   const [passwordValue, setPasswordValue] = useState('');
@@ -71,10 +68,11 @@ export const RegisterPage: FC = (): JSX.Element => {
       email: emailValue.trim(),
       password: passwordValue,
     };
-    const registrationRequestData = { ...userData, lang: currentLanguage };
+    const state = store.getState().main;
+
+    const registrationRequestData = { ...userData, lang: state.currentLanguage };
     await thunkDispatch(registrationUserAsync(registrationRequestData));
-    const state = store.getState();
-    if (state.main.isAuthorized) {
+    if (state.isAuthorized) {
       alert.success('You have been registered');
       navigate('/settings');
     } else {
