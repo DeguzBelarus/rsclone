@@ -17,7 +17,7 @@ export const AuthPage = () => {
   const currentLanguage = useAppSelector(getCurrentLanguage);
 
   const alert = useAlert();
-  const langauge = useLanguage();
+  const language = useLanguage();
 
   const [emailValue, setEmailValue] = useState('');
   const [passwordValue, setPasswordValue] = useState('');
@@ -59,9 +59,9 @@ export const AuthPage = () => {
 
     const { isAuthorized } = store.getState().main;
     if (isAuthorized) {
-      alert.success(langauge(lng.loginSuccess));
+      alert.success(language(lng.loginSuccess));
     } else {
-      alert.error(langauge(lng.loginError));
+      alert.error(language(lng.loginError));
     }
   }
 
@@ -70,32 +70,32 @@ export const AuthPage = () => {
       <Card className={styles.card}>
         <form onSubmit={handleSubmit} noValidate>
           <CardContent className={styles.content}>
-            <h3>{langauge(lng.loginWelcome)}</h3>
+            <h3>{language(lng.loginWelcome)}</h3>
             <TextField
               value={emailValue}
-              label={langauge(lng.email)}
+              label={language(lng.email)}
               required
               error={emailError}
               onChange={handleEmailChange}
-              helperText={emailError ? langauge(lng.emailHint) : ' '}
+              helperText={emailError ? language(lng.emailHint) : ' '}
               inputProps={{ inputMode: 'email' }}
             />
             <TextField
               type="password"
               value={passwordValue}
-              label={langauge(lng.password)}
+              label={language(lng.password)}
               required
               error={passwordError}
               onChange={handlePasswordChange}
-              helperText={passwordError ? langauge(lng.passwordHint) : ' '}
+              helperText={passwordError ? language(lng.passwordHint) : ' '}
             />
           </CardContent>
           <CardActions sx={{ justifyContent: 'right' }}>
             <Button>
-              <Link to="/register">{langauge(lng.register)}</Link>
+              <Link to="/register">{language(lng.register)}</Link>
             </Button>
             <Button type="submit" variant="contained">
-              {langauge(lng.login)}
+              {language(lng.login)}
             </Button>
           </CardActions>
         </form>
