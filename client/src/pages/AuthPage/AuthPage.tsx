@@ -2,19 +2,18 @@ import React, { ChangeEvent, FormEvent, useState, FC } from 'react';
 import { useAppSelector } from 'app/hooks';
 import { useDispatch } from 'react-redux';
 import { Action, ThunkDispatch } from '@reduxjs/toolkit';
-import { RootState } from '../../app/store';
+import { RootState, store } from '../../app/store';
 import { Button, Card, CardActions, CardContent, TextField } from '@mui/material';
 import { Link } from 'react-router-dom';
 
 import { CurrentLanguageType } from 'types/types';
-import { loginUserAsync, getCurrentLanguage, getIsAuthorized } from 'app/mainSlice';
+import { loginUserAsync, getCurrentLanguage } from 'app/mainSlice';
 import { EMAIL_PATTERN } from 'consts';
 import styles from './AuthPage.module.scss';
 import { useAlert } from 'components/AlertProvider';
 
 export const AuthPage: FC = (): JSX.Element => {
   const thunkDispatch = useDispatch<ThunkDispatch<RootState, unknown, Action<string>>>();
-  const isAuthorized = useAppSelector(getIsAuthorized);
   const alert = useAlert();
 
   const currentLanguage: CurrentLanguageType = useAppSelector(getCurrentLanguage);
@@ -55,10 +54,11 @@ export const AuthPage: FC = (): JSX.Element => {
     const loginRequestData = { ...userData, lang: currentLanguage };
     await thunkDispatch(loginUserAsync(loginRequestData));
 
-    if (isAuthorized) {
+    const state = store.getState();
+    if (state.main.isAuthorized) {
       alert.success('You have been successfully logged in');
     } else {
-      alert.warning('Wrong username or password. Try again!');
+      alert.error('Wrong username or password. Try again!');
     }
   }
 

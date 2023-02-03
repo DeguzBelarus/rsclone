@@ -2,7 +2,7 @@ import React, { ChangeEvent, FormEvent, useState, FC } from 'react';
 import { useAppSelector } from 'app/hooks';
 import { useDispatch } from 'react-redux';
 import { Action, ThunkDispatch } from '@reduxjs/toolkit';
-import { RootState } from '../../app/store';
+import { RootState, store } from '../../app/store';
 import { Button, Card, CardActions, CardContent, TextField } from '@mui/material';
 import { useAlert } from 'components/AlertProvider';
 
@@ -10,10 +10,12 @@ import { CurrentLanguageType } from 'types/types';
 import { registrationUserAsync, getCurrentLanguage } from 'app/mainSlice';
 import { EMAIL_PATTERN, NICKNAME_PATTERN, PASSWORD_PATTERN } from 'consts';
 import styles from './RegisterPage.module.scss';
+import { useNavigate } from 'react-router-dom';
 
 export const RegisterPage: FC = (): JSX.Element => {
   const thunkDispatch = useDispatch<ThunkDispatch<RootState, unknown, Action<string>>>();
   const alert = useAlert();
+  const navigate = useNavigate();
 
   const currentLanguage: CurrentLanguageType = useAppSelector(getCurrentLanguage);
   const [nicknameValue, setNicknameValue] = useState('');
@@ -70,10 +72,15 @@ export const RegisterPage: FC = (): JSX.Element => {
       email: emailValue.trim(),
       password: passwordValue,
     };
-    console.log(userData);
     const registrationRequestData = { ...userData, lang: currentLanguage };
     await thunkDispatch(registrationUserAsync(registrationRequestData));
-    alert.success('You have been registered');
+    const state = store.getState();
+    if (state.main.isAuthorized) {
+      alert.success('You have been registered');
+      navigate('/settings');
+    } else {
+      alert.error('Regisration error. Try again later!');
+    }
   }
   return (
     <div className={styles.register}>
