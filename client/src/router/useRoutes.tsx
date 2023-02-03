@@ -8,13 +8,12 @@ import { UserRoom } from 'pages/UserRoom/UserRoom';
 import { UserSettings } from '../pages/UserSettings/UserSettings';
 import { PostPage } from 'pages/PostPage/PostPage';
 import { PrivateRoutes } from 'components/PrivateRoutes';
-import { AlertProvider } from 'components/AlertProvider';
 import { PublicRoutes } from 'components/PublicRoutes';
 import { LanguageSwitch } from 'components/LanguageSwitch';
 
 export const useRoutes = (): JSX.Element => {
   return (
-    <AlertProvider>
+    <>
       <LanguageSwitch />
       <Routes>
         <Route element={<PrivateRoutes />}>
@@ -29,6 +28,6 @@ export const useRoutes = (): JSX.Element => {
           <Route path="*" element={<Page404 />} />
         </Route>
       </Routes>
-    </AlertProvider>
+    </>
   );
 };

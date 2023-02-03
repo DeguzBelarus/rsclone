@@ -1,5 +1,3 @@
-import { Dispatch, SetStateAction } from 'react';
-
 // types
 export type Nullable<T> = T | null;
 export type Undefinable<T> = T | undefined;
@@ -44,5 +42,3 @@ export interface ITokenDecodeData {
 export interface ILocalStorageSaveData {
   token?: string;
 }
-
-export type ReactSetState<S> = Dispatch<SetStateAction<S>>;
