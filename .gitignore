@@ -3,6 +3,9 @@
 .idea
 .env
 
+#server build
+/server-build
+
 # client:
 # dependencies
 client/node_modules
