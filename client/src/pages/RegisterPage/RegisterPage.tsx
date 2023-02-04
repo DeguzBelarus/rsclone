@@ -1,24 +1,23 @@
 import React, { ChangeEvent, FormEvent, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { useAppSelector, useAppDispatch } from 'app/hooks';
 import { Action, ThunkDispatch } from '@reduxjs/toolkit';
-import { RootState, store } from '../../app/store';
+import { RootState } from '../../app/store';
 import { Button, Card, CardActions, CardContent, TextField } from '@mui/material';
-import { useAlert } from 'components/AlertProvider';
-import { getCurrentLanguage, registrationUserAsync } from 'app/mainSlice';
+import { Link } from 'react-router-dom';
+
 import { EMAIL_PATTERN, NICKNAME_PATTERN, PASSWORD_PATTERN } from 'consts';
-import styles from './RegisterPage.module.scss';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAppSelector } from 'app/hooks';
 import useLanguage from 'hooks/useLanguage';
 import { lng } from 'hooks/useLanguage/types';
+import { getCurrentLanguage, registrationUserAsync } from 'app/mainSlice';
+import styles from './RegisterPage.module.scss';
 
 export const RegisterPage = () => {
+  const dispatch = useAppDispatch();
   const thunkDispatch = useDispatch<ThunkDispatch<RootState, unknown, Action<string>>>();
   const currentLanguage = useAppSelector(getCurrentLanguage);
 
-  const alert = useAlert();
   const language = useLanguage();
-  const navigate = useNavigate();
 
   const [nicknameValue, setNicknameValue] = useState('');
   const [emailValue, setEmailValue] = useState('');
@@ -76,14 +75,6 @@ export const RegisterPage = () => {
       lang: currentLanguage,
     };
     await thunkDispatch(registrationUserAsync(userData));
-
-    const { isAuthorized } = store.getState().main;
-    if (isAuthorized) {
-      alert.success(language(lng.registerSuccess));
-      navigate('/settings');
-    } else {
-      alert.error(language(lng.registerError));
-    }
   }
   return (
     <div className={styles.register}>

@@ -1,22 +1,22 @@
 import React, { ChangeEvent, FormEvent, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { useAppSelector, useAppDispatch } from 'app/hooks';
 import { Action, ThunkDispatch } from '@reduxjs/toolkit';
-import { RootState, store } from '../../app/store';
+import { RootState } from '../../app/store';
 import { Button, Card, CardActions, CardContent, TextField } from '@mui/material';
 import { Link } from 'react-router-dom';
-import { getCurrentLanguage, loginUserAsync } from 'app/mainSlice';
+
 import { EMAIL_PATTERN } from 'consts';
-import styles from './AuthPage.module.scss';
-import { useAlert } from 'components/AlertProvider';
 import useLanguage from 'hooks/useLanguage';
-import { useAppSelector } from 'app/hooks';
 import { lng } from 'hooks/useLanguage/types';
+import { getCurrentLanguage, loginUserAsync } from 'app/mainSlice';
+import styles from './AuthPage.module.scss';
 
 export const AuthPage = () => {
+  const dispatch = useAppDispatch();
   const thunkDispatch = useDispatch<ThunkDispatch<RootState, unknown, Action<string>>>();
   const currentLanguage = useAppSelector(getCurrentLanguage);
 
-  const alert = useAlert();
   const language = useLanguage();
 
   const [emailValue, setEmailValue] = useState('');
@@ -56,13 +56,6 @@ export const AuthPage = () => {
     };
 
     await thunkDispatch(loginUserAsync(userData));
-
-    const { isAuthorized } = store.getState().main;
-    if (isAuthorized) {
-      alert.success(language(lng.loginSuccess));
-    } else {
-      alert.error(language(lng.loginError));
-    }
   }
 
   return (

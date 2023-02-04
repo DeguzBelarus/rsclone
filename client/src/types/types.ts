@@ -1,5 +1,3 @@
-import { Dispatch, SetStateAction } from 'react';
-
 // types
 export type Nullable<T> = T | null;
 export type Undefinable<T> = T | undefined;
@@ -8,7 +6,7 @@ export type VoidMethod = () => void;
 export type CurrentLanguageType = 'en' | 'ru';
 
 // event handler type
-export type eventHandler<T, K = void> = (event: T, param?: K) => void;
+export type EventHandler<T, K = void> = (event: T, param?: K) => void;
 
 // interfaces
 export interface IRequestMethods {
@@ -43,6 +41,11 @@ export interface ITokenDecodeData {
 
 export interface ILocalStorageSaveData {
   token?: string;
+  currentLanguage?: CurrentLanguageType;
 }
 
-export type ReactSetState<S> = Dispatch<SetStateAction<S>>;
+export interface AlertMessage {
+  message?: Nullable<string>;
+  severity?: 'success' | 'error';
+  persist?: boolean;
+}

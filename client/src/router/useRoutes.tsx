@@ -1,21 +1,19 @@
 import React from 'react';
-import { Route, Routes } from 'react-router-dom';
 
-import { AuthPage } from 'pages/AuthPage/AuthPage';
+import { Route, Routes } from 'react-router-dom';
 import { RegisterPage } from 'pages/RegisterPage/RegisterPage';
 import { Page404 } from 'pages/Page404/Page404';
 import { UserRoom } from 'pages/UserRoom/UserRoom';
 import { UserSettings } from '../pages/UserSettings/UserSettings';
 import { PostPage } from 'pages/PostPage/PostPage';
 import { PrivateRoutes } from 'components/PrivateRoutes';
-import { AlertProvider } from 'components/AlertProvider';
 import { PublicRoutes } from 'components/PublicRoutes';
-import { LanguageSwitch } from 'components/LanguageSwitch';
+import { AuthPage } from 'pages/AuthPage/AuthPage';
+import { Alert } from 'components/Alert/Alert';
 
 export const useRoutes = (): JSX.Element => {
   return (
-    <AlertProvider>
-      <LanguageSwitch />
+    <>
       <Routes>
         <Route element={<PrivateRoutes />}>
           <Route path="/" element={<UserRoom />} />
@@ -29,6 +27,7 @@ export const useRoutes = (): JSX.Element => {
           <Route path="*" element={<Page404 />} />
         </Route>
       </Routes>
-    </AlertProvider>
+      <Alert />
+    </>
   );
 };

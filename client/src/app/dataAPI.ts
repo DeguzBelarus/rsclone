@@ -15,18 +15,24 @@ export function requestData(
   token?: string
 ): Undefinable<Promise<Response>> {
   try {
-    return fetch(url, {
-      method,
-      body,
-      headers: token
-        ? {
-            'Content-Type': 'application/json',
-          }
-        : {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-    });
+    if (token) {
+      return fetch(url, {
+        method,
+        body,
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    } else {
+      return fetch(url, {
+        method,
+        body,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+    }
   } catch (exception: unknown) {
     if (exception instanceof Error) {
       console.error('\x1b[40m\x1b[31m\x1b[1m', exception.message);

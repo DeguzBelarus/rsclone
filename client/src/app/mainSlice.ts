@@ -6,12 +6,14 @@ import jwtDecode from 'jwt-decode';
 import {
   CurrentLanguageType,
   IAuthResponse,
+  ILocalStorageSaveData,
   ILoginRequestData,
   IRegistrationRequestData,
   ITokenDecodeData,
   Nullable,
   RequestStatus,
   Undefinable,
+  AlertMessage,
 } from 'types/types';
 import { requestData, requestMethods } from './dataAPI';
 
@@ -22,7 +24,7 @@ interface MainState {
   userNickname: Nullable<string>;
   userRole: Nullable<string>;
   currentLanguage: CurrentLanguageType;
-  authMessage: Nullable<string>;
+  alert: Nullable<AlertMessage>;
   userRequestStatus: RequestStatus;
 }
 
@@ -33,7 +35,7 @@ const initialState: MainState = {
   userNickname: null,
   userRole: null,
   currentLanguage: 'en',
-  authMessage: null,
+  alert: null,
   userRequestStatus: 'idle',
 };
 
@@ -50,10 +52,8 @@ export const registrationUserAsync = createAsyncThunk(
       JSON.stringify(data)
     );
     if (createUserResponse) {
-      if (createUserResponse?.ok) {
-        const createUserResponseData: IAuthResponse = await createUserResponse.json();
-        return createUserResponseData;
-      }
+      const createUserResponseData: IAuthResponse = await createUserResponse.json();
+      return createUserResponseData;
     }
     return null;
   }
@@ -70,10 +70,8 @@ export const loginUserAsync = createAsyncThunk(
       JSON.stringify(data)
     );
     if (loginUserResponse) {
-      if (loginUserResponse?.ok) {
-        const loginUserResponseData: IAuthResponse = await loginUserResponse.json();
-        return loginUserResponseData;
-      }
+      const loginUserResponseData: IAuthResponse = await loginUserResponse.json();
+      return loginUserResponseData;
     }
     return null;
   }
@@ -91,10 +89,8 @@ export const authCheckUserAsync = createAsyncThunk(
       token
     );
     if (authCheckResponse) {
-      if (authCheckResponse?.ok) {
-        const authCheckResponseData: IAuthResponse = await authCheckResponse.json();
-        return authCheckResponseData;
-      }
+      const authCheckResponseData: IAuthResponse = await authCheckResponse.json();
+      return authCheckResponseData;
     }
     return null;
   }
@@ -110,8 +106,8 @@ export const mainSlice = createSlice({
     ) {
       state.currentLanguage = payload;
     },
-    setAuthMessage(state: WritableDraft<MainState>, { payload }: PayloadAction<Nullable<string>>) {
-      state.authMessage = payload;
+    setAlert(state: WritableDraft<MainState>, { payload }: PayloadAction<Nullable<AlertMessage>>) {
+      state.alert = payload;
     },
     setUserId(state: WritableDraft<MainState>, { payload }: PayloadAction<Nullable<number>>) {
       state.userId = payload;
@@ -141,16 +137,24 @@ export const mainSlice = createSlice({
 
         if (payload) {
           if (payload.token) {
-            state.authMessage = payload.message;
             const tokenDecodeData: ITokenDecodeData = jwtDecode(payload.token);
             state.userId = tokenDecodeData.id;
             state.userEmail = tokenDecodeData.email;
             state.userNickname = tokenDecodeData.nickname;
             state.userRole = tokenDecodeData.role;
             state.isAuthorized = true;
-          } else {
-            state.authMessage = payload.message;
+
+            const save: Nullable<string> = localStorage.getItem('rsclone-save');
+            if (save) {
+              const saveData: ILocalStorageSaveData = JSON.parse(save);
+              saveData.token = payload.token;
+              localStorage.setItem('rsclone-save', JSON.stringify(saveData));
+            } else {
+              const saveData: ILocalStorageSaveData = { token: payload.token };
+              localStorage.setItem('rsclone-save', JSON.stringify(saveData));
+            }
           }
+          state.alert = { message: payload.message, severity: payload.token ? 'success' : 'error' };
         }
       })
       .addCase(registrationUserAsync.rejected, (state, { error }) => {
@@ -167,16 +171,24 @@ export const mainSlice = createSlice({
 
         if (payload) {
           if (payload.token) {
-            state.authMessage = payload.message;
             const tokenDecodeData: ITokenDecodeData = jwtDecode(payload.token);
             state.userId = tokenDecodeData.id;
             state.userEmail = tokenDecodeData.email;
             state.userNickname = tokenDecodeData.nickname;
             state.userRole = tokenDecodeData.role;
             state.isAuthorized = true;
-          } else {
-            state.authMessage = payload.message;
+
+            const save: Nullable<string> = localStorage.getItem('rsclone-save');
+            if (save) {
+              const saveData: ILocalStorageSaveData = JSON.parse(save);
+              saveData.token = payload.token;
+              localStorage.setItem('rsclone-save', JSON.stringify(saveData));
+            } else {
+              const saveData: ILocalStorageSaveData = { token: payload.token };
+              localStorage.setItem('rsclone-save', JSON.stringify(saveData));
+            }
           }
+          state.alert = { message: payload.message, severity: payload.token ? 'success' : 'error' };
         }
       })
       .addCase(loginUserAsync.rejected, (state, { error }) => {
@@ -193,15 +205,22 @@ export const mainSlice = createSlice({
 
         if (payload) {
           if (payload.token) {
-            state.authMessage = payload.message;
             const tokenDecodeData: ITokenDecodeData = jwtDecode(payload.token);
             state.userId = tokenDecodeData.id;
             state.userEmail = tokenDecodeData.email;
             state.userNickname = tokenDecodeData.nickname;
             state.userRole = tokenDecodeData.role;
             state.isAuthorized = true;
-          } else {
-            state.authMessage = payload.message;
+
+            const save: Nullable<string> = localStorage.getItem('rsclone-save');
+            if (save) {
+              const saveData: ILocalStorageSaveData = JSON.parse(save);
+              saveData.token = payload.token;
+              localStorage.setItem('rsclone-save', JSON.stringify(saveData));
+            } else {
+              const saveData: ILocalStorageSaveData = { token: payload.token };
+              localStorage.setItem('rsclone-save', JSON.stringify(saveData));
+            }
           }
         }
       })
@@ -215,7 +234,7 @@ export const mainSlice = createSlice({
 export const {
   actions: {
     setCurrentLanguage,
-    setAuthMessage,
+    setAlert,
     setUserNickname,
     setUserEmail,
     setUserId,
@@ -230,6 +249,6 @@ export const getUserEmail = ({ main: { userEmail } }: RootState) => userEmail;
 export const getUserNickname = ({ main: { userNickname } }: RootState) => userNickname;
 export const getUserRole = ({ main: { userRole } }: RootState) => userRole;
 export const getCurrentLanguage = ({ main: { currentLanguage } }: RootState) => currentLanguage;
-export const getAuthMessage = ({ main: { authMessage } }: RootState) => authMessage;
+export const getAlert = ({ main: { alert } }: RootState) => alert;
 
 export const { reducer } = mainSlice;
