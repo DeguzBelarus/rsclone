@@ -10,10 +10,12 @@ import { PrivateRoutes } from 'components/PrivateRoutes';
 import { PublicRoutes } from 'components/PublicRoutes';
 import { AuthPage } from 'pages/AuthPage/AuthPage';
 import { Alert } from 'components/Alert/Alert';
+import { Header } from 'components/Header/Header';
 
 export const useRoutes = (): JSX.Element => {
   return (
-    <>
+    <AlertProvider>
+      <Header />
       <Routes>
         <Route element={<PrivateRoutes />}>
           <Route path="/" element={<UserRoom />} />
