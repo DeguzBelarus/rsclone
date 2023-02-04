@@ -76,20 +76,34 @@ class UserController {
           )
         );
       }
-      
+
       if (User) {
         let candidate = await User.findOne({
           where: {
-            email
+            nickname
           }
         });
         if (candidate) {
-          
           return next(
             ApiError.badRequest(
               lang === "ru" ?
                 "Указанный никнейм уже используется" :
                 "The specified nickname is already in use"
+            )
+          );
+        }
+
+        candidate = await User.findOne({
+          where: {
+            email
+          }
+        });
+        if (candidate) {
+          return next(
+            ApiError.badRequest(
+              lang === "ru" ?
+                "Указанный email уже используется" :
+                "The specified email is already in use"
             )
           );
         }
@@ -100,10 +114,10 @@ class UserController {
         const newUser = await User.create({
           email,
           role: (email === process.env.ADMIN_FIRST)
-          || (email === process.env.ADMIN_SECOND)
-          || (email === process.env.ADMIN_THIRD)
-          ? "ADMIN"
-          : "USER",
+            || (email === process.env.ADMIN_SECOND)
+            || (email === process.env.ADMIN_THIRD)
+            ? "ADMIN"
+            : "USER",
           nickname,
           password: cryptedPassword,
         });
