@@ -12,8 +12,8 @@ import {
   Toolbar,
   Tooltip,
 } from '@mui/material';
-import { useAppSelector } from 'app/hooks';
-import { getIsAuthorized, getUserNickname } from 'app/mainSlice';
+import { useAppDispatch, useAppSelector } from 'app/hooks';
+import { getIsAuthorized, getUserNickname, setIsAuthorized } from 'app/mainSlice';
 import { LanguageSwitch } from 'components/LanguageSwitch';
 import React, { useState } from 'react';
 import styles from './Header.module.scss';
@@ -25,7 +25,7 @@ import {
   Message as MessageIcon,
   PostAdd,
 } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import useLanguage from 'hooks/useLanguage';
 import { lng } from 'hooks/useLanguage/types';
 
@@ -33,6 +33,7 @@ export const Header = () => {
   const [userMenuAnchor, setUserMenuAnchor] = useState<HTMLElement>();
   const isAuthorized = useAppSelector(getIsAuthorized);
   const userName = useAppSelector(getUserNickname);
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const language = useLanguage();
 
@@ -52,7 +53,7 @@ export const Header = () => {
     navigate('/register');
   }
   function handleUserLogout() {
-    console.log('logout');
+    dispatch(setIsAuthorized(false));
   }
   function handleMessages() {
     console.log('messages');
@@ -64,7 +65,9 @@ export const Header = () => {
   return (
     <AppBar className={styles.header}>
       <Toolbar className={styles.toolbar}>
-        <h1 className={styles.logo}>RS Social</h1>
+        <h1 className={styles.logo}>
+          <Link to="/">RS Social</Link>
+        </h1>
         <LanguageSwitch />
 
         {isAuthorized && (
@@ -88,7 +91,7 @@ export const Header = () => {
         )}
 
         <Button className={styles.userButton} color="inherit" onClick={handleUserMenuOpen}>
-          {userName && <span className={styles.nickname}>{userName}</span>}
+          {isAuthorized && userName && <span className={styles.nickname}>{userName}</span>}
           <Avatar />
         </Button>
         {isAuthorized ? (
