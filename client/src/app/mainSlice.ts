@@ -153,6 +153,7 @@ export const mainSlice = createSlice({
               const saveData: ILocalStorageSaveData = { token: payload.token };
               localStorage.setItem('rsclone-save', JSON.stringify(saveData));
             }
+            state.alert = { message: payload.message, severity: 'success' };
           }
           state.alert = { message: payload.message, severity: payload.token ? 'success' : 'error' };
         }

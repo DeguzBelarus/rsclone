@@ -1,3 +1,18 @@
 .header {
-  
+  position: absolute;
+
+  .toolbar {
+    gap: 1rem;
+    .logo {
+      margin-right: auto;
+    }
+    .userButton {
+      display: flex;
+      gap: 0.5em;
+
+      .nickname {
+        text-transform: none;;
+      }
+    }
+  }
 }

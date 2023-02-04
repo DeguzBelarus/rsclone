@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from 'react';
+import { FC, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { Action, ThunkDispatch } from '@reduxjs/toolkit';
 import { RootState } from '../app/store';
@@ -8,7 +8,6 @@ import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import { useRoutes } from '../router/useRoutes';
 import { authCheckUserAsync } from 'app/mainSlice';
 import { ILocalStorageSaveData, Nullable } from 'types/types';
-import { LanguageSwitch } from './LanguageSwitch';
 
 interface Props {
   socket: Socket<DefaultEventsMap, DefaultEventsMap>;
@@ -35,10 +34,5 @@ export const App: FC<Props> = ({ socket }): JSX.Element => {
     }
   }, []);
 
-  return (
-    <>
-      <LanguageSwitch />
-      {routes}
-    </>
-  );
+  return routes;
 };
