@@ -6,8 +6,8 @@ import { Socket } from 'socket.io-client';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 
 import { useRoutes } from '../router/useRoutes';
-import { authCheckUserAsync } from 'app/mainSlice';
-import { ILocalStorageSaveData, Nullable } from 'types/types';
+import { authCheckUserAsync, setCurrentLanguage } from 'app/mainSlice';
+import { getLocalStorageData } from 'app/storage';
 
 interface Props {
   socket: Socket<DefaultEventsMap, DefaultEventsMap>;
@@ -25,14 +25,14 @@ export const App: FC<Props> = ({ socket }): JSX.Element => {
   }, [socket]);
 
   useEffect(() => {
-    const save: Nullable<string> = localStorage.getItem('rsclone-save');
-    if (save) {
-      const saveData: ILocalStorageSaveData = JSON.parse(save);
-      if (saveData.token) {
-        thunkDispatch(authCheckUserAsync(saveData.token));
-      }
+    const { token, currentLanguage } = getLocalStorageData();
+    if (token) {
+      thunkDispatch(authCheckUserAsync(token));
     }
-  }, []);
+    if (currentLanguage) {
+      thunkDispatch(setCurrentLanguage(currentLanguage));
+    }
+  }, [thunkDispatch]);
 
   return routes;
 };
