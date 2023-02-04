@@ -13,6 +13,7 @@ import {
   Nullable,
   RequestStatus,
   Undefinable,
+  AlertMessage,
 } from 'types/types';
 import { requestData, requestMethods } from './dataAPI';
 
@@ -23,7 +24,7 @@ interface MainState {
   userNickname: Nullable<string>;
   userRole: Nullable<string>;
   currentLanguage: CurrentLanguageType;
-  alert: Nullable<string>;
+  alert: Nullable<AlertMessage>;
   userRequestStatus: RequestStatus;
 }
 
@@ -105,7 +106,7 @@ export const mainSlice = createSlice({
     ) {
       state.currentLanguage = payload;
     },
-    setAuthMessage(state: WritableDraft<MainState>, { payload }: PayloadAction<Nullable<string>>) {
+    setAlert(state: WritableDraft<MainState>, { payload }: PayloadAction<Nullable<AlertMessage>>) {
       state.alert = payload;
     },
     setUserId(state: WritableDraft<MainState>, { payload }: PayloadAction<Nullable<number>>) {
@@ -135,7 +136,6 @@ export const mainSlice = createSlice({
         state.userRequestStatus = 'idle';
 
         if (payload) {
-          state.alert = payload.message;
           if (payload.token) {
             const tokenDecodeData: ITokenDecodeData = jwtDecode(payload.token);
             state.userId = tokenDecodeData.id;
@@ -154,6 +154,7 @@ export const mainSlice = createSlice({
               localStorage.setItem('rsclone-save', JSON.stringify(saveData));
             }
           }
+          state.alert = { message: payload.message, severity: payload.token ? 'success' : 'error' };
         }
       })
       .addCase(registrationUserAsync.rejected, (state, { error }) => {
@@ -169,7 +170,6 @@ export const mainSlice = createSlice({
         state.userRequestStatus = 'idle';
 
         if (payload) {
-          state.alert = payload.message;
           if (payload.token) {
             const tokenDecodeData: ITokenDecodeData = jwtDecode(payload.token);
             state.userId = tokenDecodeData.id;
@@ -188,6 +188,7 @@ export const mainSlice = createSlice({
               localStorage.setItem('rsclone-save', JSON.stringify(saveData));
             }
           }
+          state.alert = { message: payload.message, severity: payload.token ? 'success' : 'error' };
         }
       })
       .addCase(loginUserAsync.rejected, (state, { error }) => {
@@ -233,7 +234,7 @@ export const mainSlice = createSlice({
 export const {
   actions: {
     setCurrentLanguage,
-    setAuthMessage,
+    setAlert,
     setUserNickname,
     setUserEmail,
     setUserId,

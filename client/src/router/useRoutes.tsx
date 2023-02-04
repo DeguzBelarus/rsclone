@@ -8,8 +8,8 @@ import { UserSettings } from '../pages/UserSettings/UserSettings';
 import { PostPage } from 'pages/PostPage/PostPage';
 import { PrivateRoutes } from 'components/PrivateRoutes';
 import { PublicRoutes } from 'components/PublicRoutes';
-import { LanguageSwitch } from 'components/LanguageSwitch';
 import { AuthPage } from 'pages/AuthPage/AuthPage';
+import { Alert } from 'components/Alert/Alert';
 
 export const useRoutes = (): JSX.Element => {
   return (
@@ -27,6 +27,7 @@ export const useRoutes = (): JSX.Element => {
           <Route path="*" element={<Page404 />} />
         </Route>
       </Routes>
+      <Alert />
     </>
   );
 };

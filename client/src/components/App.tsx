@@ -40,7 +40,6 @@ export const App: FC<Props> = ({ socket }): JSX.Element => {
     <>
       <LanguageSwitch />
       {routes}
-      <Alert />
     </>
   );
 };

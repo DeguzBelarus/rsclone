@@ -45,7 +45,7 @@ export interface ILocalStorageSaveData {
 }
 
 export interface AlertMessage {
-  message?: string;
+  message?: Nullable<string>;
   severity?: 'success' | 'error';
   persist?: boolean;
 }

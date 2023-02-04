@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom';
 import { EMAIL_PATTERN } from 'consts';
 import useLanguage from 'hooks/useLanguage';
 import { lng } from 'hooks/useLanguage/types';
-import { getCurrentLanguage, loginUserAsync, setAuthMessage } from 'app/mainSlice';
+import { getCurrentLanguage, loginUserAsync } from 'app/mainSlice';
 import styles from './AuthPage.module.scss';
 
 export const AuthPage = () => {
@@ -49,7 +49,6 @@ export const AuthPage = () => {
     validateAll();
     if (!isValid()) return;
 
-    dispatch(setAuthMessage(null));
     const userData = {
       email: emailValue.trim(),
       password: passwordValue,
@@ -86,9 +85,7 @@ export const AuthPage = () => {
           </CardContent>
           <CardActions sx={{ justifyContent: 'right' }}>
             <Button>
-              <Link to="/register" onClick={() => dispatch(setAuthMessage(null))}>
-                {language(lng.register)}
-              </Link>
+              <Link to="/register">{language(lng.register)}</Link>
             </Button>
             <Button type="submit" variant="contained">
               {language(lng.login)}

@@ -1,17 +1,39 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAppSelector } from 'app/hooks';
 
 import { getAlert } from 'app/mainSlice';
+import { Snackbar, Alert as MUIAlert } from '@mui/material';
+import { ALERT_AUTO_HIDE_DURATION } from 'consts';
 
-export const AuthMessage = () => {
-  const authMessage = useAppSelector(getAlert);
+export const Alert = () => {
+  const alert = useAppSelector(getAlert);
+  const [message, setMessage] = useState<string>();
+  const [open, setOpen] = useState(false);
+
+  const handleClose = (_: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') return;
+    setOpen(false);
+  };
+
+  useEffect(() => {
+    const newMessage = alert?.message;
+    setOpen(false);
+    if (newMessage) {
+      setMessage(newMessage);
+      setOpen(true);
+    } else setMessage(undefined);
+  }, [alert]);
 
   return (
-    <div className="auth-message-wrapper">
-      <div className="message-container">{`${authMessage || ''}`}</div>
-      <button type="button" className="clear-message-button">
-        х
-      </button>
-    </div>
+    <Snackbar open={open} autoHideDuration={ALERT_AUTO_HIDE_DURATION} onClose={handleClose}>
+      <MUIAlert
+        variant="filled"
+        severity={alert?.severity || 'info'}
+        onClose={handleClose}
+        sx={{ width: '100%' }}
+      >
+        {message}
+      </MUIAlert>
+    </Snackbar>
   );
 };

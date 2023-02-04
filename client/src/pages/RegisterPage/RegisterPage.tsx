@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom';
 import { EMAIL_PATTERN, NICKNAME_PATTERN, PASSWORD_PATTERN } from 'consts';
 import useLanguage from 'hooks/useLanguage';
 import { lng } from 'hooks/useLanguage/types';
-import { getCurrentLanguage, registrationUserAsync, setAuthMessage } from 'app/mainSlice';
+import { getCurrentLanguage, registrationUserAsync } from 'app/mainSlice';
 import styles from './RegisterPage.module.scss';
 
 export const RegisterPage = () => {
@@ -68,7 +68,6 @@ export const RegisterPage = () => {
     validateAll();
     if (!isValid()) return;
 
-    dispatch(setAuthMessage(null));
     const userData = {
       nickname: nicknameValue.trim(),
       email: emailValue.trim(),
@@ -121,9 +120,7 @@ export const RegisterPage = () => {
           </CardContent>
           <CardActions sx={{ justifyContent: 'right' }}>
             <Button>
-              <Link to="/login" onClick={() => dispatch(setAuthMessage(null))}>
-                {language(lng.login)}
-              </Link>
+              <Link to="/login">{language(lng.login)}</Link>
             </Button>
             <Button type="submit" variant="contained">
               {language(lng.register)}
