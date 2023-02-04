@@ -14,7 +14,7 @@ import { Header } from 'components/Header/Header';
 
 export const useRoutes = (): JSX.Element => {
   return (
-    <AlertProvider>
+    <>
       <Header />
       <Routes>
         <Route element={<PrivateRoutes />}>

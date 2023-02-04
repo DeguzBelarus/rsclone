@@ -20,6 +20,8 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.registerWelcome]: 'Create a new account',
     [lng.registerSuccess]: 'You have been registered',
     [lng.registerError]: 'Regisration error. Try again later!',
+
+    [lng.languageSelect]: 'App language',
   },
 
   ru: {
@@ -41,6 +43,8 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.registerWelcome]: 'Новый аккаунт',
     [lng.registerSuccess]: 'Аккаунт успешно создан!',
     [lng.registerError]: 'Ошибка при регистрации. Повторите позже!',
+
+    [lng.languageSelect]: 'Язык приложения',
   },
 };
 

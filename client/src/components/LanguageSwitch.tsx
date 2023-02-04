@@ -1,14 +1,17 @@
-import { Badge, FormControlLabel, IconButton, Menu, MenuItem, Radio } from '@mui/material';
+import { Badge, FormControlLabel, IconButton, Menu, MenuItem, Radio, Tooltip } from '@mui/material';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { getCurrentLanguage, setCurrentLanguage } from 'app/mainSlice';
 import { LANGUAGES, LANGUAGE_NAMES } from 'consts';
 import React, { ChangeEvent, useState } from 'react';
 import { CurrentLanguageType } from 'types/types';
 import LanguageIcon from '@mui/icons-material/Language';
+import useLanguage from 'hooks/useLanguage';
+import { lng } from 'hooks/useLanguage/types';
 
 export const LanguageSwitch = () => {
   const currentLangauge = useAppSelector(getCurrentLanguage);
   const dispatch = useAppDispatch();
+  const langauge = useLanguage();
 
   const [menuAnchor, setMenuAnchor] = useState<HTMLElement>();
   const menuOpen = Boolean(menuAnchor);
@@ -27,11 +30,13 @@ export const LanguageSwitch = () => {
 
   return (
     <>
-      <IconButton color="inherit" onClick={handleMenuOpen}>
-        <Badge badgeContent={currentLangauge} color="secondary">
-          <LanguageIcon />
-        </Badge>
-      </IconButton>
+      <Tooltip title={langauge(lng.languageSelect)}>
+        <IconButton color="inherit" onClick={handleMenuOpen}>
+          <Badge badgeContent={currentLangauge} color="secondary">
+            <LanguageIcon />
+          </Badge>
+        </IconButton>
+      </Tooltip>
       <Menu
         anchorEl={menuAnchor}
         open={menuOpen}
