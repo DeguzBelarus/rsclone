@@ -1,22 +1,26 @@
 import React, { ChangeEvent, FormEvent, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { useAppSelector, useAppDispatch } from 'app/hooks';
 import { Action, ThunkDispatch } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
 import { Button, Card, CardActions, CardContent, TextField } from '@mui/material';
 import { Link } from 'react-router-dom';
-import { getCurrentLanguage, loginUserAsync } from 'app/mainSlice';
+
 import { EMAIL_PATTERN } from 'consts';
-import styles from './AuthPage.module.scss';
 import useLanguage from 'hooks/useLanguage';
-import { useAppSelector } from 'app/hooks';
 import { lng } from 'hooks/useLanguage/types';
+import { AuthMessage } from 'components/AuthMessage/AuthMessage';
+import { getCurrentLanguage, loginUserAsync, getAuthMessage, setAuthMessage } from 'app/mainSlice';
+import styles from './AuthPage.module.scss';
 
 export const AuthPage = () => {
+  const dispatch = useAppDispatch();
   const thunkDispatch = useDispatch<ThunkDispatch<RootState, unknown, Action<string>>>();
   const currentLanguage = useAppSelector(getCurrentLanguage);
 
   const language = useLanguage();
 
+  const authMessage = useAppSelector(getAuthMessage);
   const [emailValue, setEmailValue] = useState('');
   const [passwordValue, setPasswordValue] = useState('');
   const [emailError, setEmailError] = useState(false);
@@ -47,6 +51,7 @@ export const AuthPage = () => {
     validateAll();
     if (!isValid()) return;
 
+    dispatch(setAuthMessage(null));
     const userData = {
       email: emailValue.trim(),
       password: passwordValue,
@@ -58,6 +63,7 @@ export const AuthPage = () => {
 
   return (
     <div className={styles.auth}>
+      {authMessage ? <AuthMessage /> : null}
       <Card className={styles.card}>
         <form onSubmit={handleSubmit} noValidate>
           <CardContent className={styles.content}>
@@ -83,7 +89,9 @@ export const AuthPage = () => {
           </CardContent>
           <CardActions sx={{ justifyContent: 'right' }}>
             <Button>
-              <Link to="/register">{language(lng.register)}</Link>
+              <Link to="/register" onClick={() => dispatch(setAuthMessage(null))}>
+                {language(lng.register)}
+              </Link>
             </Button>
             <Button type="submit" variant="contained">
               {language(lng.login)}

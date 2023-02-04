@@ -25,10 +25,9 @@ export const App: FC<Props> = ({ socket }): JSX.Element => {
   }, [socket]);
 
   useEffect(() => {
-    const save: Nullable<string> = localStorage.getItem('MyOnlineStoreToken');
+    const save: Nullable<string> = localStorage.getItem('rsclone-save');
     if (save) {
       const saveData: ILocalStorageSaveData = JSON.parse(save);
-
       if (saveData.token) {
         thunkDispatch(authCheckUserAsync(saveData.token));
       }

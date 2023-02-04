@@ -6,6 +6,7 @@ import jwtDecode from 'jwt-decode';
 import {
   CurrentLanguageType,
   IAuthResponse,
+  ILocalStorageSaveData,
   ILoginRequestData,
   IRegistrationRequestData,
   ITokenDecodeData,
@@ -50,10 +51,8 @@ export const registrationUserAsync = createAsyncThunk(
       JSON.stringify(data)
     );
     if (createUserResponse) {
-      if (createUserResponse?.ok) {
-        const createUserResponseData: IAuthResponse = await createUserResponse.json();
-        return createUserResponseData;
-      }
+      const createUserResponseData: IAuthResponse = await createUserResponse.json();
+      return createUserResponseData;
     }
     return null;
   }
@@ -70,10 +69,8 @@ export const loginUserAsync = createAsyncThunk(
       JSON.stringify(data)
     );
     if (loginUserResponse) {
-      if (loginUserResponse?.ok) {
-        const loginUserResponseData: IAuthResponse = await loginUserResponse.json();
-        return loginUserResponseData;
-      }
+      const loginUserResponseData: IAuthResponse = await loginUserResponse.json();
+      return loginUserResponseData;
     }
     return null;
   }
@@ -91,10 +88,8 @@ export const authCheckUserAsync = createAsyncThunk(
       token
     );
     if (authCheckResponse) {
-      if (authCheckResponse?.ok) {
-        const authCheckResponseData: IAuthResponse = await authCheckResponse.json();
-        return authCheckResponseData;
-      }
+      const authCheckResponseData: IAuthResponse = await authCheckResponse.json();
+      return authCheckResponseData;
     }
     return null;
   }
@@ -140,16 +135,24 @@ export const mainSlice = createSlice({
         state.userRequestStatus = 'idle';
 
         if (payload) {
+          state.authMessage = payload.message;
           if (payload.token) {
-            state.authMessage = payload.message;
             const tokenDecodeData: ITokenDecodeData = jwtDecode(payload.token);
             state.userId = tokenDecodeData.id;
             state.userEmail = tokenDecodeData.email;
             state.userNickname = tokenDecodeData.nickname;
             state.userRole = tokenDecodeData.role;
             state.isAuthorized = true;
-          } else {
-            state.authMessage = payload.message;
+
+            const save: Nullable<string> = localStorage.getItem('rsclone-save');
+            if (save) {
+              const saveData: ILocalStorageSaveData = JSON.parse(save);
+              saveData.token = payload.token;
+              localStorage.setItem('rsclone-save', JSON.stringify(saveData));
+            } else {
+              const saveData: ILocalStorageSaveData = { token: payload.token };
+              localStorage.setItem('rsclone-save', JSON.stringify(saveData));
+            }
           }
         }
       })
@@ -166,16 +169,24 @@ export const mainSlice = createSlice({
         state.userRequestStatus = 'idle';
 
         if (payload) {
+          state.authMessage = payload.message;
           if (payload.token) {
-            state.authMessage = payload.message;
             const tokenDecodeData: ITokenDecodeData = jwtDecode(payload.token);
             state.userId = tokenDecodeData.id;
             state.userEmail = tokenDecodeData.email;
             state.userNickname = tokenDecodeData.nickname;
             state.userRole = tokenDecodeData.role;
             state.isAuthorized = true;
-          } else {
-            state.authMessage = payload.message;
+
+            const save: Nullable<string> = localStorage.getItem('rsclone-save');
+            if (save) {
+              const saveData: ILocalStorageSaveData = JSON.parse(save);
+              saveData.token = payload.token;
+              localStorage.setItem('rsclone-save', JSON.stringify(saveData));
+            } else {
+              const saveData: ILocalStorageSaveData = { token: payload.token };
+              localStorage.setItem('rsclone-save', JSON.stringify(saveData));
+            }
           }
         }
       })
@@ -193,15 +204,22 @@ export const mainSlice = createSlice({
 
         if (payload) {
           if (payload.token) {
-            state.authMessage = payload.message;
             const tokenDecodeData: ITokenDecodeData = jwtDecode(payload.token);
             state.userId = tokenDecodeData.id;
             state.userEmail = tokenDecodeData.email;
             state.userNickname = tokenDecodeData.nickname;
             state.userRole = tokenDecodeData.role;
             state.isAuthorized = true;
-          } else {
-            state.authMessage = payload.message;
+
+            const save: Nullable<string> = localStorage.getItem('rsclone-save');
+            if (save) {
+              const saveData: ILocalStorageSaveData = JSON.parse(save);
+              saveData.token = payload.token;
+              localStorage.setItem('rsclone-save', JSON.stringify(saveData));
+            } else {
+              const saveData: ILocalStorageSaveData = { token: payload.token };
+              localStorage.setItem('rsclone-save', JSON.stringify(saveData));
+            }
           }
         }
       })

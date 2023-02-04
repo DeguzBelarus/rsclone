@@ -1,7 +1,6 @@
 import React from 'react';
-import { Route, Routes } from 'react-router-dom';
 
-import { AuthPage } from 'pages/AuthPage/AuthPage';
+import { Route, Routes } from 'react-router-dom';
 import { RegisterPage } from 'pages/RegisterPage/RegisterPage';
 import { Page404 } from 'pages/Page404/Page404';
 import { UserRoom } from 'pages/UserRoom/UserRoom';
@@ -10,6 +9,7 @@ import { PostPage } from 'pages/PostPage/PostPage';
 import { PrivateRoutes } from 'components/PrivateRoutes';
 import { PublicRoutes } from 'components/PublicRoutes';
 import { LanguageSwitch } from 'components/LanguageSwitch';
+import { AuthPage } from 'pages/AuthPage/AuthPage';
 
 export const useRoutes = (): JSX.Element => {
   return (

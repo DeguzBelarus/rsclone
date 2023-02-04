@@ -1,22 +1,31 @@
 import React, { ChangeEvent, FormEvent, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { useAppSelector, useAppDispatch } from 'app/hooks';
 import { Action, ThunkDispatch } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
 import { Button, Card, CardActions, CardContent, TextField } from '@mui/material';
-import { getCurrentLanguage, registrationUserAsync } from 'app/mainSlice';
-import { EMAIL_PATTERN, NICKNAME_PATTERN, PASSWORD_PATTERN } from 'consts';
-import styles from './RegisterPage.module.scss';
 import { Link } from 'react-router-dom';
-import { useAppSelector } from 'app/hooks';
+
+import { EMAIL_PATTERN, NICKNAME_PATTERN, PASSWORD_PATTERN } from 'consts';
 import useLanguage from 'hooks/useLanguage';
 import { lng } from 'hooks/useLanguage/types';
+import { AuthMessage } from 'components/AuthMessage/AuthMessage';
+import {
+  getCurrentLanguage,
+  registrationUserAsync,
+  getAuthMessage,
+  setAuthMessage,
+} from 'app/mainSlice';
+import styles from './RegisterPage.module.scss';
 
 export const RegisterPage = () => {
+  const dispatch = useAppDispatch();
   const thunkDispatch = useDispatch<ThunkDispatch<RootState, unknown, Action<string>>>();
   const currentLanguage = useAppSelector(getCurrentLanguage);
 
   const language = useLanguage();
 
+  const authMessage = useAppSelector(getAuthMessage);
   const [nicknameValue, setNicknameValue] = useState('');
   const [emailValue, setEmailValue] = useState('');
   const [passwordValue, setPasswordValue] = useState('');
@@ -66,6 +75,7 @@ export const RegisterPage = () => {
     validateAll();
     if (!isValid()) return;
 
+    dispatch(setAuthMessage(null));
     const userData = {
       nickname: nicknameValue.trim(),
       email: emailValue.trim(),
@@ -76,6 +86,7 @@ export const RegisterPage = () => {
   }
   return (
     <div className={styles.register}>
+      {authMessage ? <AuthMessage /> : null}
       <Card className={styles.card}>
         <form onSubmit={handleSubmit} noValidate>
           <CardContent className={styles.content}>
@@ -118,7 +129,9 @@ export const RegisterPage = () => {
           </CardContent>
           <CardActions sx={{ justifyContent: 'right' }}>
             <Button>
-              <Link to="/login">{language(lng.login)}</Link>
+              <Link to="/login" onClick={() => dispatch(setAuthMessage(null))}>
+                {language(lng.login)}
+              </Link>
             </Button>
             <Button type="submit" variant="contained">
               {language(lng.register)}
