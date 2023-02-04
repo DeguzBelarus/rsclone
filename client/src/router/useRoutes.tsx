@@ -14,7 +14,6 @@ import { AuthPage } from 'pages/AuthPage/AuthPage';
 export const useRoutes = (): JSX.Element => {
   return (
     <>
-      <LanguageSwitch />
       <Routes>
         <Route element={<PrivateRoutes />}>
           <Route path="/" element={<UserRoom />} />

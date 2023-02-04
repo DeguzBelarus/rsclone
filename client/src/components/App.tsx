@@ -8,6 +8,8 @@ import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import { useRoutes } from '../router/useRoutes';
 import { authCheckUserAsync } from 'app/mainSlice';
 import { ILocalStorageSaveData, Nullable } from 'types/types';
+import { Alert } from '@mui/material';
+import { LanguageSwitch } from './LanguageSwitch';
 
 interface Props {
   socket: Socket<DefaultEventsMap, DefaultEventsMap>;
@@ -34,5 +36,11 @@ export const App: FC<Props> = ({ socket }): JSX.Element => {
     }
   }, []);
 
-  return <>{routes}</>;
+  return (
+    <>
+      <LanguageSwitch />
+      {routes}
+      <Alert />
+    </>
+  );
 };

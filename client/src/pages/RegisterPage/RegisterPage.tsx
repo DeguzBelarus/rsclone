@@ -9,13 +9,7 @@ import { Link } from 'react-router-dom';
 import { EMAIL_PATTERN, NICKNAME_PATTERN, PASSWORD_PATTERN } from 'consts';
 import useLanguage from 'hooks/useLanguage';
 import { lng } from 'hooks/useLanguage/types';
-import { AuthMessage } from 'components/AuthMessage/AuthMessage';
-import {
-  getCurrentLanguage,
-  registrationUserAsync,
-  getAuthMessage,
-  setAuthMessage,
-} from 'app/mainSlice';
+import { getCurrentLanguage, registrationUserAsync, setAuthMessage } from 'app/mainSlice';
 import styles from './RegisterPage.module.scss';
 
 export const RegisterPage = () => {
@@ -25,7 +19,6 @@ export const RegisterPage = () => {
 
   const language = useLanguage();
 
-  const authMessage = useAppSelector(getAuthMessage);
   const [nicknameValue, setNicknameValue] = useState('');
   const [emailValue, setEmailValue] = useState('');
   const [passwordValue, setPasswordValue] = useState('');
@@ -86,7 +79,6 @@ export const RegisterPage = () => {
   }
   return (
     <div className={styles.register}>
-      {authMessage ? <AuthMessage /> : null}
       <Card className={styles.card}>
         <form onSubmit={handleSubmit} noValidate>
           <CardContent className={styles.content}>

@@ -43,3 +43,9 @@ export interface ILocalStorageSaveData {
   token?: string;
   currentLanguage?: CurrentLanguageType;
 }
+
+export interface AlertMessage {
+  message?: string;
+  severity?: 'success' | 'error';
+  persist?: boolean;
+}

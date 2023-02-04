@@ -23,7 +23,7 @@ interface MainState {
   userNickname: Nullable<string>;
   userRole: Nullable<string>;
   currentLanguage: CurrentLanguageType;
-  authMessage: Nullable<string>;
+  alert: Nullable<string>;
   userRequestStatus: RequestStatus;
 }
 
@@ -34,7 +34,7 @@ const initialState: MainState = {
   userNickname: null,
   userRole: null,
   currentLanguage: 'en',
-  authMessage: null,
+  alert: null,
   userRequestStatus: 'idle',
 };
 
@@ -106,7 +106,7 @@ export const mainSlice = createSlice({
       state.currentLanguage = payload;
     },
     setAuthMessage(state: WritableDraft<MainState>, { payload }: PayloadAction<Nullable<string>>) {
-      state.authMessage = payload;
+      state.alert = payload;
     },
     setUserId(state: WritableDraft<MainState>, { payload }: PayloadAction<Nullable<number>>) {
       state.userId = payload;
@@ -135,7 +135,7 @@ export const mainSlice = createSlice({
         state.userRequestStatus = 'idle';
 
         if (payload) {
-          state.authMessage = payload.message;
+          state.alert = payload.message;
           if (payload.token) {
             const tokenDecodeData: ITokenDecodeData = jwtDecode(payload.token);
             state.userId = tokenDecodeData.id;
@@ -169,7 +169,7 @@ export const mainSlice = createSlice({
         state.userRequestStatus = 'idle';
 
         if (payload) {
-          state.authMessage = payload.message;
+          state.alert = payload.message;
           if (payload.token) {
             const tokenDecodeData: ITokenDecodeData = jwtDecode(payload.token);
             state.userId = tokenDecodeData.id;
@@ -248,6 +248,6 @@ export const getUserEmail = ({ main: { userEmail } }: RootState) => userEmail;
 export const getUserNickname = ({ main: { userNickname } }: RootState) => userNickname;
 export const getUserRole = ({ main: { userRole } }: RootState) => userRole;
 export const getCurrentLanguage = ({ main: { currentLanguage } }: RootState) => currentLanguage;
-export const getAuthMessage = ({ main: { authMessage } }: RootState) => authMessage;
+export const getAlert = ({ main: { alert } }: RootState) => alert;
 
 export const { reducer } = mainSlice;

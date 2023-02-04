@@ -9,8 +9,7 @@ import { Link } from 'react-router-dom';
 import { EMAIL_PATTERN } from 'consts';
 import useLanguage from 'hooks/useLanguage';
 import { lng } from 'hooks/useLanguage/types';
-import { AuthMessage } from 'components/AuthMessage/AuthMessage';
-import { getCurrentLanguage, loginUserAsync, getAuthMessage, setAuthMessage } from 'app/mainSlice';
+import { getCurrentLanguage, loginUserAsync, setAuthMessage } from 'app/mainSlice';
 import styles from './AuthPage.module.scss';
 
 export const AuthPage = () => {
@@ -20,7 +19,6 @@ export const AuthPage = () => {
 
   const language = useLanguage();
 
-  const authMessage = useAppSelector(getAuthMessage);
   const [emailValue, setEmailValue] = useState('');
   const [passwordValue, setPasswordValue] = useState('');
   const [emailError, setEmailError] = useState(false);
@@ -63,7 +61,6 @@ export const AuthPage = () => {
 
   return (
     <div className={styles.auth}>
-      {authMessage ? <AuthMessage /> : null}
       <Card className={styles.card}>
         <form onSubmit={handleSubmit} noValidate>
           <CardContent className={styles.content}>
