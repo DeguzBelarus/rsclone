@@ -1,8 +1,8 @@
-import { IconButton, Menu, MenuItem, Select, SelectChangeEvent } from '@mui/material';
+import { Badge, FormControlLabel, IconButton, Menu, MenuItem, Radio } from '@mui/material';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { getCurrentLanguage, setCurrentLanguage } from 'app/mainSlice';
-import { LANGUAGES } from 'consts';
-import React, { useState } from 'react';
+import { LANGUAGES, LANGUAGE_NAMES } from 'consts';
+import React, { ChangeEvent, useState } from 'react';
 import { CurrentLanguageType } from 'types/types';
 import LanguageIcon from '@mui/icons-material/Language';
 
@@ -13,7 +13,7 @@ export const LanguageSwitch = () => {
   const [menuAnchor, setMenuAnchor] = useState<HTMLElement>();
   const menuOpen = Boolean(menuAnchor);
 
-  const handleChange = (event: SelectChangeEvent) => {
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     dispatch(setCurrentLanguage(event.target.value as CurrentLanguageType));
   };
 
@@ -28,33 +28,26 @@ export const LanguageSwitch = () => {
   return (
     <>
       <IconButton color="inherit" onClick={handleMenuOpen}>
-        <LanguageIcon />
+        <Badge badgeContent={currentLangauge} color="secondary">
+          <LanguageIcon />
+        </Badge>
       </IconButton>
-
       <Menu
         anchorEl={menuAnchor}
         open={menuOpen}
         onClick={handleMenuClose}
         onClose={handleMenuClose}
       >
-        {LANGUAGES.map((language) => (
+        {LANGUAGES.map((language, index) => (
           <MenuItem key={language} value={language}>
-            {language}
+            <FormControlLabel
+              value={language}
+              control={<Radio checked={language === currentLangauge} onChange={handleChange} />}
+              label={LANGUAGE_NAMES[index]}
+            />
           </MenuItem>
         ))}
       </Menu>
-      <Select
-        value={currentLangauge}
-        onChange={handleChange}
-        displayEmpty
-        inputProps={{ 'aria-label': 'Without label' }}
-      >
-        {LANGUAGES.map((language) => (
-          <MenuItem key={language} value={language}>
-            {language}
-          </MenuItem>
-        ))}
-      </Select>
     </>
   );
 };
