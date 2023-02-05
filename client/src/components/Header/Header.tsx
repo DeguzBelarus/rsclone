@@ -13,7 +13,7 @@ import {
   Tooltip,
 } from '@mui/material';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
-import { getIsAuthorized, getUserNickname, setIsAuthorized } from 'app/mainSlice';
+import { getIsAuthorized, getUserNickname, getUserRole, setIsAuthorized } from 'app/mainSlice';
 import { LanguageSwitch } from 'components/LanguageSwitch';
 import React, { useState } from 'react';
 import styles from './Header.module.scss';
@@ -26,19 +26,23 @@ import {
   PostAdd,
   Person as PersonIcon,
 } from '@mui/icons-material';
-import { blue, purple } from '@mui/material/colors';
+import { blue, purple, amber } from '@mui/material/colors';
 import { Link, useNavigate } from 'react-router-dom';
 import useLanguage from 'hooks/useLanguage';
 import { lng } from 'hooks/useLanguage/types';
 import { CustomMenu } from 'components/CustomMenu/CustomMenu';
+import { USER_ROLE_ADMIN } from 'consts';
 
 export const Header = () => {
   const [userMenuAnchor, setUserMenuAnchor] = useState<HTMLElement>();
   const isAuthorized = useAppSelector(getIsAuthorized);
   const userName = useAppSelector(getUserNickname);
+  const userRole = useAppSelector(getUserRole);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const language = useLanguage();
+
+  console.log(userRole);
 
   function handleUserMenuOpen(event: React.MouseEvent<HTMLElement>) {
     setUserMenuAnchor(event.currentTarget);
@@ -76,7 +80,12 @@ export const Header = () => {
   const authorizedMenu = [
     <MenuItem key="1" sx={{ display: { sm: 'none' }, cursor: 'default', pointerEvents: 'none' }}>
       <ListItemIcon>{avatar('1.5em')}</ListItemIcon>
-      <ListItemText>{userName}</ListItemText>
+      <ListItemText>
+        {userName}
+        {userRole === USER_ROLE_ADMIN && (
+          <span style={{ opacity: 0.6, fontSize: '0.8em' }}> (admin)</span>
+        )}
+      </ListItemText>
     </MenuItem>,
     <Divider key="2" sx={{ display: { sm: 'none' } }} />,
     <MenuItem key="3" onClick={handleMessages} sx={{ display: { sm: 'none' } }}>
@@ -158,9 +167,13 @@ export const Header = () => {
           onClick={handleUserMenuOpen}
           sx={{
             display: 'block',
+            bgcolor: userRole === USER_ROLE_ADMIN ? amber[700] : undefined,
             color: blue[50],
             borderRadius: { xs: '50%', sm: '2em' },
             padding: '6px',
+            '&:hover': {
+              bgcolor: userRole === USER_ROLE_ADMIN ? amber[800] : undefined,
+            },
           }}
         >
           {isAuthorized && userName && (
