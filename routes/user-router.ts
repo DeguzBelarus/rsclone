@@ -8,3 +8,4 @@ export const userRouter = express.Router();
 userRouter.get("/authcheck", checkAuthMiddleware, userController.authCheck);
 userRouter.post("/registration", userController.registration);
 userRouter.post("/login", userController.login);
+userRouter.put("/:id/update", userController.update);
