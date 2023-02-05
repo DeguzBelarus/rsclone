@@ -26,7 +26,7 @@ import {
   PostAdd,
   Person as PersonIcon,
 } from '@mui/icons-material';
-import { purple } from '@mui/material/colors';
+import { blue, purple } from '@mui/material/colors';
 import { Link, useNavigate } from 'react-router-dom';
 import useLanguage from 'hooks/useLanguage';
 import { lng } from 'hooks/useLanguage/types';
@@ -154,11 +154,13 @@ export const Header = () => {
         <Button
           className={styles.userButton}
           color="inherit"
+          variant="outlined"
           onClick={handleUserMenuOpen}
           sx={{
             display: 'block',
+            color: blue[50],
             borderRadius: { xs: '50%', sm: '2em' },
-            padding: { xs: '6px', sm: '6px 8px' },
+            padding: '6px',
           }}
         >
           {isAuthorized && userName && (

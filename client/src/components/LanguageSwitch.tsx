@@ -2,7 +2,7 @@ import { Badge, FormControlLabel, IconButton, MenuItem, Radio, Tooltip } from '@
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { getCurrentLanguage, setCurrentLanguage } from 'app/mainSlice';
 import { LANGUAGES, LANGUAGE_NAMES } from 'consts';
-import React, { ChangeEvent, useState } from 'react';
+import React, { useState } from 'react';
 import { CurrentLanguageType } from 'types/types';
 import LanguageIcon from '@mui/icons-material/Language';
 import useLanguage from 'hooks/useLanguage';
@@ -12,13 +12,13 @@ import { CustomMenu } from './CustomMenu/CustomMenu';
 export const LanguageSwitch = () => {
   const currentLangauge = useAppSelector(getCurrentLanguage);
   const dispatch = useAppDispatch();
-  const langauge = useLanguage();
+  const language = useLanguage();
 
   const [menuAnchor, setMenuAnchor] = useState<HTMLElement>();
   const menuOpen = Boolean(menuAnchor);
 
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    dispatch(setCurrentLanguage(event.target.value as CurrentLanguageType));
+  const handleChange = (newLanguage: string) => {
+    dispatch(setCurrentLanguage(newLanguage as CurrentLanguageType));
   };
 
   function handleMenuOpen(event: React.MouseEvent<HTMLElement>) {
@@ -31,7 +31,7 @@ export const LanguageSwitch = () => {
 
   return (
     <>
-      <Tooltip title={langauge(lng.languageSelect)}>
+      <Tooltip title={language(lng.languageSelect)}>
         <IconButton color="inherit" onClick={handleMenuOpen}>
           <Badge badgeContent={currentLangauge} color="secondary">
             <LanguageIcon />
@@ -44,11 +44,11 @@ export const LanguageSwitch = () => {
         onClick={handleMenuClose}
         onClose={handleMenuClose}
       >
-        {LANGUAGES.map((language, index) => (
-          <MenuItem key={language} value={language}>
+        {LANGUAGES.map((lang, index) => (
+          <MenuItem key={lang} value={lang} onClick={() => handleChange(lang)}>
             <FormControlLabel
-              value={language}
-              control={<Radio checked={language === currentLangauge} onChange={handleChange} />}
+              value={lang}
+              control={<Radio checked={lang === currentLangauge} />}
               label={LANGUAGE_NAMES[index]}
             />
           </MenuItem>

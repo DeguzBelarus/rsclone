@@ -26,8 +26,8 @@ export const useRoutes = (): JSX.Element => {
         <Route element={<PublicRoutes />}>
           <Route path="login" element={<AuthPage />} />
           <Route path="register" element={<RegisterPage />} />
-          <Route path="*" element={<Page404 />} />
         </Route>
+        <Route path="*" element={<Page404 />} />
       </Routes>
       <Alert />
     </>
