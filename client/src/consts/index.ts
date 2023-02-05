@@ -5,4 +5,6 @@ export const PASSWORD_PATTERN = /^.{8,}$/;
 export const ALERT_AUTO_HIDE_DURATION = 4000;
 
 export const LANGUAGES = ['en', 'ru'];
-export const LANGUAGE_NAMES = ['English', 'Русский (Russian)'];
+export const LANGUAGE_NAMES = ['English', 'Русский'];
+
+export const USER_ROLE_ADMIN = 'ADMIN';
