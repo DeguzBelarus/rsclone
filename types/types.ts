@@ -60,4 +60,6 @@ export interface IUserModel {
 
 export interface IRequestModified extends Request {
   user?: IUserModel;
+  role?: RoleType;
+  requesterId?: number;
 }
