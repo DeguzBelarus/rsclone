@@ -1,3 +1,4 @@
+import { RoleType } from "./../types/types";
 import { Response, NextFunction } from 'express';
 import fs from 'fs';
 import path from 'path';
@@ -8,6 +9,7 @@ import formidable from 'formidable';
 import { User } from '../db-models/db-models';
 import { CurrentLanguageType, IUserModel, IRequestModified, FormidableFile } from '../types/types';
 import { ApiError } from '../error-handler/error-handler';
+import Model from "sequelize/types/model";
 
 const forbiddenCharactersChecker = (string: string): boolean => {
   if (string.includes("*") ||
@@ -218,6 +220,96 @@ class UserController {
             "Вы успешно вошли в систему!" :
             "You have successfully logged in!",
         });
+      }
+    } catch (exception: unknown) {
+      if (exception instanceof Error) {
+        next(ApiError.badRequest(exception.message));
+      }
+    }
+  }
+
+  async getOneUser(request: IRequestModified, response: Response, next: NextFunction) {
+    try {
+      if (User) {
+        const { id } = request.params;
+        const { lang, role } = request.query;
+
+        const foundUser = await User.findOne({
+          where: { id },
+        });
+
+        if (foundUser) {
+          const { id, age, city, country, email, firstName, lastName, nickname, role: userRole, avatar } = foundUser.dataValues;
+
+          if (role === "ADMIN") {
+            response.json({
+              userData: { id, age, city, country, email, firstName, lastName, nickname, role: userRole, avatar },
+              message: lang === "ru" ?
+                "Данные пользователя получены администратором" :
+                "The user's data was received by the administrator",
+            });
+          } else {
+            response.json({
+              userData: { id, age, city, country, firstName, lastName, nickname, role: userRole, avatar },
+              message: lang === "ru" ?
+                "Данные пользователя получены" :
+                "User data received",
+            });
+          }
+        } else {
+          return next(
+            ApiError.notFound(
+              lang === "ru" ?
+                "Пользователь не найден" :
+                "User not found"
+            )
+          );
+        }
+      }
+    } catch (exception: unknown) {
+      if (exception instanceof Error) {
+        next(ApiError.badRequest(exception.message));
+      }
+    }
+  }
+
+  async delete(request: IRequestModified, response: Response, next: NextFunction): Promise<void | Response> {
+    try {
+      if (User) {
+        const { id } = request.params;
+        const { lang } = request.query;
+
+        const deletedUser = await User.findOne({ where: { id: id } });
+        if (deletedUser) {
+          if (Number(id) !== deletedUser.dataValues.id) {
+            if (request.user) {
+              const requestUserRole = request.user.role;
+              if (requestUserRole !== "ADMIN" && deletedUser.dataValues.role === "ADMIN") {
+                return next(
+                  ApiError.forbidden(lang === "ru" ? "Нет прав" : "No rights"));
+              }
+            }
+          }
+
+          await User.destroy({ where: { id } });
+          if (fs.existsSync(path.join(__dirname, "..", "static", `${id}`))) {
+            fs.rmdirSync(path.join(__dirname, "..", "static", `${id}`),
+              { recursive: true }
+            );
+          }
+          return response.json({
+            message: lang === "ru" ?
+              "Пользователь удалён!" :
+              "The user has been deleted!",
+          });
+        } else {
+          return response.status(204).json({
+            message:
+              lang === "ru"
+                ? "Указанный пользователь не найден"
+                : "The specified user was not found",
+          });
+        }
       }
     } catch (exception: unknown) {
       if (exception instanceof Error) {
