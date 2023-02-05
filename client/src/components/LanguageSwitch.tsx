@@ -1,32 +1,59 @@
-import { MenuItem, Select, SelectChangeEvent } from '@mui/material';
+import { Badge, FormControlLabel, IconButton, MenuItem, Radio, Tooltip } from '@mui/material';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { getCurrentLanguage, setCurrentLanguage } from 'app/mainSlice';
-import { LANGUAGES } from 'consts';
-import React from 'react';
+import { LANGUAGES, LANGUAGE_NAMES } from 'consts';
+import React, { useState } from 'react';
 import { CurrentLanguageType } from 'types/types';
+import LanguageIcon from '@mui/icons-material/Language';
+import useLanguage from 'hooks/useLanguage';
+import { lng } from 'hooks/useLanguage/types';
+import { CustomMenu } from './CustomMenu/CustomMenu';
 
 export const LanguageSwitch = () => {
   const currentLangauge = useAppSelector(getCurrentLanguage);
   const dispatch = useAppDispatch();
+  const language = useLanguage();
 
-  const handleChange = (event: SelectChangeEvent) => {
-    dispatch(setCurrentLanguage(event.target.value as CurrentLanguageType));
+  const [menuAnchor, setMenuAnchor] = useState<HTMLElement>();
+  const menuOpen = Boolean(menuAnchor);
+
+  const handleChange = (newLanguage: string) => {
+    dispatch(setCurrentLanguage(newLanguage as CurrentLanguageType));
   };
 
+  function handleMenuOpen(event: React.MouseEvent<HTMLElement>) {
+    setMenuAnchor(event.currentTarget);
+  }
+
+  function handleMenuClose() {
+    setMenuAnchor(undefined);
+  }
+
   return (
-    <div style={{ position: 'fixed', top: '1rem', right: '1rem' }}>
-      <Select
-        value={currentLangauge}
-        onChange={handleChange}
-        displayEmpty
-        inputProps={{ 'aria-label': 'Without label' }}
+    <>
+      <Tooltip title={language(lng.languageSelect)}>
+        <IconButton color="inherit" onClick={handleMenuOpen}>
+          <Badge badgeContent={currentLangauge} color="secondary">
+            <LanguageIcon />
+          </Badge>
+        </IconButton>
+      </Tooltip>
+      <CustomMenu
+        anchorEl={menuAnchor}
+        open={menuOpen}
+        onClick={handleMenuClose}
+        onClose={handleMenuClose}
       >
-        {LANGUAGES.map((language) => (
-          <MenuItem key={language} value={language}>
-            {language}
+        {LANGUAGES.map((lang, index) => (
+          <MenuItem key={lang} value={lang} onClick={() => handleChange(lang)}>
+            <FormControlLabel
+              value={lang}
+              control={<Radio checked={lang === currentLangauge} />}
+              label={LANGUAGE_NAMES[index]}
+            />
           </MenuItem>
         ))}
-      </Select>
-    </div>
+      </CustomMenu>
+    </>
   );
 };

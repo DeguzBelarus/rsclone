@@ -6,7 +6,6 @@ import jwtDecode from 'jwt-decode';
 import {
   CurrentLanguageType,
   IAuthResponse,
-  ILocalStorageSaveData,
   ILoginRequestData,
   IRegistrationRequestData,
   ITokenDecodeData,
@@ -16,6 +15,7 @@ import {
   AlertMessage,
 } from 'types/types';
 import { requestData, requestMethods } from './dataAPI';
+import { setLocalStorageData } from './storage';
 
 interface MainState {
   isAuthorized: boolean;
@@ -105,6 +105,7 @@ export const mainSlice = createSlice({
       { payload }: PayloadAction<CurrentLanguageType>
     ) {
       state.currentLanguage = payload;
+      setLocalStorageData({ currentLanguage: payload });
     },
     setAlert(state: WritableDraft<MainState>, { payload }: PayloadAction<Nullable<AlertMessage>>) {
       state.alert = payload;
@@ -123,6 +124,7 @@ export const mainSlice = createSlice({
     },
     setIsAuthorized(state: WritableDraft<MainState>, { payload }: PayloadAction<boolean>) {
       state.isAuthorized = payload;
+      if (!payload) setLocalStorageData({ token: undefined });
     },
   },
   extraReducers: (builder) => {
@@ -143,16 +145,7 @@ export const mainSlice = createSlice({
             state.userNickname = tokenDecodeData.nickname;
             state.userRole = tokenDecodeData.role;
             state.isAuthorized = true;
-
-            const save: Nullable<string> = localStorage.getItem('rsclone-save');
-            if (save) {
-              const saveData: ILocalStorageSaveData = JSON.parse(save);
-              saveData.token = payload.token;
-              localStorage.setItem('rsclone-save', JSON.stringify(saveData));
-            } else {
-              const saveData: ILocalStorageSaveData = { token: payload.token };
-              localStorage.setItem('rsclone-save', JSON.stringify(saveData));
-            }
+            setLocalStorageData({ token: payload.token });
           }
           state.alert = { message: payload.message, severity: payload.token ? 'success' : 'error' };
         }
@@ -177,16 +170,7 @@ export const mainSlice = createSlice({
             state.userNickname = tokenDecodeData.nickname;
             state.userRole = tokenDecodeData.role;
             state.isAuthorized = true;
-
-            const save: Nullable<string> = localStorage.getItem('rsclone-save');
-            if (save) {
-              const saveData: ILocalStorageSaveData = JSON.parse(save);
-              saveData.token = payload.token;
-              localStorage.setItem('rsclone-save', JSON.stringify(saveData));
-            } else {
-              const saveData: ILocalStorageSaveData = { token: payload.token };
-              localStorage.setItem('rsclone-save', JSON.stringify(saveData));
-            }
+            setLocalStorageData({ token: payload.token });
           }
           state.alert = { message: payload.message, severity: payload.token ? 'success' : 'error' };
         }
@@ -211,16 +195,7 @@ export const mainSlice = createSlice({
             state.userNickname = tokenDecodeData.nickname;
             state.userRole = tokenDecodeData.role;
             state.isAuthorized = true;
-
-            const save: Nullable<string> = localStorage.getItem('rsclone-save');
-            if (save) {
-              const saveData: ILocalStorageSaveData = JSON.parse(save);
-              saveData.token = payload.token;
-              localStorage.setItem('rsclone-save', JSON.stringify(saveData));
-            } else {
-              const saveData: ILocalStorageSaveData = { token: payload.token };
-              localStorage.setItem('rsclone-save', JSON.stringify(saveData));
-            }
+            setLocalStorageData({ token: payload.token });
           }
         }
       })

@@ -1,6 +1,6 @@
 import React, { ChangeEvent, FormEvent, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { useAppSelector, useAppDispatch } from 'app/hooks';
+import { useAppSelector } from 'app/hooks';
 import { Action, ThunkDispatch } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
 import { Button, Card, CardActions, CardContent, TextField } from '@mui/material';
@@ -13,7 +13,6 @@ import { getCurrentLanguage, loginUserAsync } from 'app/mainSlice';
 import styles from './AuthPage.module.scss';
 
 export const AuthPage = () => {
-  const dispatch = useAppDispatch();
   const thunkDispatch = useDispatch<ThunkDispatch<RootState, unknown, Action<string>>>();
   const currentLanguage = useAppSelector(getCurrentLanguage);
 

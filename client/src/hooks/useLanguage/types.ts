@@ -19,6 +19,13 @@ export enum lng {
   registerWelcome,
   registerSuccess,
   registerError,
+
+  languageSelect,
+  userMessages,
+  userAddPost,
+
+  settings,
+  logout,
 }
 
 export type LangaugeData = {

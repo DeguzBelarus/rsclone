@@ -10,10 +10,12 @@ import { PrivateRoutes } from 'components/PrivateRoutes';
 import { PublicRoutes } from 'components/PublicRoutes';
 import { AuthPage } from 'pages/AuthPage/AuthPage';
 import { Alert } from 'components/Alert/Alert';
+import { Header } from 'components/Header/Header';
 
 export const useRoutes = (): JSX.Element => {
   return (
     <>
+      <Header />
       <Routes>
         <Route element={<PrivateRoutes />}>
           <Route path="/" element={<UserRoom />} />
@@ -24,8 +26,8 @@ export const useRoutes = (): JSX.Element => {
         <Route element={<PublicRoutes />}>
           <Route path="login" element={<AuthPage />} />
           <Route path="register" element={<RegisterPage />} />
-          <Route path="*" element={<Page404 />} />
         </Route>
+        <Route path="*" element={<Page404 />} />
       </Routes>
       <Alert />
     </>

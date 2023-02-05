@@ -8,7 +8,7 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.passwordHint]: 'Please enter your password',
     [lng.register]: 'Register',
     [lng.login]: 'Log in',
-    [lng.loginWelcome]: 'Please enter your credentials to log in',
+    [lng.loginWelcome]: 'Enter your login and password',
     [lng.loginSuccess]: 'You have been successfully logged in',
     [lng.loginError]: 'Wrong email or password. Try again!',
 
@@ -20,6 +20,13 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.registerWelcome]: 'Create a new account',
     [lng.registerSuccess]: 'You have been registered',
     [lng.registerError]: 'Regisration error. Try again later!',
+
+    [lng.languageSelect]: 'App language',
+    [lng.userMessages]: 'Messages',
+    [lng.userAddPost]: 'Create new post',
+
+    [lng.settings]: 'Settings',
+    [lng.logout]: 'Log out',
   },
 
   ru: {
@@ -41,6 +48,13 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.registerWelcome]: 'Новый аккаунт',
     [lng.registerSuccess]: 'Аккаунт успешно создан!',
     [lng.registerError]: 'Ошибка при регистрации. Повторите позже!',
+
+    [lng.languageSelect]: 'Язык приложения',
+    [lng.userMessages]: 'Сообщения',
+    [lng.userAddPost]: 'Написать пост',
+
+    [lng.settings]: 'Настройки',
+    [lng.logout]: 'Выйти',
   },
 };
 
