@@ -2,12 +2,12 @@ import {
   AppBar,
   Avatar,
   Badge,
+  Box,
   Button,
   Divider,
   IconButton,
   ListItemIcon,
   ListItemText,
-  Menu,
   MenuItem,
   Toolbar,
   Tooltip,
@@ -24,10 +24,13 @@ import {
   PersonAdd as RegisterIcon,
   Message as MessageIcon,
   PostAdd,
+  Person as PersonIcon,
 } from '@mui/icons-material';
+import { purple } from '@mui/material/colors';
 import { Link, useNavigate } from 'react-router-dom';
 import useLanguage from 'hooks/useLanguage';
 import { lng } from 'hooks/useLanguage/types';
+import { CustomMenu } from 'components/CustomMenu/CustomMenu';
 
 export const Header = () => {
   const [userMenuAnchor, setUserMenuAnchor] = useState<HTMLElement>();
@@ -56,11 +59,69 @@ export const Header = () => {
     dispatch(setIsAuthorized(false));
   }
   function handleMessages() {
-    console.log('messages');
+    navigate('/messages');
   }
   function handleAddPost() {
-    console.log('add post');
+    navigate('/posts/new');
   }
+
+  const avatar = (size: string) => {
+    return (
+      <Avatar sx={{ width: size, height: size, bgcolor: purple[50], color: purple[300] }}>
+        <PersonIcon sx={{ bgcolor: 'primary' }}></PersonIcon>
+      </Avatar>
+    );
+  };
+
+  const authorizedMenu = [
+    <MenuItem key="1" sx={{ display: { sm: 'none' }, cursor: 'default', pointerEvents: 'none' }}>
+      <ListItemIcon>{avatar('1.5em')}</ListItemIcon>
+      <ListItemText>{userName}</ListItemText>
+    </MenuItem>,
+    <Divider key="2" sx={{ display: { sm: 'none' } }} />,
+    <MenuItem key="3" onClick={handleMessages} sx={{ display: { sm: 'none' } }}>
+      <ListItemIcon>
+        <Badge badgeContent={4} color="warning">
+          <MessageIcon />
+        </Badge>
+      </ListItemIcon>
+      <ListItemText>{language(lng.userMessages)}</ListItemText>
+    </MenuItem>,
+    <MenuItem key="4" onClick={handleAddPost} sx={{ display: { sm: 'none' } }}>
+      <ListItemIcon>
+        <PostAdd />
+      </ListItemIcon>
+      <ListItemText>{language(lng.userAddPost)}</ListItemText>
+    </MenuItem>,
+    <MenuItem key="5" onClick={handleUserSettings}>
+      <ListItemIcon>
+        <SettingsIcon />
+      </ListItemIcon>
+      <ListItemText>{language(lng.settings)}</ListItemText>
+    </MenuItem>,
+    <Divider key="6" />,
+    <MenuItem key="7" onClick={handleUserLogout}>
+      <ListItemIcon>
+        <LogoutIcon />
+      </ListItemIcon>
+      <ListItemText>{language(lng.logout)}</ListItemText>
+    </MenuItem>,
+  ];
+
+  const unauthorizedMenu = [
+    <MenuItem key="1" onClick={handleUserLogin}>
+      <ListItemIcon>
+        <LoginIcon />
+      </ListItemIcon>
+      <ListItemText>{language(lng.login)}</ListItemText>
+    </MenuItem>,
+    <MenuItem key="2" onClick={handleUserRegister}>
+      <ListItemIcon>
+        <RegisterIcon />
+      </ListItemIcon>
+      <ListItemText>{language(lng.register)}</ListItemText>
+    </MenuItem>,
+  ];
 
   return (
     <AppBar className={styles.header}>
@@ -90,66 +151,32 @@ export const Header = () => {
           </>
         )}
 
-        <Button className={styles.userButton} color="inherit" onClick={handleUserMenuOpen}>
-          {isAuthorized && userName && <span className={styles.nickname}>{userName}</span>}
-          <Avatar />
+        <Button
+          className={styles.userButton}
+          color="inherit"
+          onClick={handleUserMenuOpen}
+          sx={{
+            display: 'block',
+            borderRadius: { xs: '50%', sm: '2em' },
+            padding: { xs: '6px', sm: '6px 8px' },
+          }}
+        >
+          {isAuthorized && userName && (
+            <Box className={styles.nickname} sx={{ display: { xs: 'none', sm: 'flex' } }}>
+              {userName}
+            </Box>
+          )}
+          {avatar('2rem')}
         </Button>
-        {isAuthorized ? (
-          <Menu
-            anchorEl={userMenuAnchor}
-            open={Boolean(userMenuAnchor)}
-            onClick={handleUserMenuClose}
-            onClose={handleUserMenuClose}
-          >
-            <MenuItem onClick={handleMessages} sx={{ display: { sm: 'none' } }}>
-              <ListItemIcon>
-                <Badge badgeContent={4} color="warning">
-                  <MessageIcon />
-                </Badge>
-              </ListItemIcon>
-              <ListItemText>{language(lng.userMessages)}</ListItemText>
-            </MenuItem>
-            <MenuItem onClick={handleAddPost} sx={{ display: { sm: 'none' } }}>
-              <ListItemIcon>
-                <PostAdd />
-              </ListItemIcon>
-              <ListItemText>{language(lng.userAddPost)}</ListItemText>
-            </MenuItem>
-            <MenuItem onClick={handleUserSettings}>
-              <ListItemIcon>
-                <SettingsIcon />
-              </ListItemIcon>
-              <ListItemText>{language(lng.settings)}</ListItemText>
-            </MenuItem>
-            <Divider />
-            <MenuItem onClick={handleUserLogout}>
-              <ListItemIcon>
-                <LogoutIcon />
-              </ListItemIcon>
-              <ListItemText>{language(lng.logout)}</ListItemText>
-            </MenuItem>
-          </Menu>
-        ) : (
-          <Menu
-            anchorEl={userMenuAnchor}
-            open={Boolean(userMenuAnchor)}
-            onClick={handleUserMenuClose}
-            onClose={handleUserMenuClose}
-          >
-            <MenuItem onClick={handleUserLogin}>
-              <ListItemIcon>
-                <LoginIcon />
-              </ListItemIcon>
-              <ListItemText>{language(lng.login)}</ListItemText>
-            </MenuItem>
-            <MenuItem onClick={handleUserRegister}>
-              <ListItemIcon>
-                <RegisterIcon />
-              </ListItemIcon>
-              <ListItemText>{language(lng.register)}</ListItemText>
-            </MenuItem>
-          </Menu>
-        )}
+
+        <CustomMenu
+          anchorEl={userMenuAnchor}
+          open={Boolean(userMenuAnchor)}
+          onClick={handleUserMenuClose}
+          onClose={handleUserMenuClose}
+        >
+          {isAuthorized ? authorizedMenu : unauthorizedMenu}
+        </CustomMenu>
       </Toolbar>
     </AppBar>
   );

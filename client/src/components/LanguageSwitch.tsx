@@ -1,4 +1,4 @@
-import { Badge, FormControlLabel, IconButton, Menu, MenuItem, Radio, Tooltip } from '@mui/material';
+import { Badge, FormControlLabel, IconButton, MenuItem, Radio, Tooltip } from '@mui/material';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { getCurrentLanguage, setCurrentLanguage } from 'app/mainSlice';
 import { LANGUAGES, LANGUAGE_NAMES } from 'consts';
@@ -7,6 +7,7 @@ import { CurrentLanguageType } from 'types/types';
 import LanguageIcon from '@mui/icons-material/Language';
 import useLanguage from 'hooks/useLanguage';
 import { lng } from 'hooks/useLanguage/types';
+import { CustomMenu } from './CustomMenu/CustomMenu';
 
 export const LanguageSwitch = () => {
   const currentLangauge = useAppSelector(getCurrentLanguage);
@@ -37,7 +38,7 @@ export const LanguageSwitch = () => {
           </Badge>
         </IconButton>
       </Tooltip>
-      <Menu
+      <CustomMenu
         anchorEl={menuAnchor}
         open={menuOpen}
         onClick={handleMenuClose}
@@ -52,7 +53,7 @@ export const LanguageSwitch = () => {
             />
           </MenuItem>
         ))}
-      </Menu>
+      </CustomMenu>
     </>
   );
 };
