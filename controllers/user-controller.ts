@@ -231,17 +231,25 @@ class UserController {
   async getOneUser(request: IRequestModified, response: Response, next: NextFunction) {
     try {
       if (User) {
-        const { id } = request.params;
-        const { lang, role } = request.query;
-
+        const { nickname } = request.params;
+        const { lang } = request.query;
+        const { requesterId, role } = request;
+        console.log(requesterId, role);
+        
         const foundUser = await User.findOne({
-          where: { id },
+          where: { nickname },
         });
 
         if (foundUser) {
           const { id, age, city, country, email, firstName, lastName, nickname, role: userRole, avatar } = foundUser.dataValues;
-
-          if (role === "ADMIN") {
+          if (id === requesterId) {
+            response.json({
+              userData: { id, age, city, country, email, firstName, lastName, nickname, role: userRole, avatar },
+              message: lang === "ru" ?
+                "Получены собственные данные пользователя" :
+                "The user's own data was obtained",
+            });
+          } else if (role === "ADMIN") {
             response.json({
               userData: { id, age, city, country, email, firstName, lastName, nickname, role: userRole, avatar },
               message: lang === "ru" ?
