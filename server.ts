@@ -1,6 +1,5 @@
 import dotenv from 'dotenv';
 import path from 'path';
-import fileUpload from 'express-fileupload';
 import express, { Express, Request, Response } from 'express';
 import { IClientToServerEvents, IInterServerEvents, IServerToClientEvents, ISocketData } from './types/types'
 import { createServer } from 'http';
@@ -11,7 +10,6 @@ import { errorHandlingMiddleware } from './middleware/error-handling';
 import { router } from './routes/index'
 
 dotenv.config();
-
 const app: Express = express();
 const server = createServer(app);
 const io = new Server<IClientToServerEvents, IServerToClientEvents, IInterServerEvents, ISocketData>(server, {
@@ -19,7 +17,6 @@ const io = new Server<IClientToServerEvents, IServerToClientEvents, IInterServer
 });
 app.use(express.json());
 app.use("/api", router);
-app.use(fileUpload({ createParentPath: true }));
 app.use(express.static("./client/build"));
 app.use(express.static(path.resolve(__dirname, "static")));
 app.use(errorHandlingMiddleware);

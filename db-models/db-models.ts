@@ -25,4 +25,28 @@ export const User: Nullable<ModelDefined<IUserModel, IUserModel>> = sequelizeCon
       type: DataTypes.STRING,
       defaultValue: "USER"
     },
+    age: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    country: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    city: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    avatar: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    firstName: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    lastName: {
+      type: DataTypes.STRING,
+      allowNull: true
+    }
   }) : null;
