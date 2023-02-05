@@ -42,7 +42,7 @@ export const Header = () => {
   const navigate = useNavigate();
   const language = useLanguage();
 
-  console.log(userRole);
+  const role = isAuthorized ? userRole : undefined;
 
   function handleUserMenuOpen(event: React.MouseEvent<HTMLElement>) {
     setUserMenuAnchor(event.currentTarget);
@@ -82,7 +82,7 @@ export const Header = () => {
       <ListItemIcon>{avatar('1.5em')}</ListItemIcon>
       <ListItemText>
         {userName}
-        {userRole === USER_ROLE_ADMIN && (
+        {role === USER_ROLE_ADMIN && (
           <span style={{ opacity: 0.6, fontSize: '0.8em' }}> (admin)</span>
         )}
       </ListItemText>
@@ -167,12 +167,12 @@ export const Header = () => {
           onClick={handleUserMenuOpen}
           sx={{
             display: 'block',
-            bgcolor: userRole === USER_ROLE_ADMIN ? amber[700] : undefined,
+            bgcolor: role === USER_ROLE_ADMIN ? amber[700] : undefined,
             color: blue[50],
             borderRadius: { xs: '50%', sm: '2em' },
             padding: '6px',
             '&:hover': {
-              bgcolor: userRole === USER_ROLE_ADMIN ? amber[800] : undefined,
+              bgcolor: role === USER_ROLE_ADMIN ? amber[800] : undefined,
             },
           }}
         >
