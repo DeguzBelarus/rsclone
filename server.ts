@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 import path from 'path';
 import express, { Express, Request, Response } from 'express';
-import { IClientToServerEvents, IInterServerEvents, IServerToClientEvents, ISocketData } from './types/types'
+import { IClientToServerEvents, IInterServerEvents, IServerToClientEvents, ISocketData, UserOnlineData } from './types/types'
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 
@@ -32,6 +32,7 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
+let usersOnline: Array<UserOnlineData> = [];
 io.on("connection", (socket) => {
   console.log(`New websocket connection: socket ${socket.id}`);
   console.log(
@@ -41,8 +42,27 @@ io.on("connection", (socket) => {
   );
 
   socket.on("disconnect", (data) => {
-    console.log("Websocket disconnection socket id: ", socket.id);
+    const disconnectedUser = usersOnline.find((user: UserOnlineData) => user.socketId === socket.id);
+    if (disconnectedUser) {
+      usersOnline = usersOnline.filter((user: UserOnlineData) => user.nickname !== disconnectedUser.nickname);
+      console.log(`user ${disconnectedUser.nickname} is offline`);
+      const userNicknamesOnline = usersOnline.map((user: UserOnlineData) => user.nickname);
+      console.log(`users online: ${userNicknamesOnline}`);
+    } else {
+      console.log("Websocket disconnection socket id: ", socket.id);
+    }
   });
+
+  socket.on("userOnline", (onlineUserNickname) => {
+    const isConnectedUserAlreadyAdded = usersOnline.find((user: UserOnlineData) => user.socketId === socket.id);
+
+    if (!isConnectedUserAlreadyAdded) {
+      usersOnline.push({ socketId: socket.id, nickname: onlineUserNickname })
+      console.log(`user ${onlineUserNickname} is online`);
+      const userNicknamesOnline = usersOnline.map((user: UserOnlineData) => user.nickname);
+      console.log(`users online: ${userNicknamesOnline}`);
+    }
+  })
 });
 
 (async function () {
