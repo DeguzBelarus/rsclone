@@ -11,7 +11,7 @@ export const requestMethods: IRequestMethods = {
 export function requestData(
   url: string,
   method: string,
-  body?: string,
+  body?: string | FormData,
   token?: string
 ): Undefinable<Promise<Response>> {
   try {

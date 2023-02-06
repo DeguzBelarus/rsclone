@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 
 import { IUserModel, ControllerMethod } from '../types/types';
 
-export const checkGetDataMiddleware: ControllerMethod = function (request, response, next) {
+export const roleAndIdAccessMiddleware: ControllerMethod = function (request, response, next) {
   if (request.method === "OPTIONS") {
     next();
   }

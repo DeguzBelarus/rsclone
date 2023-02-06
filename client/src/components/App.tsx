@@ -18,7 +18,7 @@ interface Props {
 export const App: FC<Props> = ({ socket }): JSX.Element => {
   const thunkDispatch = useDispatch<ThunkDispatch<RootState, unknown, Action<string>>>();
 
-  const routes: JSX.Element = useRoutes();
+  const routes: JSX.Element = useRoutes(socket);
 
   useEffect(() => {
     socket.on('connect', () => {
