@@ -1,8 +1,7 @@
 import dotenv from 'dotenv';
 import path from 'path';
-import fileUpload from 'express-fileupload';
 import express, { Express, Request, Response } from 'express';
-import { IClientToServerEvents, IInterServerEvents, IServerToClientEvents, ISocketData } from './types/types'
+import { IClientToServerEvents, IInterServerEvents, IServerToClientEvents, ISocketData, UserOnlineData } from './types/types'
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 
@@ -11,7 +10,6 @@ import { errorHandlingMiddleware } from './middleware/error-handling';
 import { router } from './routes/index'
 
 dotenv.config();
-
 const app: Express = express();
 const server = createServer(app);
 const io = new Server<IClientToServerEvents, IServerToClientEvents, IInterServerEvents, ISocketData>(server, {
@@ -19,7 +17,6 @@ const io = new Server<IClientToServerEvents, IServerToClientEvents, IInterServer
 });
 app.use(express.json());
 app.use("/api", router);
-app.use(fileUpload({ createParentPath: true }));
 app.use(express.static("./client/build"));
 app.use(express.static(path.resolve(__dirname, "static")));
 app.use(errorHandlingMiddleware);
@@ -35,6 +32,7 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
+let usersOnline: Array<UserOnlineData> = [];
 io.on("connection", (socket) => {
   console.log(`New websocket connection: socket ${socket.id}`);
   console.log(
@@ -44,8 +42,27 @@ io.on("connection", (socket) => {
   );
 
   socket.on("disconnect", (data) => {
-    console.log("Websocket disconnection socket id: ", socket.id);
+    const disconnectedUser = usersOnline.find((user: UserOnlineData) => user.socketId === socket.id);
+    if (disconnectedUser) {
+      usersOnline = usersOnline.filter((user: UserOnlineData) => user.nickname !== disconnectedUser.nickname);
+      console.log(`user ${disconnectedUser.nickname} is offline`);
+      const userNicknamesOnline = usersOnline.map((user: UserOnlineData) => user.nickname);
+      console.log(`users online: ${userNicknamesOnline}`);
+    } else {
+      console.log("Websocket disconnection socket id: ", socket.id);
+    }
   });
+
+  socket.on("userOnline", (onlineUserNickname) => {
+    const isConnectedUserAlreadyAdded = usersOnline.find((user: UserOnlineData) => user.socketId === socket.id);
+
+    if (!isConnectedUserAlreadyAdded) {
+      usersOnline.push({ socketId: socket.id, nickname: onlineUserNickname })
+      console.log(`user ${onlineUserNickname} is online`);
+      const userNicknamesOnline = usersOnline.map((user: UserOnlineData) => user.nickname);
+      console.log(`users online: ${userNicknamesOnline}`);
+    }
+  })
 });
 
 (async function () {
