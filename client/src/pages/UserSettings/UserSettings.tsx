@@ -2,16 +2,19 @@ import { useAppDispatch, useAppSelector } from 'app/hooks';
 import {
   getCurrentLanguage,
   getIsAuthorized,
+  getToken,
   getUserAge,
   getUserCity,
   getUserCountry,
   getUserEmail,
   getUserFirstName,
+  getUserId,
   getUserLastName,
   getUserNickname,
+  updateUserAsync,
 } from 'app/mainSlice';
 import Avatar from 'components/Avatar';
-import React, { FormEvent, useState } from 'react';
+import React, { ChangeEvent, FormEvent, useState } from 'react';
 import styles from './UserSettings.module.scss';
 import { Button, IconButton, TextField, Tooltip } from '@mui/material';
 import { AddAPhoto, DeleteForever } from '@mui/icons-material';
@@ -28,6 +31,8 @@ import {
   NICKNAME_PATTERN,
   PASSWORD_PATTERN,
 } from 'consts';
+import { IAvatarRequestData, IUpdateUserInfoRequestData } from 'types/types';
+import { getLocalStorageData } from '../../app/storage';
 
 export function UserSettings() {
   const isAuthorized = useAppSelector(getIsAuthorized);
@@ -38,11 +43,12 @@ export function UserSettings() {
   const city = useAppSelector(getUserCity);
   const firstName = useAppSelector(getUserFirstName);
   const lastName = useAppSelector(getUserLastName);
-
-  const language = useLanguage();
+  const ownId = useAppSelector(getUserId);
+  const token = useAppSelector(getToken);
+  const currentLanguage = useAppSelector(getCurrentLanguage);
 
   const dispatch = useAppDispatch();
-  const currentLanguage = useAppSelector(getCurrentLanguage);
+  const language = useLanguage();
 
   const [nicknameValue, setNicknameValue] = useState(nickname || '');
   const [emailValue, setEmailValue] = useState(email || '');
@@ -105,25 +111,66 @@ export function UserSettings() {
     event.preventDefault();
     validateNickname(nicknameValue);
     validateEmail(emailValue);
-    validatePassword(passwordValue);
-    validateAge(ageValue);
-    validateCountry(countryValue);
-    validateCity(cityValue);
-    validateFirstName(firstNameValue);
-    validateLastName(lastNameValue);
+    // validatePassword(passwordValue);
+    // validateAge(ageValue);
+    // validateCountry(countryValue);
+    // validateCity(cityValue);
+    // validateFirstName(firstNameValue);
+    // validateLastName(lastNameValue);
 
     const isValid = touched && !(emailError || passwordError || nicknameError);
-    if (!isValid) return;
+    console.log(isValid, ownId, token);
 
-    const userData = {
-      email: emailValue.trim(),
-      password: passwordValue,
-      lang: currentLanguage,
+    if (!isValid || !ownId || !token) return;
+
+    const userData: IUpdateUserInfoRequestData = {
+      type: 'info',
+      ownId,
+      token,
+      requestData: {
+        lang: currentLanguage,
+        email: emailValue,
+        password: passwordValue ? passwordValue : undefined,
+        id: ownId,
+        nickname: nicknameValue,
+        age: parseInt(ageValue) || 0,
+        country: countryValue,
+        city: cityValue,
+        firstName: firstNameValue,
+        lastName: lastNameValue,
+      },
     };
-
     console.log(userData);
 
-    // dispatch(loginUserAsync(userData));
+    dispatch(updateUserAsync(userData));
+  }
+
+  function setAvatarSrc(file: File) {
+    if (!ownId || !token) return;
+
+    // const formData = new FormData();
+
+    // formData.append('lang', currentLanguage);
+    // formData.append('id', String(ownId));
+    // formData.append('avatar', file);
+
+    const userData: IAvatarRequestData = {
+      type: 'avatar',
+      ownId,
+      token,
+      requestData: {
+        lang: currentLanguage,
+        id: ownId,
+        avatar: file,
+      },
+    };
+
+    dispatch(updateUserAsync(userData));
+  }
+
+  function handleAvatarChange(event: ChangeEvent<HTMLInputElement>) {
+    const files = event.target.files;
+    if (files && files[0]) setAvatarSrc(files[0]);
   }
 
   return isAuthorized ? (
@@ -132,7 +179,14 @@ export function UserSettings() {
         <Avatar size="min(30vw, 20rem)" />
         <div>
           <Tooltip title={language(lng.addPhoto)}>
-            <IconButton color="primary">
+            <IconButton component="label" color="primary">
+              <input
+                id="avatar-image"
+                accept="image/*"
+                hidden
+                type="file"
+                onChange={handleAvatarChange}
+              />
               <AddAPhoto />
             </IconButton>
           </Tooltip>
@@ -213,7 +267,12 @@ export function UserSettings() {
             onChange={validateLastName}
             helperText={lastNameError ? language(lng.lastNameHint) : ' '}
           />
-          <Button className={styles.updateBtn} type="submit" variant="contained">
+          <Button
+            disabled={!touched}
+            className={styles.updateBtn}
+            type="submit"
+            variant="contained"
+          >
             {language(lng.update)}
           </Button>
         </form>
