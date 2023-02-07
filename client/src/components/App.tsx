@@ -1,8 +1,5 @@
 import React, { FC, useEffect } from 'react';
 import { useAppDispatch } from 'app/hooks';
-import { useDispatch } from 'react-redux';
-import { Action, ThunkDispatch } from '@reduxjs/toolkit';
-import { RootState } from '../app/store';
 import { Socket } from 'socket.io-client';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 
@@ -19,8 +16,6 @@ interface Props {
 
 export const App: FC<Props> = ({ socket }): JSX.Element => {
   const dispatch = useAppDispatch();
-  const thunkDispatch = useDispatch<ThunkDispatch<RootState, unknown, Action<string>>>();
-
   const routes: JSX.Element = useRoutes(socket);
 
   useEffect(() => {
@@ -35,12 +30,12 @@ export const App: FC<Props> = ({ socket }): JSX.Element => {
   useEffect(() => {
     const { token, currentLanguage } = getLocalStorageData();
     if (token) {
-      thunkDispatch(authCheckUserAsync(token));
+      dispatch(authCheckUserAsync(token));
     }
     if (currentLanguage) {
-      thunkDispatch(setCurrentLanguage(currentLanguage));
+      dispatch(setCurrentLanguage(currentLanguage));
     }
-  }, [thunkDispatch]);
+  }, []);
 
   return (
     <>

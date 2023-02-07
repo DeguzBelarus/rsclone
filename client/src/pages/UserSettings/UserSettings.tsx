@@ -12,6 +12,7 @@ import {
   getUserLastName,
   getUserNickname,
   updateUserAsync,
+  deleteUserAsync,
 } from 'app/mainSlice';
 import Avatar from 'components/Avatar';
 import React, { ChangeEvent, FormEvent, useState } from 'react';
