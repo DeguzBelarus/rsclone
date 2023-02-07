@@ -27,6 +27,7 @@ export const App: FC<Props> = ({ socket }): JSX.Element => {
       console.log('websocket connection has been established...');
     });
     socket.on('onlineUsersUpdate', (data: Array<string>) => {
+      console.log(data);
       dispatch(setUsersOnline(data));
     });
   }, [socket]);

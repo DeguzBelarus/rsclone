@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import path from 'path';
+import fs from 'fs';
 import express, { Express, Request, Response } from 'express';
 import { IClientToServerEvents, IInterServerEvents, IServerToClientEvents, ISocketData, UserOnlineData } from './types/types'
 import { createServer } from 'http';
@@ -30,6 +31,19 @@ if (process.env.NODE_ENV === "production") {
     }
     response.sendFile(url);
   });
+
+  if (!fs.existsSync(path.join(__dirname, "..", "static"))) {
+    fs.mkdirSync(path.join(__dirname, "..", "static"),
+      { recursive: true }
+    );
+    console.log('static folder has been created');
+  }
+  if (!fs.existsSync(path.join(__dirname, "..", "temp"))) {
+    fs.mkdirSync(path.join(__dirname, "..", "temp"),
+      { recursive: true }
+    );
+    console.log('temp folder has been created');
+  }
 }
 
 let usersOnline: Array<UserOnlineData> = [];
@@ -60,7 +74,7 @@ io.on("connection", (socket) => {
       usersOnline.push({ socketId: socket.id, nickname: onlineUserNickname })
       console.log(`user ${onlineUserNickname} is online`);
       const userNicknamesOnline = usersOnline.map((user: UserOnlineData) => user.nickname);
-      socket.broadcast.emit("onlineUsersUpdate", userNicknamesOnline);
+      io.emit("onlineUsersUpdate", userNicknamesOnline);
       console.log(`users online: ${userNicknamesOnline}`);
     }
   })
