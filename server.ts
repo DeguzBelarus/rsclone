@@ -47,6 +47,7 @@ io.on("connection", (socket) => {
       usersOnline = usersOnline.filter((user: UserOnlineData) => user.nickname !== disconnectedUser.nickname);
       console.log(`user ${disconnectedUser.nickname} is offline`);
       const userNicknamesOnline = usersOnline.map((user: UserOnlineData) => user.nickname);
+      socket.broadcast.emit("onlineUsersUpdate", userNicknamesOnline);
       console.log(`users online: ${userNicknamesOnline}`);
     } else {
       console.log("Websocket disconnection socket id: ", socket.id);
@@ -55,13 +56,21 @@ io.on("connection", (socket) => {
 
   socket.on("userOnline", (onlineUserNickname) => {
     const isConnectedUserAlreadyAdded = usersOnline.find((user: UserOnlineData) => user.socketId === socket.id);
-
     if (!isConnectedUserAlreadyAdded) {
       usersOnline.push({ socketId: socket.id, nickname: onlineUserNickname })
       console.log(`user ${onlineUserNickname} is online`);
       const userNicknamesOnline = usersOnline.map((user: UserOnlineData) => user.nickname);
+      socket.broadcast.emit("onlineUsersUpdate", userNicknamesOnline);
       console.log(`users online: ${userNicknamesOnline}`);
     }
+  })
+
+  socket.on("userOffline", (onlineUserNickname) => {
+    usersOnline = usersOnline.filter((user: UserOnlineData) => user.nickname !== onlineUserNickname);
+    console.log(`user ${onlineUserNickname} is offline`);
+    const userNicknamesOnline = usersOnline.map((user: UserOnlineData) => user.nickname);
+    socket.broadcast.emit("onlineUsersUpdate", userNicknamesOnline);
+    console.log(`users online: ${userNicknamesOnline}`);
   })
 });
 
