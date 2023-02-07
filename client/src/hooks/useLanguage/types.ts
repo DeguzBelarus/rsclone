@@ -26,6 +26,23 @@ export enum lng {
 
   settings,
   logout,
+
+  addPhoto,
+  deletePhoto,
+
+  age,
+  ageHint,
+  country,
+  countryHint,
+  city,
+  cityHint,
+  firstName,
+  firstNameHint,
+  lastName,
+  lastNameHint,
+  newPassword,
+
+  update,
 }
 
 export type LangaugeData = {

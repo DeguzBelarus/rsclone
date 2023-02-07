@@ -1,0 +1,50 @@
+@import '../../css_variables/variables';
+
+.wrapper {
+  display: grid;
+  gap: 1rem 3rem;
+  grid-template-rows: auto 1fr;
+  min-width: 100%;
+
+  .avatar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .inputs {
+    display: flex;
+    flex-direction: column;
+  }
+  .nickname {
+    margin-bottom: 0.8em;
+    align-self: center;
+    font-size: clamp(2rem, 12vw, 4rem);
+    font-weight: 600;
+    opacity: 0.6;
+    text-transform: uppercase;
+  }
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    .updateBtn {
+      align-self: end;
+    }
+  }
+
+  @media screen and (min-width: $mobile-breakpoint) {
+    grid-template-columns: auto 1fr;   
+    min-width: calc(min(100%, 900px));
+
+    .content {
+      gap: 1rem;
+    }
+
+    .nickname {
+      align-self: flex-start;
+    }
+  } 
+}

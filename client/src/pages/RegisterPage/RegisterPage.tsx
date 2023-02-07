@@ -1,8 +1,5 @@
-import React, { ChangeEvent, FormEvent, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { FormEvent, useState } from 'react';
 import { useAppSelector, useAppDispatch } from 'app/hooks';
-import { Action, ThunkDispatch } from '@reduxjs/toolkit';
-import { RootState } from '../../app/store';
 import { Button, Card, CardActions, CardContent, TextField } from '@mui/material';
 import { Link } from 'react-router-dom';
 
@@ -11,12 +8,11 @@ import useLanguage from 'hooks/useLanguage';
 import { lng } from 'hooks/useLanguage/types';
 import { getCurrentLanguage, registrationUserAsync } from 'app/mainSlice';
 import styles from './RegisterPage.module.scss';
+import useValidateInput from 'hooks/useValidateInput';
 
 export const RegisterPage = () => {
   const dispatch = useAppDispatch();
-  const thunkDispatch = useDispatch<ThunkDispatch<RootState, unknown, Action<string>>>();
   const currentLanguage = useAppSelector(getCurrentLanguage);
-
   const language = useLanguage();
 
   const [nicknameValue, setNicknameValue] = useState('');
@@ -29,44 +25,38 @@ export const RegisterPage = () => {
   const [repeatPasswordError, setRepeatPasswordError] = useState(false);
   const [touched, setTouched] = useState(false);
 
-  const isValid = () =>
-    touched && !(nicknameError || emailError || passwordError || repeatPasswordError);
+  const validateNickname = useValidateInput(
+    NICKNAME_PATTERN,
+    setNicknameValue,
+    setNicknameError,
+    setTouched
+  );
+  const validateEmail = useValidateInput(EMAIL_PATTERN, setEmailValue, setEmailError, setTouched);
 
-  function handleNicknameChange(event: ChangeEvent<HTMLInputElement>) {
-    setNicknameValue(event.target.value);
-    setNicknameError(!NICKNAME_PATTERN.test(event.target.value));
-    setTouched(true);
-  }
+  const validatePassword = useValidateInput(
+    PASSWORD_PATTERN,
+    setPasswordValue,
+    setPasswordError,
+    setTouched
+  );
 
-  function handleEmailChange(event: ChangeEvent<HTMLInputElement>) {
-    setEmailValue(event.target.value);
-    setEmailError(!EMAIL_PATTERN.test(event.target.value));
-    setTouched(true);
-  }
+  const validateRepeatPassword = useValidateInput(
+    (value) => passwordValue !== value,
+    setRepeatPasswordValue,
+    setRepeatPasswordError,
+    setTouched
+  );
 
-  function handlePasswordChange(event: ChangeEvent<HTMLInputElement>) {
-    setPasswordValue(event.target.value);
-    setPasswordError(!PASSWORD_PATTERN.test(event.target.value));
-    setTouched(true);
-  }
-
-  function handleRepeatPasswordChange(event: ChangeEvent<HTMLInputElement>) {
-    setRepeatPasswordValue(event.target.value);
-    setRepeatPasswordError(passwordValue !== event.target.value);
-    setTouched(true);
-  }
-
-  function validateAll() {
-    setNicknameError(!NICKNAME_PATTERN.test(nicknameValue));
-    setEmailError(!EMAIL_PATTERN.test(emailValue));
-    setPasswordError(!PASSWORD_PATTERN.test(passwordValue));
-    setRepeatPasswordError(passwordValue !== repeatPasswordValue);
-  }
-
-  async function handleSubmit(event: FormEvent) {
+  function handleSubmit(event: FormEvent) {
     event.preventDefault();
-    validateAll();
-    if (!isValid()) return;
+    validateNickname(nicknameValue);
+    validateEmail(emailValue);
+    validatePassword(passwordValue);
+    validateRepeatPassword(repeatPasswordValue);
+
+    const isValid =
+      touched && !(nicknameError || emailError || passwordError || repeatPasswordError);
+    if (!isValid) return;
 
     const userData = {
       nickname: nicknameValue.trim(),
@@ -74,7 +64,7 @@ export const RegisterPage = () => {
       password: passwordValue,
       lang: currentLanguage,
     };
-    await thunkDispatch(registrationUserAsync(userData));
+    dispatch(registrationUserAsync(userData));
   }
   return (
     <div className={styles.register}>
@@ -87,7 +77,7 @@ export const RegisterPage = () => {
               label={language(lng.nickname)}
               required
               error={nicknameError}
-              onChange={handleNicknameChange}
+              onChange={validateNickname}
               helperText={nicknameError ? language(lng.nicknameHint) : ' '}
             />
             <TextField
@@ -95,7 +85,7 @@ export const RegisterPage = () => {
               label={language(lng.email)}
               required
               error={emailError}
-              onChange={handleEmailChange}
+              onChange={validateEmail}
               helperText={emailError ? language(lng.emailHint) : ' '}
               inputProps={{ inputMode: 'email' }}
             />
@@ -105,7 +95,7 @@ export const RegisterPage = () => {
               label={language(lng.password)}
               required
               error={passwordError}
-              onChange={handlePasswordChange}
+              onChange={validatePassword}
               helperText={passwordError ? language(lng.passwordHint) : ' '}
             />
             <TextField
@@ -114,7 +104,7 @@ export const RegisterPage = () => {
               label={language(lng.repeatPassword)}
               required
               error={repeatPasswordError}
-              onChange={handleRepeatPasswordChange}
+              onChange={validateRepeatPassword}
               helperText={repeatPasswordError ? language(lng.repeatPasswordHint) : ' '}
             />
           </CardContent>

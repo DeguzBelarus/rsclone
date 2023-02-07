@@ -8,6 +8,17 @@ $header-height: 40;
 $footer-height: 30;
 // colors
 
+$mobile-breakpoint: 600px;
+
+:root {
+  --header-height: 56px;
+  --footer-height: 40px;
+
+  @media screen and (min-width: $mobile-breakpoint) {
+    --header-height: 64px;
+  }
+}
+
 // mixins
 // flex row mixins
 @mixin flex-all-center {
