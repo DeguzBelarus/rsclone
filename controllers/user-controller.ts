@@ -365,6 +365,12 @@ class UserController {
     try {
       const { id } = request.params;
       const { requesterId, role } = request;
+      if (!fs.existsSync(path.join(__dirname, "..", "temp"))) {
+        fs.mkdirSync(path.join(__dirname, "..", "temp"),
+          { recursive: true }
+        );
+        console.log('temp folder has been created');
+      }
       const tempFolderPath = path.join(__dirname, "..", "temp");
 
       const form = formidable({ multiples: true, uploadDir: tempFolderPath });

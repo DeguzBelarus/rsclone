@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import path from 'path';
+import fs from 'fs';
 import express, { Express, Request, Response } from 'express';
 import { IClientToServerEvents, IInterServerEvents, IServerToClientEvents, ISocketData, UserOnlineData } from './types/types'
 import { createServer } from 'http';
@@ -60,7 +61,7 @@ io.on("connection", (socket) => {
       usersOnline.push({ socketId: socket.id, nickname: onlineUserNickname })
       console.log(`user ${onlineUserNickname} is online`);
       const userNicknamesOnline = usersOnline.map((user: UserOnlineData) => user.nickname);
-      socket.broadcast.emit("onlineUsersUpdate", userNicknamesOnline);
+      io.emit("onlineUsersUpdate", userNicknamesOnline);
       console.log(`users online: ${userNicknamesOnline}`);
     }
   })
@@ -80,7 +81,6 @@ io.on("connection", (socket) => {
       await sequelizeConfig.authenticate();
       await sequelizeConfig.sync();
     }
-
     server.listen(process.env.PORT || 5000, () => {
       console.log(
         "\x1b[40m\x1b[32m\x1b[4m\x1b[1m",
