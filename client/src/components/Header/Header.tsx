@@ -13,9 +13,15 @@ import {
   Tooltip,
 } from '@mui/material';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
-import { getIsAuthorized, getUserNickname, getUserRole, setIsAuthorized } from 'app/mainSlice';
+import {
+  getIsAuthorized,
+  getUserNickname,
+  getUserRole,
+  setIsAuthorized,
+  setToken,
+} from 'app/mainSlice';
 import { LanguageSwitch } from 'components/LanguageSwitch';
-import React, { useState } from 'react';
+import React, { useState, FC } from 'react';
 import styles from './Header.module.scss';
 import {
   Settings as SettingsIcon,
@@ -32,8 +38,14 @@ import useLanguage from 'hooks/useLanguage';
 import { lng } from 'hooks/useLanguage/types';
 import { CustomMenu } from 'components/CustomMenu/CustomMenu';
 import { USER_ROLE_ADMIN } from 'consts';
+import { Socket } from 'socket.io-client';
+import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 
-export const Header = () => {
+interface Props {
+  socket: Socket<DefaultEventsMap, DefaultEventsMap>;
+}
+
+export const Header: FC<Props> = (socket) => {
   const [userMenuAnchor, setUserMenuAnchor] = useState<HTMLElement>();
   const isAuthorized = useAppSelector(getIsAuthorized);
   const userName = useAppSelector(getUserNickname);
@@ -61,6 +73,8 @@ export const Header = () => {
   }
   function handleUserLogout() {
     dispatch(setIsAuthorized(false));
+    dispatch(setToken(null));
+    socket.socket.emit('userOffline', userName);
   }
   function handleMessages() {
     navigate('/messages');

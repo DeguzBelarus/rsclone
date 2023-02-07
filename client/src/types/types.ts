@@ -96,7 +96,7 @@ export interface ITokenDecodeData {
   id: number;
   email: string;
   nickname: string;
-  role: string;
+  role: RoleType;
   age?: Nullable<number>;
   country?: Nullable<string>;
   city?: Nullable<string>;
