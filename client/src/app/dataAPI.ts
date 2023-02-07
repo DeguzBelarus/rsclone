@@ -16,22 +16,39 @@ export function requestData(
 ): Undefinable<Promise<Response>> {
   try {
     if (token) {
-      return fetch(url, {
-        method,
-        body,
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      if (body && typeof body !== 'string') {
+        return fetch(url, {
+          method,
+          body,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+      } else {
+        return fetch(url, {
+          method,
+          body,
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        });
+      }
     } else {
-      return fetch(url, {
-        method,
-        body,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+      if (body && typeof body !== 'string') {
+        return fetch(url, {
+          method,
+          body,
+        });
+      } else {
+        return fetch(url, {
+          method,
+          body,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+      }
     }
   } catch (exception: unknown) {
     if (exception instanceof Error) {

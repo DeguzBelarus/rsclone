@@ -12,6 +12,7 @@ import {
   getUserLastName,
   getUserNickname,
   updateUserAsync,
+  deleteUserAsync,
 } from 'app/mainSlice';
 import Avatar from 'components/Avatar';
 import React, { ChangeEvent, FormEvent, useState } from 'react';
@@ -31,10 +32,9 @@ import {
   NICKNAME_PATTERN,
   PASSWORD_PATTERN,
 } from 'consts';
-import { IAvatarRequestData, IUpdateUserInfoRequestData } from 'types/types';
-import { getLocalStorageData } from '../../app/storage';
+import { IUpdateUserRequestData } from 'types/types';
 
-export function UserSettings() {
+export const UserSettings = () => {
   const isAuthorized = useAppSelector(getIsAuthorized);
   const nickname = useAppSelector(getUserNickname);
   const email = useAppSelector(getUserEmail);
@@ -107,10 +107,10 @@ export function UserSettings() {
     setTouched
   );
 
-  function handleSubmit(event: FormEvent) {
+  const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
-    validateNickname(nicknameValue);
-    validateEmail(emailValue);
+    // validateNickname(nicknameValue);
+    // validateEmail(emailValue);
     // validatePassword(passwordValue);
     // validateAge(ageValue);
     // validateCountry(countryValue);
@@ -118,60 +118,68 @@ export function UserSettings() {
     // validateFirstName(firstNameValue);
     // validateLastName(lastNameValue);
 
-    const isValid = touched && !(emailError || passwordError || nicknameError);
-    console.log(isValid, ownId, token);
+    // const isValid = touched && !(emailError || passwordError || nicknameError);
+    // console.log(isValid, ownId, token);
 
-    if (!isValid || !ownId || !token) return;
+    // if (!isValid || !ownId || !token) return;
 
-    const userData: IUpdateUserInfoRequestData = {
-      type: 'info',
-      ownId,
-      token,
-      requestData: {
-        lang: currentLanguage,
-        email: emailValue,
-        password: passwordValue ? passwordValue : undefined,
-        id: ownId,
-        nickname: nicknameValue,
-        age: parseInt(ageValue) || 0,
-        country: countryValue,
-        city: cityValue,
-        firstName: firstNameValue,
-        lastName: lastNameValue,
-      },
-    };
-    console.log(userData);
+    // const userData: IUpdateUserInfoRequestData = {
+    //   type: 'info',
+    //   ownId,
+    //   token,
+    //   requestData: {
+    //     lang: currentLanguage,
+    //     email: emailValue,
+    //     password: passwordValue ? passwordValue : undefined,
+    //     id: ownId,
+    //     nickname: nicknameValue,
+    //     age: parseInt(ageValue) || 0,
+    //     country: countryValue,
+    //     city: cityValue,
+    //     firstName: firstNameValue,
+    //     lastName: lastNameValue,
+    //   },
+    // };
+    // console.log(userData);
 
-    dispatch(updateUserAsync(userData));
-  }
+    // dispatch(updateUserAsync(userData));
+  };
 
-  function setAvatarSrc(file: File) {
+  const avatarUpdate = (event: ChangeEvent<HTMLInputElement>) => {
     if (!ownId || !token) return;
+    const files = event.target.files;
 
-    // const formData = new FormData();
+    if (files && files[0]) {
+      const formData = new FormData();
+      formData.append('lang', currentLanguage);
+      formData.append('id', String(ownId));
+      formData.append('avatar', files[0]);
 
-    // formData.append('lang', currentLanguage);
-    // formData.append('id', String(ownId));
-    // formData.append('avatar', file);
+      const avatarRequestData: IUpdateUserRequestData = {
+        type: 'avatar',
+        ownId,
+        token,
+        requestData: formData,
+      };
+      dispatch(updateUserAsync(avatarRequestData));
+    }
+  };
 
-    const userData: IAvatarRequestData = {
+  const avatarDelete = () => {
+    if (!ownId || !token) return;
+    const formData = new FormData();
+    formData.append('lang', currentLanguage);
+    formData.append('id', String(ownId));
+    formData.append('avatar', '');
+
+    const avatarRequestData: IUpdateUserRequestData = {
       type: 'avatar',
       ownId,
       token,
-      requestData: {
-        lang: currentLanguage,
-        id: ownId,
-        avatar: file,
-      },
+      requestData: formData,
     };
-
-    dispatch(updateUserAsync(userData));
-  }
-
-  function handleAvatarChange(event: ChangeEvent<HTMLInputElement>) {
-    const files = event.target.files;
-    if (files && files[0]) setAvatarSrc(files[0]);
-  }
+    dispatch(updateUserAsync(avatarRequestData));
+  };
 
   return isAuthorized ? (
     <div className={styles.wrapper}>
@@ -185,13 +193,13 @@ export function UserSettings() {
                 accept="image/*"
                 hidden
                 type="file"
-                onChange={handleAvatarChange}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => avatarUpdate(event)}
               />
               <AddAPhoto />
             </IconButton>
           </Tooltip>
           <Tooltip title={language(lng.deletePhoto)}>
-            <IconButton color="warning">
+            <IconButton color="warning" onClick={avatarDelete}>
               <DeleteForever />
             </IconButton>
           </Tooltip>
@@ -281,4 +289,4 @@ export function UserSettings() {
   ) : (
     <div>User not authorized</div>
   );
-}
+};

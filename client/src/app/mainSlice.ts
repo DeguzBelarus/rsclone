@@ -18,11 +18,9 @@ import {
   IGetOneUserResponse,
   IDeleteUserRequestData,
   IDeleteUserResponse,
-  IUpdateUserInfoRequestData,
-  IAvatarRequestData,
-  IRoleUpdateRequestData,
   IUpdateUserResponse,
   RoleType,
+  IUpdateUserRequestData,
 } from 'types/types';
 import { requestData, requestMethods } from './dataAPI';
 import { setLocalStorageData } from './storage';
@@ -176,26 +174,25 @@ export const getOneUserInfoAsync = createAsyncThunk(
 export const updateUserAsync = createAsyncThunk(
   'user/update',
   async (
-    data: IUpdateUserInfoRequestData | IAvatarRequestData | IRoleUpdateRequestData
+    data: IUpdateUserRequestData
   ): Promise<Nullable<IUpdateUserResponse | IGetOneUserResponse>> => {
-    const updateUserURL = `/api/user/${data.requestData.id}/update`;
+    const updateUserURL = `/api/user/${data.requestData.get('id')}/update`;
     const updateUserResponse: Undefinable<Response> = await requestData(
       updateUserURL,
       requestMethods.put,
-      data.requestData as unknown as FormData,
+      data.requestData,
       data.token
     );
     if (updateUserResponse?.ok) {
       const params = new URLSearchParams();
-      params.set('lang', data.requestData.lang);
+      params.set('lang', String(data.requestData.get('lang')));
 
       let getOneUserURL: string;
-      if (data.requestData.id === data.ownId) {
+      if (Number(data.requestData.get('id')) === data.ownId) {
         getOneUserURL = `/api/user/${data.ownId}?${params}`;
       } else {
-        getOneUserURL = `/api/user/${data.requestData.id}?${params}`;
+        getOneUserURL = `/api/user/${data.requestData.get('id')}?${params}`;
       }
-
       const getOneUserResponse: Undefinable<Response> = await requestData(
         getOneUserURL,
         requestMethods.get,
@@ -203,9 +200,11 @@ export const updateUserAsync = createAsyncThunk(
         data.token
       );
       if (getOneUserResponse) {
+        const updateUserResponseData: IUpdateUserResponse = await updateUserResponse.json();
         const getOneUserResponseData: IGetOneUserResponse = await getOneUserResponse.json();
         getOneUserResponseData.ownId = data.ownId;
         getOneUserResponseData.statusCode = getOneUserResponse.status;
+        getOneUserResponseData.message = updateUserResponseData.message;
         return getOneUserResponseData;
       }
     } else {
@@ -504,7 +503,7 @@ export const mainSlice = createSlice({
                 if (successUpdatePayload.userData.lastName) {
                   state.userLastName = successUpdatePayload.userData.lastName;
                 }
-                if (successUpdatePayload.userData.avatar) {
+                if (successUpdatePayload.userData.avatar !== undefined) {
                   state.avatarSrc = successUpdatePayload.userData.avatar;
                 }
               }
