@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { Action, ThunkDispatch } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { Socket } from 'socket.io-client';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 
@@ -33,7 +33,6 @@ interface Props {
 export const UserRoom: FC<Props> = (socket): JSX.Element => {
   const dispatch = useAppDispatch();
   const thunkDispatch = useDispatch<ThunkDispatch<RootState, unknown, Action<string>>>();
-  const navigate = useNavigate();
   const { id } = useParams();
 
   const [isOwnPage, setIsOwnPage] = useState<boolean>(true);
@@ -75,7 +74,6 @@ export const UserRoom: FC<Props> = (socket): JSX.Element => {
   }, [id]);
 
   useEffect(() => {
-    // navigate()
     console.log(id);
     if (!isLoginNotificationSent) {
       socket.socket.emit('userOnline', userNickname);
@@ -88,7 +86,7 @@ export const UserRoom: FC<Props> = (socket): JSX.Element => {
   }, []);
   return (
     <div className="user-room-wrapper">
-      <span>{`users online: ${getUsersOnline.length}`}</span>
+      <span>{`users online: ${usersOnline.length}`}</span>
       {isOwnPage ? (
         <>
           <div>UserRoom works!</div>
