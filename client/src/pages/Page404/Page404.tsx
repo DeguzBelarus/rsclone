@@ -1,17 +1,22 @@
+import { Button } from '@mui/material';
+import useLanguage from 'hooks/useLanguage';
+import { lng } from 'hooks/useLanguage/types';
 import React, { FC } from 'react';
-import { NavigateFunction, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
-import './Page404.scss';
+import styles from './Page404.module.scss';
 
 export const Page404: FC = (): JSX.Element => {
-  const navigate: NavigateFunction = useNavigate();
+  const language = useLanguage();
+  const navigate = useNavigate();
+
   return (
-    <div className="page-404-wrapper">
-      <h1 className="page-404-h1">404</h1>
-      <h2 className="page-404-h2">Page not found</h2>
-      <button type="button" onClick={(): void => navigate('/')} className="more-link">
-        Home Page
-      </button>
+    <div className={styles.wrapper}>
+      <h2 className={styles.heading}>404</h2>
+      <h3 className={styles.subHeading}>{language(lng.notFound)}</h3>
+      <Button variant="contained" onClick={() => navigate('/')}>
+        {language(lng.goToHome)}
+      </Button>
     </div>
   );
 };

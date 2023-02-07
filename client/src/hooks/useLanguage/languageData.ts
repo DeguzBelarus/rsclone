@@ -44,6 +44,9 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.newPassword]: 'New password',
 
     [lng.update]: 'Update',
+
+    [lng.notFound]: 'The page you are looking for was not found.',
+    [lng.goToHome]: 'Go to homepage',
   },
 
   ru: {
@@ -89,6 +92,8 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.newPassword]: 'Новый пароль',
 
     [lng.update]: 'Обновить',
+    [lng.notFound]: 'Запрашиваемая страница не найдена',
+    [lng.goToHome]: 'Домой',
   },
 };
 
