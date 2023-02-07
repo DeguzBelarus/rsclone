@@ -503,7 +503,7 @@ export const mainSlice = createSlice({
                 if (successUpdatePayload.userData.lastName) {
                   state.userLastName = successUpdatePayload.userData.lastName;
                 }
-                if (successUpdatePayload.userData.avatar) {
+                if (successUpdatePayload.userData.avatar !== undefined) {
                   state.avatarSrc = successUpdatePayload.userData.avatar;
                 }
               }
