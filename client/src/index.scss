@@ -11,17 +11,30 @@ a {
   text-decoration: none;
 }
 
-button {
-  cursor: pointer;
+main {
+  width: 100%;
+  margin-top: var(--header-height);
+  padding: 1rem 1em 0 1em;
+  display: flex;
+  height: calc(100vh - var(--header-height) - var(--footer-height));
+  overflow: auto;
 
-  &:disabled {
-    cursor: default;
+  & > div {
+    max-width: 1100px;
+    margin: 1em auto;
+
+    &::after {
+      content: '';
+      display: block;
+      height: 1rem;
+    }
   }
-}
 
-input {
-  &:focus {
-    outline: none;
+  @media screen and (min-width: 600px) {
+    padding: 3rem 2rem 0 2rem;
+    & > div::after {
+      height: 3rem;
+    }
   }
 }
 
