@@ -1,21 +1,18 @@
-import React, { ChangeEvent, FormEvent, useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { useAppSelector } from 'app/hooks';
-import { Action, ThunkDispatch } from '@reduxjs/toolkit';
-import { RootState } from '../../app/store';
+import React, { FormEvent, useState } from 'react';
+import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { Button, Card, CardActions, CardContent, TextField } from '@mui/material';
 import { Link } from 'react-router-dom';
 
-import { EMAIL_PATTERN } from 'consts';
+import { EMAIL_PATTERN, PASSWORD_PATTERN } from 'consts';
 import useLanguage from 'hooks/useLanguage';
 import { lng } from 'hooks/useLanguage/types';
 import { getCurrentLanguage, loginUserAsync } from 'app/mainSlice';
 import styles from './AuthPage.module.scss';
+import useValidateInput from 'hooks/useValidateInput';
 
 export const AuthPage = () => {
-  const thunkDispatch = useDispatch<ThunkDispatch<RootState, unknown, Action<string>>>();
+  const dispatch = useAppDispatch();
   const currentLanguage = useAppSelector(getCurrentLanguage);
-
   const language = useLanguage();
 
   const [emailValue, setEmailValue] = useState('');
@@ -24,29 +21,21 @@ export const AuthPage = () => {
   const [passwordError, setPasswordError] = useState(false);
   const [touched, setTouched] = useState(false);
 
-  const isValid = () => touched && !(emailError || passwordError);
+  const validateEmail = useValidateInput(EMAIL_PATTERN, setEmailValue, setEmailError, setTouched);
 
-  function handleEmailChange(event: ChangeEvent<HTMLInputElement>) {
-    setEmailValue(event.target.value);
-    setEmailError(!EMAIL_PATTERN.test(event.target.value));
-    setTouched(true);
-  }
+  const validatePassword = useValidateInput(
+    PASSWORD_PATTERN,
+    setPasswordValue,
+    setPasswordError,
+    setTouched
+  );
 
-  function handlePasswordChange(event: ChangeEvent<HTMLInputElement>) {
-    setPasswordValue(event.target.value);
-    setPasswordError(event.target.value === '');
-    setTouched(true);
-  }
-
-  function validateAll() {
-    setEmailError(!EMAIL_PATTERN.test(emailValue));
-    setPasswordError(passwordValue === '');
-  }
-
-  async function handleSubmit(event: FormEvent) {
+  function handleSubmit(event: FormEvent) {
     event.preventDefault();
-    validateAll();
-    if (!isValid()) return;
+    validateEmail(emailValue);
+    validatePassword(passwordValue);
+    const isValid = touched && !(emailError || passwordError);
+    if (!isValid) return;
 
     const userData = {
       email: emailValue.trim(),
@@ -54,7 +43,7 @@ export const AuthPage = () => {
       lang: currentLanguage,
     };
 
-    await thunkDispatch(loginUserAsync(userData));
+    dispatch(loginUserAsync(userData));
   }
 
   return (
@@ -68,7 +57,7 @@ export const AuthPage = () => {
               label={language(lng.email)}
               required
               error={emailError}
-              onChange={handleEmailChange}
+              onChange={validateEmail}
               helperText={emailError ? language(lng.emailHint) : ' '}
               inputProps={{ inputMode: 'email' }}
             />
@@ -78,7 +67,7 @@ export const AuthPage = () => {
               label={language(lng.password)}
               required
               error={passwordError}
-              onChange={handlePasswordChange}
+              onChange={validatePassword}
               helperText={passwordError ? language(lng.passwordHint) : ' '}
             />
           </CardContent>
