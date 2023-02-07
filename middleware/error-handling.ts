@@ -8,6 +8,8 @@ export const errorHandlingMiddleware = function (error: Error, request: Request,
       message: error.message
     });
   }
+
+  console.error('\x1b[40m\x1b[31m\x1b[1m', error);
   return response.status(500).json({
     message: "Unexpected Error"
   });
