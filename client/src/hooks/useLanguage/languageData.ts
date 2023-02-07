@@ -30,6 +30,20 @@ const LANGUAGE_DATA: LangaugeData = {
 
     [lng.addPhoto]: 'Add photo',
     [lng.deletePhoto]: 'Delete photo',
+
+    [lng.age]: 'Age',
+    [lng.ageHint]: 'Age must be between 0 and 99 years',
+    [lng.country]: 'Country',
+    [lng.countryHint]: 'At least 3 characters long',
+    [lng.city]: 'City',
+    [lng.cityHint]: 'At least 3 characters long',
+    [lng.firstName]: 'First name',
+    [lng.firstNameHint]: 'At least 3 characters long',
+    [lng.lastName]: 'Last name',
+    [lng.lastNameHint]: 'At least 3 characters long',
+    [lng.newPassword]: 'New password',
+
+    [lng.update]: 'Update',
   },
 
   ru: {
@@ -61,6 +75,20 @@ const LANGUAGE_DATA: LangaugeData = {
 
     [lng.addPhoto]: 'Добавить фотографию',
     [lng.deletePhoto]: 'Удалить фотографию',
+
+    [lng.age]: 'Возраст',
+    [lng.ageHint]: 'Возраст должен быть между 0 и 99',
+    [lng.country]: 'Страна',
+    [lng.countryHint]: 'Минимум 3 символа',
+    [lng.city]: 'Город',
+    [lng.cityHint]: 'Минимум 3 символа',
+    [lng.firstName]: 'Имя',
+    [lng.firstNameHint]: 'Минимум 3 символа',
+    [lng.lastName]: 'Фамилия',
+    [lng.lastNameHint]: 'Минимум 3 символа',
+    [lng.newPassword]: 'Новый пароль',
+
+    [lng.update]: 'Обновить',
   },
 };
 
