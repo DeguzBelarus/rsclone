@@ -19,7 +19,7 @@ export default function Avatar({ size = 32 }: AvatarProps) {
       src={src}
       sx={{ width: size, height: size, bgcolor: purple[50], color: purple[300] }}
     >
-      {!src && <PersonIcon sx={{ bgcolor: 'primary' }}></PersonIcon>}
+      {!src && <PersonIcon sx={{ width: '70%', height: '70%' }}></PersonIcon>}
     </MUIAvatar>
   );
 }
