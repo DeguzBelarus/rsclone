@@ -33,7 +33,6 @@ import {
   PASSWORD_PATTERN,
 } from 'consts';
 import { IUpdateUserRequestData } from 'types/types';
-import { getLocalStorageData } from '../../app/storage';
 
 export const UserSettings = () => {
   const isAuthorized = useAppSelector(getIsAuthorized);
@@ -110,8 +109,8 @@ export const UserSettings = () => {
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
-    validateNickname(nicknameValue);
-    validateEmail(emailValue);
+    // validateNickname(nicknameValue);
+    // validateEmail(emailValue);
     // validatePassword(passwordValue);
     // validateAge(ageValue);
     // validateCountry(countryValue);
@@ -119,10 +118,10 @@ export const UserSettings = () => {
     // validateFirstName(firstNameValue);
     // validateLastName(lastNameValue);
 
-    const isValid = touched && !(emailError || passwordError || nicknameError);
-    console.log(isValid, ownId, token);
+    // const isValid = touched && !(emailError || passwordError || nicknameError);
+    // console.log(isValid, ownId, token);
 
-    if (!isValid || !ownId || !token) return;
+    // if (!isValid || !ownId || !token) return;
 
     // const userData: IUpdateUserInfoRequestData = {
     //   type: 'info',
@@ -146,13 +145,32 @@ export const UserSettings = () => {
     // dispatch(updateUserAsync(userData));
   };
 
-  const setAvatarSrc = (file: File) => {
+  const avatarUpdate = (event: ChangeEvent<HTMLInputElement>) => {
     if (!ownId || !token) return;
+    const files = event.target.files;
 
+    if (files && files[0]) {
+      const formData = new FormData();
+      formData.append('lang', currentLanguage);
+      formData.append('id', String(ownId));
+      formData.append('avatar', files[0]);
+
+      const avatarRequestData: IUpdateUserRequestData = {
+        type: 'avatar',
+        ownId,
+        token,
+        requestData: formData,
+      };
+      dispatch(updateUserAsync(avatarRequestData));
+    }
+  };
+
+  const avatarDelete = () => {
+    if (!ownId || !token) return;
     const formData = new FormData();
     formData.append('lang', currentLanguage);
     formData.append('id', String(ownId));
-    formData.append('avatar', file);
+    formData.append('avatar', '');
 
     const avatarRequestData: IUpdateUserRequestData = {
       type: 'avatar',
@@ -160,13 +178,7 @@ export const UserSettings = () => {
       token,
       requestData: formData,
     };
-
     dispatch(updateUserAsync(avatarRequestData));
-  };
-
-  const handleAvatarChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files && files[0]) setAvatarSrc(files[0]);
   };
 
   return isAuthorized ? (
@@ -181,13 +193,13 @@ export const UserSettings = () => {
                 accept="image/*"
                 hidden
                 type="file"
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleAvatarChange(event)}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => avatarUpdate(event)}
               />
               <AddAPhoto />
             </IconButton>
           </Tooltip>
           <Tooltip title={language(lng.deletePhoto)}>
-            <IconButton color="warning">
+            <IconButton color="warning" onClick={avatarDelete}>
               <DeleteForever />
             </IconButton>
           </Tooltip>

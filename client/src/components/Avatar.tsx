@@ -14,7 +14,7 @@ export default function Avatar({ size = 32 }: AvatarProps) {
   const isAuthorized = useAppSelector(getIsAuthorized);
   const avatarSrc = useAppSelector(getAvatarSrc);
   const userId = useAppSelector<Nullable<number>>(getUserId);
-  const src = isAuthorized ? `/${userId}/avatar/${avatarSrc}` || undefined : undefined;
+  const src = isAuthorized && avatarSrc ? `/${userId}/avatar/${avatarSrc}` || undefined : undefined;
 
   return (
     <MUIAvatar
