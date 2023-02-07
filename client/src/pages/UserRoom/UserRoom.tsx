@@ -1,8 +1,5 @@
 import React, { FC, useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
-import { Action, ThunkDispatch } from '@reduxjs/toolkit';
-import { RootState } from '../../app/store';
 import { useParams } from 'react-router-dom';
 import { Socket } from 'socket.io-client';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
@@ -32,7 +29,6 @@ interface Props {
 
 export const UserRoom: FC<Props> = (socket): JSX.Element => {
   const dispatch = useAppDispatch();
-  const thunkDispatch = useDispatch<ThunkDispatch<RootState, unknown, Action<string>>>();
   const { id } = useParams();
 
   const [isOwnPage, setIsOwnPage] = useState<boolean>(true);
@@ -58,7 +54,7 @@ export const UserRoom: FC<Props> = (socket): JSX.Element => {
           token,
           requestData: { id: userId, lang: currentLanguage },
         };
-        thunkDispatch(getOneUserInfoAsync(getOneUserRequestData));
+        dispatch(getOneUserInfoAsync(getOneUserRequestData));
       }
     }
     if (id && Number(id) !== userId) {
@@ -68,7 +64,7 @@ export const UserRoom: FC<Props> = (socket): JSX.Element => {
           token,
           requestData: { id: Number(id), lang: currentLanguage },
         };
-        thunkDispatch(getOneUserInfoAsync(getOneUserRequestData));
+        dispatch(getOneUserInfoAsync(getOneUserRequestData));
       }
     }
   }, [id]);

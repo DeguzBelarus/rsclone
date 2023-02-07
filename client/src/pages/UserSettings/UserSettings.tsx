@@ -32,10 +32,10 @@ import {
   NICKNAME_PATTERN,
   PASSWORD_PATTERN,
 } from 'consts';
-import { IAvatarRequestData, IUpdateUserInfoRequestData } from 'types/types';
+import { IUpdateUserRequestData } from 'types/types';
 import { getLocalStorageData } from '../../app/storage';
 
-export function UserSettings() {
+export const UserSettings = () => {
   const isAuthorized = useAppSelector(getIsAuthorized);
   const nickname = useAppSelector(getUserNickname);
   const email = useAppSelector(getUserEmail);
@@ -108,7 +108,7 @@ export function UserSettings() {
     setTouched
   );
 
-  function handleSubmit(event: FormEvent) {
+  const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
     validateNickname(nicknameValue);
     validateEmail(emailValue);
@@ -124,55 +124,50 @@ export function UserSettings() {
 
     if (!isValid || !ownId || !token) return;
 
-    const userData: IUpdateUserInfoRequestData = {
-      type: 'info',
-      ownId,
-      token,
-      requestData: {
-        lang: currentLanguage,
-        email: emailValue,
-        password: passwordValue ? passwordValue : undefined,
-        id: ownId,
-        nickname: nicknameValue,
-        age: parseInt(ageValue) || 0,
-        country: countryValue,
-        city: cityValue,
-        firstName: firstNameValue,
-        lastName: lastNameValue,
-      },
-    };
-    console.log(userData);
+    // const userData: IUpdateUserInfoRequestData = {
+    //   type: 'info',
+    //   ownId,
+    //   token,
+    //   requestData: {
+    //     lang: currentLanguage,
+    //     email: emailValue,
+    //     password: passwordValue ? passwordValue : undefined,
+    //     id: ownId,
+    //     nickname: nicknameValue,
+    //     age: parseInt(ageValue) || 0,
+    //     country: countryValue,
+    //     city: cityValue,
+    //     firstName: firstNameValue,
+    //     lastName: lastNameValue,
+    //   },
+    // };
+    // console.log(userData);
 
-    dispatch(updateUserAsync(userData));
-  }
+    // dispatch(updateUserAsync(userData));
+  };
 
-  function setAvatarSrc(file: File) {
+  const setAvatarSrc = (file: File) => {
     if (!ownId || !token) return;
 
-    // const formData = new FormData();
+    const formData = new FormData();
+    formData.append('lang', currentLanguage);
+    formData.append('id', String(ownId));
+    formData.append('avatar', file);
 
-    // formData.append('lang', currentLanguage);
-    // formData.append('id', String(ownId));
-    // formData.append('avatar', file);
-
-    const userData: IAvatarRequestData = {
+    const avatarRequestData: IUpdateUserRequestData = {
       type: 'avatar',
       ownId,
       token,
-      requestData: {
-        lang: currentLanguage,
-        id: ownId,
-        avatar: file,
-      },
+      requestData: formData,
     };
 
-    dispatch(updateUserAsync(userData));
-  }
+    dispatch(updateUserAsync(avatarRequestData));
+  };
 
-  function handleAvatarChange(event: ChangeEvent<HTMLInputElement>) {
+  const handleAvatarChange = (event: ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files && files[0]) setAvatarSrc(files[0]);
-  }
+  };
 
   return isAuthorized ? (
     <div className={styles.wrapper}>
@@ -186,7 +181,7 @@ export function UserSettings() {
                 accept="image/*"
                 hidden
                 type="file"
-                onChange={handleAvatarChange}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleAvatarChange(event)}
               />
               <AddAPhoto />
             </IconButton>
@@ -282,4 +277,4 @@ export function UserSettings() {
   ) : (
     <div>User not authorized</div>
   );
-}
+};
