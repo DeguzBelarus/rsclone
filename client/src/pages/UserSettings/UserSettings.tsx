@@ -1,7 +1,11 @@
-import React, { FC } from 'react';
+import Avatar from 'components/Avatar';
+import React from 'react';
+import styles from './UserSettings.module.scss';
 
-import './UserSettings.scss';
-
-export const UserSettings: FC = (): JSX.Element => {
-  return <div className="user-settings-wrapper">UserSettings works!</div>;
-};
+export function UserSettings() {
+  return (
+    <div className={styles.wrapper}>
+      <Avatar size="30rem" />
+    </div>
+  );
+}
