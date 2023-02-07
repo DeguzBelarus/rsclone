@@ -1,6 +1,5 @@
 import {
   AppBar,
-  Avatar,
   Badge,
   Box,
   Button,
@@ -30,14 +29,14 @@ import {
   PersonAdd as RegisterIcon,
   Message as MessageIcon,
   PostAdd,
-  Person as PersonIcon,
 } from '@mui/icons-material';
-import { blue, purple, amber } from '@mui/material/colors';
+import { blue, amber } from '@mui/material/colors';
 import { Link, useNavigate } from 'react-router-dom';
 import useLanguage from 'hooks/useLanguage';
 import { lng } from 'hooks/useLanguage/types';
 import { CustomMenu } from 'components/CustomMenu/CustomMenu';
 import { USER_ROLE_ADMIN } from 'consts';
+import Avatar from 'components/Avatar';
 import { Socket } from 'socket.io-client';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 
@@ -83,17 +82,11 @@ export const Header: FC<Props> = (socket) => {
     navigate('/posts/new');
   }
 
-  const avatar = (size: string) => {
-    return (
-      <Avatar sx={{ width: size, height: size, bgcolor: purple[50], color: purple[300] }}>
-        <PersonIcon sx={{ bgcolor: 'primary' }}></PersonIcon>
-      </Avatar>
-    );
-  };
-
   const authorizedMenu = [
     <MenuItem key="1" sx={{ display: { sm: 'none' }, cursor: 'default', pointerEvents: 'none' }}>
-      <ListItemIcon>{avatar('1.5em')}</ListItemIcon>
+      <ListItemIcon>
+        <Avatar size="1.5em" />
+      </ListItemIcon>
       <ListItemText>
         {userName}
         {role === USER_ROLE_ADMIN && (
@@ -195,7 +188,7 @@ export const Header: FC<Props> = (socket) => {
               {userName}
             </Box>
           )}
-          {avatar('2rem')}
+          <Avatar size="2rem" />
         </Button>
 
         <CustomMenu
