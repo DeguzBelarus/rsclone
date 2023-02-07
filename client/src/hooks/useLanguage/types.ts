@@ -26,6 +26,9 @@ export enum lng {
 
   settings,
   logout,
+
+  addPhoto,
+  deletePhoto,
 }
 
 export type LangaugeData = {

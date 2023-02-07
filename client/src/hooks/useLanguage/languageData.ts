@@ -27,6 +27,9 @@ const LANGUAGE_DATA: LangaugeData = {
 
     [lng.settings]: 'Settings',
     [lng.logout]: 'Log out',
+
+    [lng.addPhoto]: 'Add photo',
+    [lng.deletePhoto]: 'Delete photo',
   },
 
   ru: {
@@ -55,6 +58,9 @@ const LANGUAGE_DATA: LangaugeData = {
 
     [lng.settings]: 'Настройки',
     [lng.logout]: 'Выйти',
+
+    [lng.addPhoto]: 'Добавить фотографию',
+    [lng.deletePhoto]: 'Удалить фотографию',
   },
 };
 
