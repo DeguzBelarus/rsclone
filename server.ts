@@ -81,20 +81,6 @@ io.on("connection", (socket) => {
       await sequelizeConfig.authenticate();
       await sequelizeConfig.sync();
     }
-
-    // if (!fs.existsSync(path.join(__dirname, "..", "static"))) {
-    //   fs.mkdirSync(path.join(__dirname, "..", "static"),
-    //     { recursive: true }
-    //   );
-    //   console.log('static folder has been created');
-    // }
-    // if (!fs.existsSync(path.join(__dirname, "..", "temp"))) {
-    //   fs.mkdirSync(path.join(__dirname, "..", "temp"),
-    //     { recursive: true }
-    //   );
-    //   console.log('temp folder has been created');
-    // }
-
     server.listen(process.env.PORT || 5000, () => {
       console.log(
         "\x1b[40m\x1b[32m\x1b[4m\x1b[1m",
