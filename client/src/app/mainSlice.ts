@@ -324,6 +324,12 @@ export const mainSlice = createSlice({
     ) {
       state.isLoginNotificationSent = payload;
     },
+    setUserRequestStatus(
+      state: WritableDraft<MainState>,
+      { payload }: PayloadAction<RequestStatus>
+    ) {
+      state.userRequestStatus = payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -593,5 +599,7 @@ export const getCurrentLanguage = ({ main: { currentLanguage } }: RootState) => 
 export const getCurrentColorTheme = ({ main: { currentColorTheme } }: RootState) =>
   currentColorTheme;
 export const getAlert = ({ main: { alert } }: RootState) => alert;
+export const getUserRequestStatus = ({ main: { userRequestStatus } }: RootState) =>
+  userRequestStatus;
 
 export const { reducer } = mainSlice;
