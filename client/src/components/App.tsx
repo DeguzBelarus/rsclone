@@ -11,6 +11,7 @@ import { authCheckUserAsync, setCurrentLanguage, setUsersOnline } from 'app/main
 import { getLocalStorageData } from 'app/storage';
 import { Header } from './Header/Header';
 import { Alert } from './Alert/Alert';
+import { Footer } from './Footer/Footer';
 
 interface Props {
   socket: Socket<DefaultEventsMap, DefaultEventsMap>;
@@ -46,6 +47,7 @@ export const App: FC<Props> = ({ socket }): JSX.Element => {
       <Header socket={socket} />
       <main>{routes}</main>
       <Alert />
+      <Footer />
     </>
   );
 };

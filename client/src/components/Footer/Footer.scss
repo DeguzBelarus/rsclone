@@ -2,30 +2,39 @@
 
 footer {
   width: 100%;
-  height: 55px;
+  height: var(--footer-height);
+  padding: 0.5rem 1.5rem;
   @include flex-line-spacebetween-vertical-center;
   @include user-select-none;
   background-color: #1976d2;
   color: #fff;
+  font-size: clamp(0.6rem, 4vw, 0.9rem);
+  gap: 1rem;
 
-
-  .footer-authors {
-    width: 100%;
-    @include flex-all-center;
-    gap: 25px;
+  a {
+    opacity: 0.8;
+    &:hover {
+      opacity: 1;
+    }
   }
 
-  .footer-logo-year {
-    width: 100%;
-    @include flex-all-center;
-    gap: 15px;
+  p {
+    opacity: 0.8;
+  }
 
-    .rsschool-footer-link {
-      height: 20px;
-      width: 50px;
-      background-image: url(../../assets/rs_school_js.svg);
-      background-size: contain;
-      background-repeat: no-repeat;
+  .rsschool-footer-link {
+    height: 1.2em;
+    width: 3.2em;
+    margin-left: auto;
+    background-image: url(../../assets/rs_school_js.svg);
+    background-size: cover;
+    background-repeat: no-repeat;
+    filter: invert(1);
+  }
+
+  @media screen and (max-width: $mobile-breakpoint) {
+    .last-name {
+      display: none;
     }
   }
 }

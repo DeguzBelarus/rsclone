@@ -11,45 +11,29 @@ a {
   text-decoration: none;
 }
 
-button {
-  cursor: pointer;
-
-  &:disabled {
-    cursor: default;
-  }
-}
-
-input {
-  &:focus {
-    outline: none;
-  }
-}
-
 main {
   width: 100%;
   margin-top: var(--header-height);
-  padding: 4rem 2rem;
+  padding: 1rem 1em 0 1em;
   display: flex;
   height: calc(100vh - var(--header-height) - var(--footer-height));
   overflow: auto;
 
   & > div {
     max-width: 1100px;
-    margin: 0 auto;
+    margin: 1em auto;
+
+    &::after {
+      content: '';
+      display: block;
+      height: 1rem;
+    }
   }
 
-  @media screen and (max-width: 600px) {
-    padding: 1rem;
+  @media screen and (min-width: 600px) {
+    padding: 3rem 2rem 0 2rem;
+    & > div::after {
+      height: 3rem;
+    }
   }
-}
-
-.visually-hidden {
-  border: 0;
-  clip: rect(0 0 0 0);
-  height: 1px;
-  margin: -1px;
-  overflow: hidden;
-  padding: 0;
-  position: absolute;
-  width: 1px;
 }
