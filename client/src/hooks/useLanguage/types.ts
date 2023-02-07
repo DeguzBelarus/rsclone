@@ -43,6 +43,9 @@ export enum lng {
   newPassword,
 
   update,
+
+  notFound,
+  goToHome,
 }
 
 export type LangaugeData = {
