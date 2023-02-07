@@ -55,10 +55,12 @@ export interface IServerToClientEvents {
   noArg: () => void;
   basicEmit: (a: number, b: string, c: Buffer) => void;
   withAck: (d: string, callback: (e: number) => void) => void;
+  onlineUsersUpdate: (onlineUsers: Array<string>) => void;
 }
 
 export interface IClientToServerEvents {
   userOnline: (onlineUserNickname: string) => void;
+  userOffline: (onlineUserNickname: string) => void;
 }
 
 export interface IInterServerEvents {

@@ -22,6 +22,7 @@ import {
   IAvatarRequestData,
   IRoleUpdateRequestData,
   IUpdateUserResponse,
+  RoleType,
 } from 'types/types';
 import { requestData, requestMethods } from './dataAPI';
 import { setLocalStorageData } from './storage';
@@ -32,7 +33,7 @@ interface MainState {
   userId: Nullable<number>;
   userEmail: Nullable<string>;
   userNickname: Nullable<string>;
-  userRole: Nullable<string>;
+  userRole: Nullable<RoleType>;
   userAge: Nullable<number>;
   userCountry: Nullable<string>;
   userCity: Nullable<string>;
@@ -43,6 +44,8 @@ interface MainState {
   guestUserData: Nullable<ITokenDecodeData>;
   currentLanguage: CurrentLanguageType;
   currentColorTheme: CurrentColorTheme;
+  usersOnline: Array<string>;
+  isLoginNotificationSent: boolean;
   alert: Nullable<AlertMessage>;
   userRequestStatus: RequestStatus;
 }
@@ -64,6 +67,8 @@ const initialState: MainState = {
   guestUserData: null,
   currentLanguage: 'en',
   currentColorTheme: 'white',
+  usersOnline: [],
+  isLoginNotificationSent: false,
   alert: null,
   userRequestStatus: 'idle',
 };
@@ -264,7 +269,7 @@ export const mainSlice = createSlice({
     setUserNickname(state: WritableDraft<MainState>, { payload }: PayloadAction<Nullable<string>>) {
       state.userNickname = payload;
     },
-    setUserRole(state: WritableDraft<MainState>, { payload }: PayloadAction<Nullable<string>>) {
+    setUserRole(state: WritableDraft<MainState>, { payload }: PayloadAction<Nullable<RoleType>>) {
       state.userRole = payload;
     },
     setIsAuthorized(state: WritableDraft<MainState>, { payload }: PayloadAction<boolean>) {
@@ -309,6 +314,15 @@ export const mainSlice = createSlice({
       { payload }: PayloadAction<Nullable<ITokenDecodeData>>
     ) {
       state.guestUserData = payload;
+    },
+    setUsersOnline(state: WritableDraft<MainState>, { payload }: PayloadAction<Array<string>>) {
+      state.usersOnline = payload;
+    },
+    setIsLoginNotificationSent(
+      state: WritableDraft<MainState>,
+      { payload }: PayloadAction<boolean>
+    ) {
+      state.isLoginNotificationSent = payload;
     },
   },
   extraReducers: (builder) => {
@@ -553,6 +567,8 @@ export const {
     setFoundUsers,
     setCurrentColorTheme,
     setGuestUserData,
+    setUsersOnline,
+    setIsLoginNotificationSent,
   },
 } = mainSlice;
 
@@ -570,6 +586,9 @@ export const getAvatarSrc = ({ main: { avatarSrc } }: RootState) => avatarSrc;
 export const getFoundUsers = ({ main: { foundUsers } }: RootState) => foundUsers;
 export const getGuestUserData = ({ main: { guestUserData } }: RootState) => guestUserData;
 export const getUserRole = ({ main: { userRole } }: RootState) => userRole;
+export const getUsersOnline = ({ main: { usersOnline } }: RootState) => usersOnline;
+export const getIsLoginNotificationSent = ({ main: { isLoginNotificationSent } }: RootState) =>
+  isLoginNotificationSent;
 export const getCurrentLanguage = ({ main: { currentLanguage } }: RootState) => currentLanguage;
 export const getCurrentColorTheme = ({ main: { currentColorTheme } }: RootState) =>
   currentColorTheme;
