@@ -5,6 +5,7 @@ import {
   getToken,
   getUserAge,
   getUserCity,
+  getUserRole,
   getUserCountry,
   getUserEmail,
   getUserFirstName,
@@ -32,12 +33,13 @@ import {
   NICKNAME_PATTERN,
   PASSWORD_PATTERN,
 } from 'consts';
-import { IUpdateUserRequestData } from 'types/types';
+import { IDeleteUserRequestData, IUpdateUserRequestData } from 'types/types';
 
 export const UserSettings = () => {
   const isAuthorized = useAppSelector(getIsAuthorized);
   const nickname = useAppSelector(getUserNickname);
   const email = useAppSelector(getUserEmail);
+  const role = useAppSelector(getUserRole);
   const age = useAppSelector(getUserAge);
   const country = useAppSelector(getUserCountry);
   const city = useAppSelector(getUserCity);
@@ -107,42 +109,41 @@ export const UserSettings = () => {
     setTouched
   );
 
-  const handleSubmit = (event: FormEvent) => {
+  const infoUpdate = (event: FormEvent) => {
     event.preventDefault();
-    // validateNickname(nicknameValue);
-    // validateEmail(emailValue);
-    // validatePassword(passwordValue);
-    // validateAge(ageValue);
-    // validateCountry(countryValue);
-    // validateCity(cityValue);
-    // validateFirstName(firstNameValue);
-    // validateLastName(lastNameValue);
+    validateNickname(nicknameValue);
+    validateEmail(emailValue);
+    validatePassword(passwordValue);
+    validateAge(ageValue);
+    validateCountry(countryValue);
+    validateCity(cityValue);
+    validateFirstName(firstNameValue);
+    validateLastName(lastNameValue);
 
-    // const isValid = touched && !(emailError || passwordError || nicknameError);
-    // console.log(isValid, ownId, token);
+    const isValid = touched && !(emailError || passwordError || nicknameError);
+    if (!isValid || !ownId || !token) return;
 
-    // if (!isValid || !ownId || !token) return;
+    const formData = new FormData();
+    formData.append('lang', currentLanguage);
+    formData.append('id', String(ownId));
+    formData.append('nickname', nicknameValue);
+    formData.append('email', emailValue);
+    formData.append('age', String(ageValue || ''));
+    formData.append('country', countryValue);
+    formData.append('city', cityValue);
+    formData.append('firstName', firstNameValue);
+    formData.append('lastName', lastNameValue);
+    if (passwordValue) {
+      formData.append('password', passwordValue);
+    }
 
-    // const userData: IUpdateUserInfoRequestData = {
-    //   type: 'info',
-    //   ownId,
-    //   token,
-    //   requestData: {
-    //     lang: currentLanguage,
-    //     email: emailValue,
-    //     password: passwordValue ? passwordValue : undefined,
-    //     id: ownId,
-    //     nickname: nicknameValue,
-    //     age: parseInt(ageValue) || 0,
-    //     country: countryValue,
-    //     city: cityValue,
-    //     firstName: firstNameValue,
-    //     lastName: lastNameValue,
-    //   },
-    // };
-    // console.log(userData);
-
-    // dispatch(updateUserAsync(userData));
+    const updateUserInfoRequestData: IUpdateUserRequestData = {
+      type: 'info',
+      ownId,
+      token,
+      requestData: formData,
+    };
+    dispatch(updateUserAsync(updateUserInfoRequestData));
   };
 
   const avatarUpdate = (event: ChangeEvent<HTMLInputElement>) => {
@@ -181,6 +182,35 @@ export const UserSettings = () => {
     dispatch(updateUserAsync(avatarRequestData));
   };
 
+  const roleDowngrade = () => {
+    if (!ownId || !token) return;
+    const formData = new FormData();
+    formData.append('lang', currentLanguage);
+    formData.append('id', String(ownId));
+    formData.append('role', 'USER');
+
+    const roleRequestData: IUpdateUserRequestData = {
+      type: 'role',
+      ownId,
+      token,
+      requestData: formData,
+    };
+    dispatch(updateUserAsync(roleRequestData));
+  };
+
+  const userDelete = () => {
+    if (!ownId || !token) return;
+    const deleteUserRequestData: IDeleteUserRequestData = {
+      token,
+      requestData: {
+        lang: currentLanguage,
+        id: ownId,
+        ownId: ownId,
+      },
+    };
+    dispatch(deleteUserAsync(deleteUserRequestData));
+  };
+
   return isAuthorized ? (
     <div className={styles.wrapper}>
       <div className={styles.avatar}>
@@ -207,7 +237,7 @@ export const UserSettings = () => {
       </div>
       <div className={styles.inputs}>
         <div className={styles.nickname}>{nickname}</div>
-        <form className={styles.content} onSubmit={handleSubmit} noValidate>
+        <form className={styles.content} onSubmit={infoUpdate} noValidate>
           <TextField
             value={nicknameValue}
             label={language(lng.nickname)}
@@ -275,15 +305,19 @@ export const UserSettings = () => {
             onChange={validateLastName}
             helperText={lastNameError ? language(lng.lastNameHint) : ' '}
           />
-          <Button
-            disabled={!touched}
-            className={styles.updateBtn}
-            type="submit"
-            variant="contained"
-          >
+          <Button className={styles.updateBtn} type="submit" variant="contained">
             {language(lng.update)}
           </Button>
         </form>
+        {role === 'ADMIN' ? (
+          <button type="button" onClick={roleDowngrade}>
+            give up my admin rights
+          </button>
+        ) : null}
+
+        <button type="button" onClick={userDelete}>
+          delete account
+        </button>
       </div>
     </div>
   ) : (
