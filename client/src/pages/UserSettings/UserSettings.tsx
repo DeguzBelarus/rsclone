@@ -244,7 +244,7 @@ export const UserSettings: FC<Props> = ({ socket }) => {
       <div className={styles.avatar}>
         <Avatar size="min(40vw, 20rem)" />
         <div>
-          <Tooltip title={language(lng.addPhoto)}>
+          <Tooltip title={language(lng.addPhoto)} placement="top">
             <IconButton component="label" color="primary">
               <input
                 id="avatar-image"
@@ -256,7 +256,7 @@ export const UserSettings: FC<Props> = ({ socket }) => {
               <AddAPhoto />
             </IconButton>
           </Tooltip>
-          <Tooltip title={language(lng.deletePhoto)}>
+          <Tooltip title={language(lng.deletePhoto)} placement="top">
             <span>
               <IconButton color="warning" onClick={avatarDelete} disabled={avatarSrc === null}>
                 <DeleteForever />
