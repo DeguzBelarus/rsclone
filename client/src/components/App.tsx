@@ -16,7 +16,7 @@ interface Props {
 
 export const App: FC<Props> = ({ socket }): JSX.Element => {
   const dispatch = useAppDispatch();
-  const routes: JSX.Element = useRoutes(socket);
+  const routes = useRoutes(socket);
 
   useEffect(() => {
     socket.on('connect', () => {
@@ -25,7 +25,7 @@ export const App: FC<Props> = ({ socket }): JSX.Element => {
     socket.on('onlineUsersUpdate', (data: Array<string>) => {
       dispatch(setUsersOnline(data));
     });
-  }, [socket]);
+  }, [socket, dispatch]);
 
   useEffect(() => {
     const { token, currentLanguage } = getLocalStorageData();
@@ -35,7 +35,7 @@ export const App: FC<Props> = ({ socket }): JSX.Element => {
     if (currentLanguage) {
       dispatch(setCurrentLanguage(currentLanguage));
     }
-  }, []);
+  }, [dispatch]);
 
   return (
     <>
