@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Socket } from 'socket.io-client';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 
@@ -29,6 +29,7 @@ interface Props {
 
 export const UserRoom: FC<Props> = ({ socket }) => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const { id } = useParams();
 
   const [isOwnPage, setIsOwnPage] = useState<boolean>(true);
@@ -70,22 +71,24 @@ export const UserRoom: FC<Props> = ({ socket }) => {
   }, [id]);
 
   useEffect(() => {
-    console.log(id);
+    console.log(id, isLoginNotificationSent);
     if (!isLoginNotificationSent) {
+      if (!id) {
+        navigate(`/user/${userId}`);
+      }
       socket.emit('userOnline', userNickname);
-      setIsLoginNotificationSent(true);
+      dispatch(setIsLoginNotificationSent(true));
     }
-
     return () => {
       dispatch(setGuestUserData(null));
     };
   }, []);
+
   return (
     <div className="user-room-wrapper">
       <span>{`users online: ${usersOnline.length}`}</span>
       {isOwnPage ? (
         <>
-          <div>UserRoom works!</div>
           {isAuthorized && (
             <div className="user-data">
               <div>
@@ -105,27 +108,32 @@ export const UserRoom: FC<Props> = ({ socket }) => {
         </>
       ) : (
         <>
-          <div>UserRoom works!</div>
-          {isAuthorized && (
-            <div className="user-data">
-              <div>
-                {guestUserData && id ? (
-                  <img
-                    width={200}
-                    src={`/${id}/avatar/${guestUserData.avatar}`}
-                    alt={currentLanguage === 'ru' ? 'аватарка пользователя' : 'user avatar'}
-                  />
-                ) : null}
-              </div>
-              {role === 'ADMIN' && guestUserData?.email ? (
-                <>
-                  <span>admin rights additional info:</span>
-                  <div>{`${guestUserData.nickname} email: ${guestUserData.email}`}</div>
-                </>
-              ) : null}
-              <div>Nickname: {guestUserData?.nickname}</div>
-              <div>guest page</div>
-            </div>
+          {isAuthorized && id && guestUserData ? (
+            <>
+              {isAuthorized && (
+                <div className="user-data">
+                  <div>
+                    {guestUserData.avatar ? (
+                      <img
+                        width={200}
+                        src={`/${id}/avatar/${guestUserData.avatar}`}
+                        alt={currentLanguage === 'ru' ? 'аватарка пользователя' : 'user avatar'}
+                      />
+                    ) : null}
+                  </div>
+                  {role === 'ADMIN' && guestUserData.email ? (
+                    <>
+                      <span>admin rights additional info:</span>
+                      <div>{`${guestUserData.nickname} email: ${guestUserData.email}`}</div>
+                    </>
+                  ) : null}
+                  <div>Nickname: {guestUserData.nickname}</div>
+                  <div>guest page</div>
+                </div>
+              )}
+            </>
+          ) : (
+            <span>user not found</span>
           )}
         </>
       )}

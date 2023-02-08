@@ -86,6 +86,7 @@ const userReset = (state: WritableDraft<MainState>) => {
   state.avatarSrc = null;
   state.foundUsers = [];
   state.guestUserData = null;
+  state.isLoginNotificationSent = false;
   setLocalStorageData({ token: undefined });
 };
 

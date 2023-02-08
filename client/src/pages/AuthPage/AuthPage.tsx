@@ -12,9 +12,9 @@ import useValidateInput from 'hooks/useValidateInput';
 
 export const AuthPage = () => {
   const dispatch = useAppDispatch();
-  const currentLanguage = useAppSelector(getCurrentLanguage);
   const language = useLanguage();
 
+  const currentLanguage = useAppSelector(getCurrentLanguage);
   const [emailValue, setEmailValue] = useState('');
   const [passwordValue, setPasswordValue] = useState('');
   const [emailError, setEmailError] = useState(false);
