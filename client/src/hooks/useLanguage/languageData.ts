@@ -46,6 +46,10 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.update]: 'Update',
     [lng.notFound]: 'The page you are looking for was not found',
     [lng.goToHome]: 'Go to homepage',
+
+    [lng.dangerZone]: 'Danger zone',
+    [lng.giveUpAdmin]: 'Give up admin rights',
+    [lng.deleteAccount]: 'Delete account',
   },
 
   ru: {
@@ -93,6 +97,10 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.update]: 'Обновить',
     [lng.notFound]: 'Запрашиваемая страница не найдена',
     [lng.goToHome]: 'Перейти домой',
+
+    [lng.dangerZone]: 'Зона опасности',
+    [lng.giveUpAdmin]: 'Отказаться от прав администратора',
+    [lng.deleteAccount]: 'Удалить аккаунт',
   },
 };
 

@@ -15,6 +15,7 @@ import {
   getUserNickname,
   updateUserAsync,
   deleteUserAsync,
+  getAvatarSrc,
 } from 'app/mainSlice';
 import Avatar from 'components/Avatar';
 import styles from './UserSettings.module.scss';
@@ -51,6 +52,7 @@ export const UserSettings: FC<Props> = ({ socket }) => {
   const firstName = useAppSelector(getUserFirstName);
   const lastName = useAppSelector(getUserLastName);
   const ownId = useAppSelector(getUserId);
+  const avatarSrc = useAppSelector(getAvatarSrc);
   const token = useAppSelector(getToken);
   const currentLanguage = useAppSelector(getCurrentLanguage);
 
@@ -220,7 +222,7 @@ export const UserSettings: FC<Props> = ({ socket }) => {
   return isAuthorized ? (
     <div className={styles.wrapper}>
       <div className={styles.avatar}>
-        <Avatar size="min(30vw, 20rem)" />
+        <Avatar size="min(40vw, 20rem)" />
         <div>
           <Tooltip title={language(lng.addPhoto)}>
             <IconButton component="label" color="primary">
@@ -235,96 +237,102 @@ export const UserSettings: FC<Props> = ({ socket }) => {
             </IconButton>
           </Tooltip>
           <Tooltip title={language(lng.deletePhoto)}>
-            <IconButton color="warning" onClick={avatarDelete}>
-              <DeleteForever />
-            </IconButton>
+            <span>
+              <IconButton color="warning" onClick={avatarDelete} disabled={avatarSrc === null}>
+                <DeleteForever />
+              </IconButton>
+            </span>
           </Tooltip>
         </div>
       </div>
-      <div className={styles.inputs}>
-        <div className={styles.nickname}>{nickname}</div>
-        <form className={styles.content} onSubmit={infoUpdate} noValidate>
-          <TextField
-            value={nicknameValue}
-            label={language(lng.nickname)}
-            required
-            error={nicknameError}
-            onChange={validateNickname}
-            helperText={nicknameError ? language(lng.nicknameHint) : ' '}
-          />
-          <TextField
-            value={emailValue}
-            label={language(lng.email)}
-            required
-            error={emailError}
-            onChange={validateEmail}
-            helperText={emailError ? language(lng.emailHint) : ' '}
-            inputProps={{ inputMode: 'email' }}
-          />
-          <TextField
-            type="password"
-            value={passwordValue}
-            label={language(lng.newPassword)}
-            required
-            error={passwordError}
-            onChange={validatePassword}
-            helperText={passwordError ? language(lng.passwordHint) : ' '}
-          />
-          <TextField
-            type="number"
-            value={ageValue}
-            label={language(lng.age)}
-            required
-            error={ageError}
-            onChange={validateAge}
-            helperText={ageError ? language(lng.ageHint) : ' '}
-          />
-          <TextField
-            value={countryValue}
-            label={language(lng.country)}
-            required
-            error={countryError}
-            onChange={validateCountry}
-            helperText={countryError ? language(lng.countryHint) : ' '}
-          />
-          <TextField
-            value={cityValue}
-            label={language(lng.city)}
-            required
-            error={cityError}
-            onChange={validateCity}
-            helperText={cityError ? language(lng.cityHint) : ' '}
-          />
-          <TextField
-            value={firstNameValue}
-            label={language(lng.firstName)}
-            required
-            error={firstNameError}
-            onChange={validateFirstName}
-            helperText={firstNameError ? language(lng.firstNameHint) : ' '}
-          />
-          <TextField
-            value={lastNameValue}
-            label={language(lng.lastName)}
-            required
-            error={lastNameError}
-            onChange={validateLastName}
-            helperText={lastNameError ? language(lng.lastNameHint) : ' '}
-          />
-          <Button className={styles.updateBtn} type="submit" variant="contained">
-            {language(lng.update)}
-          </Button>
-        </form>
+
+      <div className={styles.nickname}>{nickname}</div>
+
+      <div className={styles.danger}>
+        <h3>{language(lng.dangerZone)}</h3>
         {role === 'ADMIN' ? (
-          <button type="button" onClick={roleDowngrade}>
-            give up my admin rights
-          </button>
+          <Button onClick={roleDowngrade} variant="contained">
+            {language(lng.giveUpAdmin)}
+          </Button>
         ) : null}
 
-        <button type="button" onClick={userDelete}>
-          delete account
-        </button>
+        <Button onClick={userDelete} variant="contained" color="error">
+          {language(lng.deleteAccount)}
+        </Button>
       </div>
+
+      <form className={styles.inputs} onSubmit={infoUpdate} noValidate>
+        <TextField
+          value={nicknameValue}
+          label={language(lng.nickname)}
+          required
+          error={nicknameError}
+          onChange={validateNickname}
+          helperText={nicknameError ? language(lng.nicknameHint) : ' '}
+        />
+        <TextField
+          value={emailValue}
+          label={language(lng.email)}
+          required
+          error={emailError}
+          onChange={validateEmail}
+          helperText={emailError ? language(lng.emailHint) : ' '}
+          inputProps={{ inputMode: 'email' }}
+        />
+        <TextField
+          type="password"
+          value={passwordValue}
+          label={language(lng.newPassword)}
+          required
+          error={passwordError}
+          onChange={validatePassword}
+          helperText={passwordError ? language(lng.passwordHint) : ' '}
+        />
+        <TextField
+          type="number"
+          value={ageValue}
+          label={language(lng.age)}
+          required
+          error={ageError}
+          onChange={validateAge}
+          helperText={ageError ? language(lng.ageHint) : ' '}
+        />
+        <TextField
+          value={countryValue}
+          label={language(lng.country)}
+          required
+          error={countryError}
+          onChange={validateCountry}
+          helperText={countryError ? language(lng.countryHint) : ' '}
+        />
+        <TextField
+          value={cityValue}
+          label={language(lng.city)}
+          required
+          error={cityError}
+          onChange={validateCity}
+          helperText={cityError ? language(lng.cityHint) : ' '}
+        />
+        <TextField
+          value={firstNameValue}
+          label={language(lng.firstName)}
+          required
+          error={firstNameError}
+          onChange={validateFirstName}
+          helperText={firstNameError ? language(lng.firstNameHint) : ' '}
+        />
+        <TextField
+          value={lastNameValue}
+          label={language(lng.lastName)}
+          required
+          error={lastNameError}
+          onChange={validateLastName}
+          helperText={lastNameError ? language(lng.lastNameHint) : ' '}
+        />
+        <Button className={styles.updateBtn} type="submit" variant="contained">
+          {language(lng.update)}
+        </Button>
+      </form>
     </div>
   ) : (
     <div>User not authorized</div>
