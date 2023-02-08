@@ -14,6 +14,7 @@ import {
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import {
   getIsAuthorized,
+  getUserId,
   getUserNickname,
   getUserRole,
   setIsAuthorized,
@@ -49,6 +50,7 @@ export const Header: FC<Props> = (socket) => {
   const isAuthorized = useAppSelector(getIsAuthorized);
   const userName = useAppSelector(getUserNickname);
   const userRole = useAppSelector(getUserRole);
+  const userId = useAppSelector(getUserId);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const language = useLanguage();
@@ -143,7 +145,7 @@ export const Header: FC<Props> = (socket) => {
     <AppBar className={styles.header}>
       <Toolbar className={styles.toolbar}>
         <h1 className={styles.logo}>
-          <Link to="/">RS Social</Link>
+          <Link to={userId === null ? '/' : `user/${userId}`}>RS Social</Link>
         </h1>
         <LanguageSwitch />
 
