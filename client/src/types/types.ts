@@ -34,6 +34,11 @@ export interface IGetOneUserRequestData {
   token: string;
 }
 
+export interface IGetUsersRequestData {
+  lang: string;
+  searchKey: string;
+}
+
 export interface IDeleteUserRequestData {
   requestData: {
     lang: string;
@@ -91,6 +96,22 @@ export interface IUpdateUserResponse {
   ownId: number;
 }
 
+export interface IFoundUserData {
+  id: number;
+  nickname: string;
+  firstName: Nullable<string>;
+  lastName: Nullable<string>;
+  city: Nullable<string>;
+  country: Nullable<string>;
+  avatarSrc: Nullable<string>;
+  role: string;
+}
+
+export interface ISearchUsersResponse {
+  count: number;
+  searchResult: Array<IFoundUserData>;
+  message: string;
+}
 export interface ILocalStorageSaveData {
   token?: string;
   currentLanguage?: CurrentLanguageType;

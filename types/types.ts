@@ -86,6 +86,6 @@ export interface IFoundUserData {
 
 export interface ISearchUsersResponse {
   count: number;
-  rows: Array<IFoundUserData>;
+  searchResult: Array<IFoundUserData>;
   message: string;
 }

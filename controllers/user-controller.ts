@@ -232,7 +232,18 @@ class UserController {
       if (User) {
         const { searchKey, lang } = request.query;
 
-        if (searchKey && typeof searchKey === 'string' && lang) {
+        if (!searchKey && typeof searchKey === 'string' && lang) {
+          const filteredSearchResponse: ISearchUsersResponse = {
+            count: 0,
+            searchResult: [],
+            message: lang === "ru" ?
+              "Поиск пользователей успешно выполнен" :
+              "User search completed successfully"
+          }
+          return response.json(filteredSearchResponse);
+        }
+
+        if (typeof searchKey === 'string' && lang) {
           const foundUsers = await User.findAndCountAll({
             where: {
               [Op.or]: {
@@ -256,7 +267,7 @@ class UserController {
           });
           const filteredSearchResponse: ISearchUsersResponse = {
             count: foundUsers.count,
-            rows: foundUsers.rows.map((user) => {
+            searchResult: foundUsers.rows.map((user) => {
               return {
                 id: user.dataValues.id,
                 nickname: user.dataValues.nickname,
