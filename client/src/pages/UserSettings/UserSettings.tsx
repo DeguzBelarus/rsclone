@@ -1,3 +1,4 @@
+import React, { ChangeEvent, FormEvent, useState, FC } from 'react';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import {
   getCurrentLanguage,
@@ -16,7 +17,6 @@ import {
   deleteUserAsync,
 } from 'app/mainSlice';
 import Avatar from 'components/Avatar';
-import React, { ChangeEvent, FormEvent, useState } from 'react';
 import styles from './UserSettings.module.scss';
 import { Button, IconButton, TextField, Tooltip } from '@mui/material';
 import { AddAPhoto, DeleteForever } from '@mui/icons-material';
@@ -34,8 +34,13 @@ import {
   PASSWORD_PATTERN,
 } from 'consts';
 import { IDeleteUserRequestData, IUpdateUserRequestData } from 'types/types';
+import { Socket } from 'socket.io-client';
+import { DefaultEventsMap } from 'socket.io/dist/typed-events';
+interface Props {
+  socket: Socket<DefaultEventsMap, DefaultEventsMap>;
+}
 
-export const UserSettings = () => {
+export const UserSettings: FC<Props> = ({ socket }) => {
   const isAuthorized = useAppSelector(getIsAuthorized);
   const nickname = useAppSelector(getUserNickname);
   const email = useAppSelector(getUserEmail);
@@ -209,6 +214,7 @@ export const UserSettings = () => {
       },
     };
     dispatch(deleteUserAsync(deleteUserRequestData));
+    socket.emit('userOffline', nickname);
   };
 
   return isAuthorized ? (

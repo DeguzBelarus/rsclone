@@ -27,7 +27,7 @@ interface Props {
   socket: Socket<DefaultEventsMap, DefaultEventsMap>;
 }
 
-export const UserRoom: FC<Props> = (socket): JSX.Element => {
+export const UserRoom: FC<Props> = ({ socket }) => {
   const dispatch = useAppDispatch();
   const { id } = useParams();
 
@@ -72,7 +72,7 @@ export const UserRoom: FC<Props> = (socket): JSX.Element => {
   useEffect(() => {
     console.log(id);
     if (!isLoginNotificationSent) {
-      socket.socket.emit('userOnline', userNickname);
+      socket.emit('userOnline', userNickname);
       setIsLoginNotificationSent(true);
     }
 

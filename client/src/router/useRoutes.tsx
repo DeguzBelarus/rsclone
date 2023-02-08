@@ -20,7 +20,7 @@ export const useRoutes = (socket: Socket<DefaultEventsMap, DefaultEventsMap>) =>
         <>
           <Route path="/" element={<UserRoom socket={socket} />} />
           <Route path="user/:id" element={<UserRoom socket={socket} />} />
-          <Route path="settings" element={<UserSettings />} />
+          <Route path="settings" element={<UserSettings socket={socket} />} />
           <Route path="post/:id" element={<PostPage />} />
           <Route path="*" element={<Page404 />} />
         </>
