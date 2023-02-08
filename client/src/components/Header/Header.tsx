@@ -10,6 +10,7 @@ import {
   MenuItem,
   Toolbar,
   Tooltip,
+  useTheme,
 } from '@mui/material';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import {
@@ -40,6 +41,7 @@ import { USER_ROLE_ADMIN } from 'consts';
 import Avatar from 'components/Avatar';
 import { Socket } from 'socket.io-client';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
+import { HeaderSearch } from 'components/HeaderSearch/HeaderSearch';
 
 interface Props {
   socket: Socket<DefaultEventsMap, DefaultEventsMap>;
@@ -47,6 +49,7 @@ interface Props {
 
 export const Header: FC<Props> = ({ socket }) => {
   const [userMenuAnchor, setUserMenuAnchor] = useState<HTMLElement>();
+  const [searchFocused, setSearchFocused] = useState(false);
   const isAuthorized = useAppSelector(getIsAuthorized);
   const userName = useAppSelector(getUserNickname);
   const userRole = useAppSelector(getUserRole);
@@ -54,35 +57,19 @@ export const Header: FC<Props> = ({ socket }) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const language = useLanguage();
+  const theme = useTheme();
 
   const role = isAuthorized ? userRole : undefined;
 
-  function handleUserMenuOpen(event: React.MouseEvent<HTMLElement>) {
-    setUserMenuAnchor(event.currentTarget);
-  }
-  function handleUserMenuClose() {
-    setUserMenuAnchor(undefined);
-  }
-  function handleUserSettings() {
-    navigate('/settings');
-  }
-  function handleUserLogin() {
-    navigate('/login');
-  }
-  function handleUserRegister() {
-    navigate('/register');
-  }
-  function handleUserLogout() {
+  const handleUserLogout = () => {
     dispatch(setIsAuthorized(false));
     dispatch(setToken(null));
     socket.emit('userOffline', userName);
-  }
-  function handleMessages() {
-    navigate('/messages');
-  }
-  function handleAddPost() {
-    navigate('/posts/new');
-  }
+  };
+
+  const handleMessages = () => navigate('/messages');
+
+  const handleAddPost = () => navigate('/posts/new');
 
   const authorizedMenu = [
     <MenuItem key="1" sx={{ display: { sm: 'none' }, cursor: 'default', pointerEvents: 'none' }}>
@@ -111,7 +98,7 @@ export const Header: FC<Props> = ({ socket }) => {
       </ListItemIcon>
       <ListItemText>{language(lng.userAddPost)}</ListItemText>
     </MenuItem>,
-    <MenuItem key="5" onClick={handleUserSettings}>
+    <MenuItem key="5" onClick={() => navigate('/settings')}>
       <ListItemIcon>
         <SettingsIcon />
       </ListItemIcon>
@@ -127,13 +114,13 @@ export const Header: FC<Props> = ({ socket }) => {
   ];
 
   const unauthorizedMenu = [
-    <MenuItem key="1" onClick={handleUserLogin}>
+    <MenuItem key="1" onClick={() => navigate('/login')}>
       <ListItemIcon>
         <LoginIcon />
       </ListItemIcon>
       <ListItemText>{language(lng.login)}</ListItemText>
     </MenuItem>,
-    <MenuItem key="2" onClick={handleUserRegister}>
+    <MenuItem key="2" onClick={() => navigate('/register')}>
       <ListItemIcon>
         <RegisterIcon />
       </ListItemIcon>
@@ -142,11 +129,18 @@ export const Header: FC<Props> = ({ socket }) => {
   ];
 
   return (
-    <AppBar className={styles.header}>
+    <AppBar
+      className={styles.header + ' ' + (searchFocused ? styles.focused : '')}
+      sx={{
+        backgroundColor: searchFocused ? theme.palette.primary.dark : undefined,
+        transition: 'background-color 0.5s linear',
+      }}
+    >
       <Toolbar className={styles.toolbar}>
         <h1 className={styles.logo}>
           <Link to={userId === null ? '/' : `user/${userId}`}>RS Social</Link>
         </h1>
+        <HeaderSearch onFocusChange={(focused) => setSearchFocused(focused)} />
         <LanguageSwitch />
 
         {isAuthorized && (
@@ -173,7 +167,7 @@ export const Header: FC<Props> = ({ socket }) => {
           className={styles.userButton}
           color="inherit"
           variant="outlined"
-          onClick={handleUserMenuOpen}
+          onClick={(event) => setUserMenuAnchor(event.currentTarget)}
           sx={{
             display: 'block',
             bgcolor: role === USER_ROLE_ADMIN ? amber[700] : undefined,
@@ -196,8 +190,8 @@ export const Header: FC<Props> = ({ socket }) => {
         <CustomMenu
           anchorEl={userMenuAnchor}
           open={Boolean(userMenuAnchor)}
-          onClick={handleUserMenuClose}
-          onClose={handleUserMenuClose}
+          onClick={() => setUserMenuAnchor(undefined)}
+          onClose={() => setUserMenuAnchor(undefined)}
         >
           {isAuthorized ? authorizedMenu : unauthorizedMenu}
         </CustomMenu>
