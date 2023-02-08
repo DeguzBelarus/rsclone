@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FormEvent, useState, FC } from 'react';
+import React, { ChangeEvent, FormEvent, useState, FC, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import {
   getCurrentLanguage,
@@ -32,6 +32,7 @@ import {
   FIRST_NAME_PATTERN,
   LAST_NAME_PATTERN,
   NICKNAME_PATTERN,
+  PASSWORD_OR_EMPTY_PATTERN,
   PASSWORD_PATTERN,
 } from 'consts';
 import { IDeleteUserRequestData, IUpdateUserRequestData } from 'types/types';
@@ -62,6 +63,7 @@ export const UserSettings: FC<Props> = ({ socket }) => {
   const [nicknameValue, setNicknameValue] = useState(nickname || '');
   const [emailValue, setEmailValue] = useState(email || '');
   const [passwordValue, setPasswordValue] = useState('');
+  const [repeatPasswordValue, setRepeatPasswordValue] = useState('');
   const [ageValue, setAgeValue] = useState(age ? String(age) : '');
   const [countryValue, setCountryValue] = useState(country || '');
   const [cityValue, setCityValue] = useState(city || '');
@@ -70,6 +72,7 @@ export const UserSettings: FC<Props> = ({ socket }) => {
   const [nicknameError, setNicknameError] = useState(false);
   const [emailError, setEmailError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
+  const [repeatPasswordError, setRepeatPasswordError] = useState(false);
   const [ageError, setAgeError] = useState(false);
   const [countryError, setCountryError] = useState(false);
   const [cityError, setCityError] = useState(false);
@@ -88,9 +91,16 @@ export const UserSettings: FC<Props> = ({ socket }) => {
   const validateEmail = useValidateInput(EMAIL_PATTERN, setEmailValue, setEmailError, setTouched);
 
   const validatePassword = useValidateInput(
-    PASSWORD_PATTERN,
+    PASSWORD_OR_EMPTY_PATTERN,
     setPasswordValue,
     setPasswordError,
+    setTouched
+  );
+
+  const validateRepeatPassword = useValidateInput(
+    (value) => passwordValue !== value,
+    setRepeatPasswordValue,
+    setRepeatPasswordError,
     setTouched
   );
 
@@ -116,18 +126,20 @@ export const UserSettings: FC<Props> = ({ socket }) => {
     setTouched
   );
 
-  const infoUpdate = (event: FormEvent) => {
+  const infoUpdate = async (event: FormEvent) => {
     event.preventDefault();
     validateNickname(nicknameValue);
     validateEmail(emailValue);
     validatePassword(passwordValue);
+    validateRepeatPassword(repeatPasswordValue);
     validateAge(ageValue);
     validateCountry(countryValue);
     validateCity(cityValue);
     validateFirstName(firstNameValue);
     validateLastName(lastNameValue);
 
-    const isValid = touched && !(emailError || passwordError || nicknameError);
+    const isValid =
+      touched && !(emailError || passwordError || nicknameError || repeatPasswordError);
     if (!isValid || !ownId || !token) return;
 
     const formData = new FormData();
@@ -140,7 +152,7 @@ export const UserSettings: FC<Props> = ({ socket }) => {
     formData.append('city', cityValue);
     formData.append('firstName', firstNameValue);
     formData.append('lastName', lastNameValue);
-    if (passwordValue) {
+    if (passwordValue !== '') {
       formData.append('password', passwordValue);
     }
 
@@ -150,7 +162,11 @@ export const UserSettings: FC<Props> = ({ socket }) => {
       token,
       requestData: formData,
     };
-    dispatch(updateUserAsync(updateUserInfoRequestData));
+    await dispatch(updateUserAsync(updateUserInfoRequestData));
+    setPasswordValue('');
+    setRepeatPasswordValue('');
+    setPasswordError(false);
+    setRepeatPasswordError(false);
   };
 
   const avatarUpdate = (event: ChangeEvent<HTMLInputElement>) => {
@@ -218,6 +234,16 @@ export const UserSettings: FC<Props> = ({ socket }) => {
     dispatch(deleteUserAsync(deleteUserRequestData));
     socket.emit('userOffline', nickname);
   };
+
+  useEffect(() => {
+    setNicknameValue(nickname || '');
+    setEmailValue(email || '');
+    setAgeValue(age ? String(age) : '');
+    setCountryValue(country || '');
+    setCityValue(city || '');
+    setFirstNameValue(firstName || '');
+    setLastNameValue(lastName || '');
+  }, [nickname, email, age, country, city, firstName, lastName]);
 
   return isAuthorized ? (
     <div className={styles.wrapper}>
@@ -287,6 +313,15 @@ export const UserSettings: FC<Props> = ({ socket }) => {
           error={passwordError}
           onChange={validatePassword}
           helperText={passwordError ? language(lng.passwordHint) : ' '}
+        />
+        <TextField
+          type="password"
+          value={repeatPasswordValue}
+          label={language(lng.repeatPassword)}
+          required
+          error={repeatPasswordError}
+          onChange={validateRepeatPassword}
+          helperText={repeatPasswordError ? language(lng.repeatPasswordHint) : ' '}
         />
         <TextField
           type="number"
