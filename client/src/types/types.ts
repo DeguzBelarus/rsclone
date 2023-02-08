@@ -50,49 +50,6 @@ export interface IUpdateUserRequestData {
   ownId: number;
 }
 
-// export interface IUpdateUserInfoRequestData {
-//   requestData: FormData;
-//   token: string;
-//   type: UpdateUserType;
-//   ownId: number;
-// }
-// requestData: {
-//   lang: CurrentLanguageType;
-//   id: number;
-//   nickname: string;
-//   email: string;
-//   password ?: string;
-//   age: number;
-//   country: string;
-//   city: string;
-//   firstName: string;
-//   lastName: string;
-// };
-
-// export interface IAvatarRequestData {
-//   requestData: FormData;
-//   token: string;
-//   type: UpdateUserType;
-//   ownId: number;
-// }
-// requestData: {
-//   lang: CurrentLanguageType;
-//   id: number;
-//   avatar: string | File;
-// };
-
-// export interface IRoleUpdateRequestData {
-//   requestData: FormData;
-//   token: string;
-//   type: UpdateUserType;
-//   ownId: number;
-// }
-// requestData: {
-//   lang: CurrentLanguageType;
-//   id: number;
-//   role: RoleType;
-// };
-
 export interface IRegistrationRequestData extends ILoginRequestData {
   nickname: string;
 }
