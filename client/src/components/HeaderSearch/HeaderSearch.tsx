@@ -1,9 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Autocomplete, InputBase, useTheme } from '@mui/material';
 import styles from './HeaderSearch.module.scss';
 import { Search as SearchIcon } from '@mui/icons-material';
 import { alpha, Box } from '@mui/system';
 import joinStrings from 'lib/joinStrings';
+import Avatar from 'components/Avatar';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import { useNavigate } from 'react-router-dom';
 
 interface SearchOption {
   id: number;
@@ -17,11 +20,36 @@ interface SearchOption {
 
 // type SearchOption = string;
 const defaultOptions: SearchOption[] = [
-  { nickname: 'Pavel', city: 'Prague' },
-  { nickname: 'Nick', firstName: 'Nicholas' },
-  { nickname: 'Tom', city: 'New York', firstName: 'Thomas', lastName: 'Jefferson' },
+  {
+    id: 5,
+    nickname: 'Pavel',
+    city: 'Prague',
+    country: 'Czechia',
+    avatarSrc: 'dbc9cbba796564618767bad00.jpeg',
+  },
+  { id: 13, nickname: 'Nick5', firstName: 'Nicholas' },
+  { id: 14, nickname: 'Nick6', firstName: 'Nicholas' },
+  { id: 15, nickname: 'Nick7', firstName: 'Nicholas' },
+  { id: 16, nickname: 'Nick8d', firstName: 'Nicholas' },
+  {
+    id: 6,
+    nickname: 'Tom',
+    city: 'New York',
+    country: 'USA',
+    firstName: 'Thomas',
+    lastName: 'Jefferson',
+    avatarSrc: 'dbc9cbba796564618767bad01.png',
+  },
+  {
+    id: 7,
+    nickname: 'Jane',
+    city: 'LA',
+    country: 'USA',
+    firstName: 'Jane',
+    lastName: 'Blake',
+    avatarSrc: 'dbc9cbba796564618767bad02.png',
+  },
 ];
-// const defaultOptions: SearchOption[] = ['Pavel', 'Nick'];
 
 const SEARCH_ID = 'header-search-autocomplete';
 
@@ -31,10 +59,11 @@ interface HeaderSearchProps {
 
 export const HeaderSearch = ({ onFocusChange }: HeaderSearchProps) => {
   const [inputFocus, setInputFocus] = useState(false);
-  const [value, setValue] = React.useState<SearchOption | null>();
+  const [value, setValue] = React.useState<SearchOption | null>(null);
   const [inputValue, setInputValue] = React.useState('');
   const [options, setOptions] = useState<SearchOption[]>(defaultOptions);
   const theme = useTheme();
+  const navigate = useNavigate();
 
   const inputFocusHandle = (focused: boolean) => {
     if (onFocusChange) onFocusChange(focused);
@@ -62,18 +91,26 @@ export const HeaderSearch = ({ onFocusChange }: HeaderSearchProps) => {
           disablePortal
           options={defaultOptions}
           getOptionLabel={(option) => (typeof option === 'string' ? option : option.nickname)}
-          isOptionEqualToValue={(option, value) => option.nickname === value.nickname}
+          isOptionEqualToValue={(option, value) => option.id === value.id}
           noOptionsText="No users were found"
           forcePopupIcon={false}
-          // value={value}
-          // filterSelectedOptions
-          // filterOptions={(x) => x}
-          // onChange={(_, value) => {
-          //   setOptions(value ? [value, ...options] : options);
-          //   setValue(value);
-          // }}
-          // inputValue={inputValue}
-          // onInputChange={(_, value) => setInputValue(value)}
+          //Turn off auto filtering on typing
+          filterOptions={(option) => option}
+          value={value}
+          onChange={(_, value) => {
+            setInputValue('');
+            setValue(null);
+            if (value?.id) navigate(`/user/${value?.id}`);
+            // setOptions(value ? [value, ...options] : options);
+            // setValue(value);
+          }}
+          inputValue={inputValue}
+          onInputChange={(_, value) => setInputValue(value)}
+          ListboxProps={{
+            style: {
+              maxHeight: 'min(80vh, 50rem)',
+            },
+          }}
           renderInput={(params) => {
             const { InputLabelProps, InputProps, ...rest } = params;
             return (
@@ -92,12 +129,19 @@ export const HeaderSearch = ({ onFocusChange }: HeaderSearchProps) => {
             return (
               <li {...props}>
                 <div className={styles.option}>
-                  <div className={styles.nick}>{option.nickname}</div>
-                  <div className={styles.info}>
-                    <div>{joinStrings(' ', option.firstName, option.lastName)}</div>
-                    {(option.city || option.country) && (
-                      <div>{'from' + ' ' + joinStrings(', ', option.city, option.country)}</div>
-                    )}
+                  <Avatar user={option.id} avatarSrc={option.avatarSrc} size="2em" />
+
+                  <div className={styles.text}>
+                    <div className={styles.nick}>{option.nickname}</div>
+                    <div className={styles.info}>
+                      <div>{joinStrings(' ', option.firstName, option.lastName)}</div>
+                      {(option.city || option.country) && (
+                        <div className={styles.location}>
+                          <LocationOnIcon sx={{ opacity: 0.6 }} />
+                          {joinStrings(', ', option.city, option.country)}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </li>
