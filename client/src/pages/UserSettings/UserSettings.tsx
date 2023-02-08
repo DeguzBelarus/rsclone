@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FormEvent, useState, FC, useEffect } from 'react';
+import React, { ChangeEvent, FormEvent, useState, FC } from 'react';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import {
   getCurrentLanguage,
@@ -33,11 +33,11 @@ import {
   LAST_NAME_PATTERN,
   NICKNAME_PATTERN,
   PASSWORD_OR_EMPTY_PATTERN,
-  PASSWORD_PATTERN,
 } from 'consts';
 import { IDeleteUserRequestData, IUpdateUserRequestData } from 'types/types';
 import { Socket } from 'socket.io-client';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
+import { Modal } from 'components/Modal/Modal';
 interface Props {
   socket: Socket<DefaultEventsMap, DefaultEventsMap>;
 }
@@ -80,6 +80,9 @@ export const UserSettings: FC<Props> = ({ socket }) => {
   const [lastNameError, setLastNameError] = useState(false);
 
   const [touched, setTouched] = useState(false);
+
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [roleModalOpen, setRoleModalOpen] = useState(false);
 
   const validateNickname = useValidateInput(
     NICKNAME_PATTERN,
@@ -167,6 +170,7 @@ export const UserSettings: FC<Props> = ({ socket }) => {
     setRepeatPasswordValue('');
     setPasswordError(false);
     setRepeatPasswordError(false);
+    setTouched(false);
   };
 
   const avatarUpdate = (event: ChangeEvent<HTMLInputElement>) => {
@@ -235,16 +239,6 @@ export const UserSettings: FC<Props> = ({ socket }) => {
     socket.emit('userOffline', nickname);
   };
 
-  useEffect(() => {
-    setNicknameValue(nickname || '');
-    setEmailValue(email || '');
-    setAgeValue(age ? String(age) : '');
-    setCountryValue(country || '');
-    setCityValue(city || '');
-    setFirstNameValue(firstName || '');
-    setLastNameValue(lastName || '');
-  }, [nickname, email, age, country, city, firstName, lastName]);
-
   return isAuthorized ? (
     <div className={styles.wrapper}>
       <div className={styles.avatar}>
@@ -275,16 +269,34 @@ export const UserSettings: FC<Props> = ({ socket }) => {
       <div className={styles.nickname}>{nickname}</div>
 
       <div className={styles.danger}>
-        <h3>{language(lng.dangerZone)}</h3>
-        {role === 'ADMIN' ? (
-          <Button onClick={roleDowngrade} variant="contained">
-            {language(lng.giveUpAdmin)}
-          </Button>
-        ) : null}
+        <h3 className={styles.dangerTitle}>{language(lng.dangerZone)}</h3>
+        {role === 'ADMIN' && (
+          <>
+            <Button onClick={() => setRoleModalOpen(true)} variant="contained">
+              {language(lng.giveUpAdmin)}
+            </Button>
+            <Modal
+              open={roleModalOpen}
+              title={language(lng.giveUpAdmin)}
+              onClose={() => setRoleModalOpen(false)}
+              onSuccess={roleDowngrade}
+            >
+              {language(lng.giveUpAdminMsg)}
+            </Modal>
+          </>
+        )}
 
-        <Button onClick={userDelete} variant="contained" color="error">
+        <Button onClick={() => setDeleteModalOpen(true)} variant="contained" color="error">
           {language(lng.deleteAccount)}
         </Button>
+        <Modal
+          open={deleteModalOpen}
+          title={language(lng.deleteAccount)}
+          onClose={() => setDeleteModalOpen(false)}
+          onSuccess={userDelete}
+        >
+          {language(lng.deleteAccountMsg)}
+        </Modal>
       </div>
 
       <form className={styles.inputs} onSubmit={infoUpdate} noValidate>

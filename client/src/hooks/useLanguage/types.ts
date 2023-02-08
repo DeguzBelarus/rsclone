@@ -49,7 +49,12 @@ export enum lng {
 
   dangerZone,
   giveUpAdmin,
+  giveUpAdminMsg,
   deleteAccount,
+  deleteAccountMsg,
+
+  confirm,
+  cancel,
 }
 
 export type LangaugeData = {
