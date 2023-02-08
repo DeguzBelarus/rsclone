@@ -40,6 +40,7 @@ import { USER_ROLE_ADMIN } from 'consts';
 import Avatar from 'components/Avatar';
 import { Socket } from 'socket.io-client';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
+import HeaderSearch from 'components/HeaderSearch/HeaderSearch';
 
 interface Props {
   socket: Socket<DefaultEventsMap, DefaultEventsMap>;
@@ -147,6 +148,7 @@ export const Header: FC<Props> = ({ socket }) => {
         <h1 className={styles.logo}>
           <Link to={userId === null ? '/' : `user/${userId}`}>RS Social</Link>
         </h1>
+        <HeaderSearch />
         <LanguageSwitch />
 
         {isAuthorized && (
