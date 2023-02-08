@@ -19,6 +19,7 @@ import {
   getUserNickname,
   getUserRole,
   setIsAuthorized,
+  setIsLoginNotificationSent,
   setToken,
 } from 'app/mainSlice';
 import { LanguageSwitch } from 'components/LanguageSwitch';
@@ -58,13 +59,14 @@ export const Header: FC<Props> = ({ socket }) => {
   const navigate = useNavigate();
   const language = useLanguage();
   const theme = useTheme();
-
   const role = isAuthorized ? userRole : undefined;
 
   const handleUserLogout = () => {
     dispatch(setIsAuthorized(false));
     dispatch(setToken(null));
+    dispatch(setIsLoginNotificationSent(false));
     socket.emit('userOffline', userName);
+    navigate('/login');
   };
 
   const handleMessages = () => navigate('/messages');
