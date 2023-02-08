@@ -46,6 +46,15 @@ export enum lng {
 
   notFound,
   goToHome,
+
+  dangerZone,
+  giveUpAdmin,
+  giveUpAdminMsg,
+  deleteAccount,
+  deleteAccountMsg,
+
+  confirm,
+  cancel,
 }
 
 export type LangaugeData = {

@@ -2,49 +2,59 @@
 
 .wrapper {
   display: grid;
-  gap: 1rem 3rem;
-  grid-template-rows: auto 1fr;
+  gap: 0rem 4rem;
   min-width: 100%;
 
+  grid-template-areas: 
+  "settings-avatar"
+  "settings-danger"  
+  "settings-inputs";  
+
   .avatar {
+    grid-area: settings-avatar;
     display: flex;
     flex-direction: column;
     align-items: center;
+    .nickname {
+      line-height: 1;
+      margin-bottom: 3rem;
+      font-size: clamp(2rem, 12vw, 4rem);
+      font-weight: 600;
+      opacity: 0.6;
+      text-transform: uppercase;
+    }    
   }
+
+  .danger {
+    grid-area: settings-danger;
+    display: flex;
+    flex-direction: column;
+    max-width: 16rem;
+    justify-self: center;
+    gap: 1rem;
+    margin-bottom: 4rem;
+
+    .dangerTitle {
+      text-align: center;
+    }    
+  }  
 
   .inputs {
+    grid-area: settings-inputs;
     display: flex;
     flex-direction: column;
-  }
-  .nickname {
-    margin-bottom: 0.8em;
-    align-self: center;
-    font-size: clamp(2rem, 12vw, 4rem);
-    font-weight: 600;
-    opacity: 0.6;
-    text-transform: uppercase;
-  }
-
-  .content {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.5em;
 
     .updateBtn {
       align-self: end;
     }
   }
+    @media screen and (min-width: $mobile-breakpoint) {
+      grid-template-areas: 
+        "settings-avatar settings-inputs"
+        "settings-danger settings-inputs";
 
-  @media screen and (min-width: $mobile-breakpoint) {
-    grid-template-columns: auto 1fr;   
-    min-width: calc(min(100%, 900px));
-
-    .content {
-      gap: 1rem;
-    }
-
-    .nickname {
-      align-self: flex-start;
-    }
-  } 
+      grid-template-columns: auto 1fr;
+      min-width: calc(min(100%, 900px));
+  }
 }

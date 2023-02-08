@@ -46,6 +46,16 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.update]: 'Update',
     [lng.notFound]: 'The page you are looking for was not found',
     [lng.goToHome]: 'Go to homepage',
+
+    [lng.dangerZone]: 'Danger zone',
+    [lng.giveUpAdmin]: 'Give up admin rights',
+    [lng.giveUpAdminMsg]:
+      'Are you sure you want to give up your admin rights? This cannot be undone.',
+    [lng.deleteAccount]: 'Delete account',
+    [lng.deleteAccountMsg]: 'Are you sure you want to delete your account? This cannot be undone.',
+
+    [lng.confirm]: 'Confirm',
+    [lng.cancel]: 'Cancel',
   },
 
   ru: {
@@ -93,6 +103,16 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.update]: 'Обновить',
     [lng.notFound]: 'Запрашиваемая страница не найдена',
     [lng.goToHome]: 'Перейти домой',
+
+    [lng.dangerZone]: 'Зона опасности',
+    [lng.giveUpAdmin]: 'Отказаться от прав',
+    [lng.giveUpAdminMsg]:
+      'Вы уверены, что хотите отказаться от прав администратора? Это действие необратимо.',
+    [lng.deleteAccount]: 'Удалить аккаунт',
+    [lng.deleteAccountMsg]: 'Вы уверены, что хотите удалить Ваш аккаунт? Это действие необратимо.',
+
+    [lng.confirm]: 'Подтвердить',
+    [lng.cancel]: 'Отменить',
   },
 };
 
