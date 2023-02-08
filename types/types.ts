@@ -72,3 +72,20 @@ export interface ISocketData {
   name: string;
   age: number;
 }
+
+export interface IFoundUserData {
+  id?: number;
+  nickname: string;
+  firstName: Nullable<string>;
+  lastName: Nullable<string>;
+  city: Nullable<string>;
+  country: Nullable<string>;
+  avatarSrc?: string | FormidableFile;
+  role: string;
+}
+
+export interface ISearchUsersResponse {
+  count: number;
+  rows: Array<IFoundUserData>;
+  message: string;
+}

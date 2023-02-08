@@ -1,3 +1,4 @@
+import { Model, Op } from "sequelize";
 import { Response, NextFunction } from 'express';
 import fs from 'fs';
 import path from 'path';
@@ -6,7 +7,7 @@ import jwt from 'jsonwebtoken';
 import formidable from 'formidable';
 
 import { User } from '../db-models/db-models';
-import { CurrentLanguageType, IUserModel, IRequestModified, FormidableFile } from '../types/types';
+import { CurrentLanguageType, IUserModel, IRequestModified, FormidableFile, IFoundUserData, ISearchUsersResponse } from '../types/types';
 import { ApiError } from '../error-handler/error-handler';
 import { Undefinable } from '../client/src/types/types';
 
@@ -218,6 +219,69 @@ class UserController {
             "Вы успешно вошли в систему!" :
             "You have successfully logged in!",
         });
+      }
+    } catch (exception: unknown) {
+      if (exception instanceof Error) {
+        next(ApiError.badRequest(exception.message));
+      }
+    }
+  }
+
+  async getAll(request: IRequestModified, response: Response, next: NextFunction): Promise<void | Response> {
+    try {
+      if (User) {
+        const { searchKey, lang } = request.query;
+
+        if (searchKey && typeof searchKey === 'string' && lang) {
+          const foundUsers = await User.findAndCountAll({
+            where: {
+              [Op.or]: {
+                nickname: {
+                  [Op.or]: { [Op.startsWith]: searchKey, [Op.iLike]: `${searchKey}%` },
+                },
+                country: {
+                  [Op.or]: { [Op.startsWith]: searchKey, [Op.iLike]: `${searchKey}%` },
+                },
+                city: {
+                  [Op.or]: { [Op.startsWith]: searchKey, [Op.iLike]: `${searchKey}%` },
+                },
+                firstName: {
+                  [Op.or]: { [Op.startsWith]: searchKey, [Op.iLike]: `${searchKey}%` },
+                },
+                lastName: {
+                  [Op.or]: { [Op.startsWith]: searchKey, [Op.iLike]: `${searchKey}%` },
+                }
+              }
+            },
+          });
+          const filteredSearchResponse: ISearchUsersResponse = {
+            count: foundUsers.count,
+            rows: foundUsers.rows.map((user) => {
+              return {
+                id: user.dataValues.id,
+                nickname: user.dataValues.nickname,
+                firstName: user.dataValues.firstName,
+                lastName: user.dataValues.lastName,
+                city: user.dataValues.city,
+                country: user.dataValues.country,
+                avatarSrc: user.dataValues.avatar,
+                role: user.dataValues.role,
+              }
+            }),
+            message: lang === "ru" ?
+              "Поиск пользователей успешно выполнен" :
+              "User search completed successfully"
+          }
+          return response.json(filteredSearchResponse);
+        } else {
+          return next(
+            ApiError.badRequest(
+              lang === "ru" ?
+                "Недостаточно данных для выполнения операции" :
+                "Not enough data to perform the operation"
+            )
+          );
+        }
       }
     } catch (exception: unknown) {
       if (exception instanceof Error) {
