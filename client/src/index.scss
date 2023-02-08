@@ -12,9 +12,8 @@ a {
 }
 
 main {
-  position: fixed; 
   width: 100%;
-  height: calc(100% - var(--header-height) - var(--footer-height));
+  height: calc(100vh - var(--header-height) - var(--footer-height));
   margin-top: var(--header-height);
   padding: 2rem 1rem 0 1rem;
   display: grid;
@@ -34,10 +33,5 @@ main {
 
   @media screen and (min-width: 600px) {
     padding: 3rem 2rem 0 2rem;
-  }
-
-  & + footer {
-    position: absolute;
-    bottom: 0;
   }
 }

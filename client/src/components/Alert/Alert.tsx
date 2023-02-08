@@ -25,7 +25,17 @@ export const Alert = () => {
   }, [alert]);
 
   return (
-    <Snackbar open={open} autoHideDuration={ALERT_AUTO_HIDE_DURATION} onClose={handleClose}>
+    <Snackbar
+      open={open}
+      autoHideDuration={ALERT_AUTO_HIDE_DURATION}
+      onClose={handleClose}
+      sx={{
+        bottom: {
+          xs: 'calc(var(--footer-height) + 0.5rem)',
+          sm: 'calc(var(--footer-height) + 1rem)',
+        },
+      }}
+    >
       <MUIAlert
         variant="filled"
         severity={alert?.severity || 'info'}
