@@ -2,12 +2,11 @@
 
 .wrapper {
   display: grid;
-  gap: 0rem 3rem;
+  gap: 0rem 4rem;
   min-width: 100%;
 
   grid-template-areas: 
   "settings-avatar"
-  "settings-nickname"
   "settings-danger"  
   "settings-inputs";  
 
@@ -16,17 +15,14 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-  }
-
-  .nickname {
-    grid-area: settings-nickname;
-    line-height: 1;
-    margin-bottom: 3rem;
-    text-align: center;
-    font-size: clamp(2rem, 12vw, 4rem);
-    font-weight: 600;
-    opacity: 0.6;
-    text-transform: uppercase;
+    .nickname {
+      line-height: 1;
+      margin-bottom: 3rem;
+      font-size: clamp(2rem, 12vw, 4rem);
+      font-weight: 600;
+      opacity: 0.6;
+      text-transform: uppercase;
+    }    
   }
 
   .danger {
@@ -37,6 +33,10 @@
     justify-self: center;
     gap: 1rem;
     margin-bottom: 4rem;
+
+    .dangerTitle {
+      text-align: center;
+    }    
   }  
 
   .inputs {
@@ -52,16 +52,9 @@
     @media screen and (min-width: $mobile-breakpoint) {
       grid-template-areas: 
         "settings-avatar settings-inputs"
-        "settings-nickname settings-inputs"
         "settings-danger settings-inputs";
 
       grid-template-columns: auto 1fr;
-      // grid-template-rows: auto 1fr;
-  
       min-width: calc(min(100%, 900px));
-  
-      .nickname {
-        align-self: flex-start;
-      }
   }
 }

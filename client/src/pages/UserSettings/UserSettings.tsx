@@ -264,9 +264,8 @@ export const UserSettings: FC<Props> = ({ socket }) => {
             </span>
           </Tooltip>
         </div>
+        <div className={styles.nickname}>{nickname}</div>
       </div>
-
-      <div className={styles.nickname}>{nickname}</div>
 
       <div className={styles.danger}>
         <h3 className={styles.dangerTitle}>{language(lng.dangerZone)}</h3>
