@@ -61,6 +61,7 @@ export interface IServerToClientEvents {
 export interface IClientToServerEvents {
   userOnline: (onlineUserNickname: string) => void;
   userOffline: (onlineUserNickname: string) => void;
+  nicknameUpdated: (userNickname: string) => void;
 }
 
 export interface IInterServerEvents {

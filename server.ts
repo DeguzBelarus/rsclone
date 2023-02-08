@@ -73,6 +73,22 @@ io.on("connection", (socket) => {
     socket.broadcast.emit("onlineUsersUpdate", userNicknamesOnline);
     console.log(`users online: ${userNicknamesOnline}`);
   })
+
+  socket.on("nicknameUpdated", (userNickname) => {
+    const updatingNicknameUser = usersOnline.find((user: UserOnlineData) => user.socketId === socket.id);
+    if (updatingNicknameUser) {
+      const userNicknamesOnline = usersOnline.map((user: UserOnlineData) => {
+        if (user.socketId === socket.id) {
+          return userNickname
+        } else {
+          return user.nickname;
+        }
+      })
+      console.log(`user ${userNickname}: updating nickname...`);
+      io.emit("onlineUsersUpdate", userNicknamesOnline);
+      console.log(`users online: ${userNicknamesOnline}`);
+    }
+  })
 });
 
 (async function () {

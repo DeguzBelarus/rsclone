@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FormEvent, useState, FC } from 'react';
+import React, { ChangeEvent, FormEvent, useState, FC, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import {
   getCurrentLanguage,
@@ -238,6 +238,12 @@ export const UserSettings: FC<Props> = ({ socket }) => {
     dispatch(deleteUserAsync(deleteUserRequestData));
     socket.emit('userOffline', nickname);
   };
+
+  useEffect(() => {
+    if (nickname) {
+      socket.emit('nicknameUpdated', nickname);
+    }
+  }, [nickname]);
 
   return isAuthorized ? (
     <div className={styles.wrapper}>
