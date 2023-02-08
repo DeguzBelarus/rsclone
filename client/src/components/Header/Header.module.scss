@@ -34,4 +34,13 @@
       }
     }
   }
+
+  &.focused {
+    .logo {
+      @media screen and (max-width: 900px) {
+        visibility: hidden;
+        width: 0;  
+      }
+    }
+  }
 }

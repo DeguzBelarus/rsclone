@@ -1,18 +1,26 @@
-import React, { useRef, useState } from 'react';
-import { Autocomplete, InputBase, TextField, useTheme } from '@mui/material';
+import React, { useState } from 'react';
+import { Autocomplete, InputBase, useTheme } from '@mui/material';
 import styles from './HeaderSearch.module.scss';
 import { Search as SearchIcon } from '@mui/icons-material';
 import { alpha, Box } from '@mui/system';
 
-export default function HeaderSearch() {
-  const [inputFocus, setInputFocus] = useState(false);
+interface HeaderSearchProps {
+  onFocusChange?: (focused: boolean) => void;
+}
 
+export const HeaderSearch = ({ onFocusChange }: HeaderSearchProps) => {
+  const [inputFocus, setInputFocus] = useState(false);
   const theme = useTheme();
+
+  const inputFocusHandle = (focused: boolean) => {
+    if (onFocusChange) onFocusChange(focused);
+    setInputFocus(focused);
+  };
 
   return (
     <div className={styles.wrapper}>
       <Box
-        className={styles.content}
+        className={styles.content + ' ' + (inputFocus ? styles.focus : '')}
         component="label"
         htmlFor="header-search"
         sx={{
@@ -30,9 +38,9 @@ export default function HeaderSearch() {
           renderInput={(params) => (
             <InputBase
               inputProps={params.inputProps}
-              onFocus={() => setInputFocus(true)}
-              onBlur={() => setInputFocus(false)}
-              className={styles.input + ' ' + inputFocus ? styles.focus : ''}
+              onFocus={() => inputFocusHandle(true)}
+              onBlur={() => inputFocusHandle(false)}
+              className={styles.input}
               sx={{ color: theme.palette.common.white }}
             />
           )}
@@ -40,4 +48,4 @@ export default function HeaderSearch() {
       </Box>
     </div>
   );
-}
+};

@@ -11,11 +11,12 @@
     padding: 0.2em 0.8em;
     border-radius: 0.2em;
     width: calc(min(180px, 100%));
+    transition: width 0.3s cubic-bezier(0.47, 1.64, 0.41, 0.9);
     .input {
       width: 100%
     }
     &.focus {
-      width: 100%;
+      width: calc(min(100%, 480px));
     }
   }
 }
