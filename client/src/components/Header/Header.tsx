@@ -45,7 +45,7 @@ interface Props {
   socket: Socket<DefaultEventsMap, DefaultEventsMap>;
 }
 
-export const Header: FC<Props> = (socket) => {
+export const Header: FC<Props> = ({ socket }) => {
   const [userMenuAnchor, setUserMenuAnchor] = useState<HTMLElement>();
   const isAuthorized = useAppSelector(getIsAuthorized);
   const userName = useAppSelector(getUserNickname);
@@ -75,7 +75,7 @@ export const Header: FC<Props> = (socket) => {
   function handleUserLogout() {
     dispatch(setIsAuthorized(false));
     dispatch(setToken(null));
-    socket.socket.emit('userOffline', userName);
+    socket.emit('userOffline', userName);
   }
   function handleMessages() {
     navigate('/messages');

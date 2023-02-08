@@ -473,34 +473,31 @@ export const mainSlice = createSlice({
           const failUpdatePayload: IUpdateUserResponse = payload;
           if (payload.statusCode === 200) {
             if (successUpdatePayload.userData) {
-              if (state.userId !== successUpdatePayload.ownId) {
+              if (state.userId !== successUpdatePayload.ownId && successUpdatePayload.userData) {
                 state.guestUserData = successUpdatePayload.userData;
               } else {
-                if (state.userId !== successUpdatePayload.userData.id) {
-                  state.userId = successUpdatePayload.userData.id;
-                }
-                if (state.userEmail !== successUpdatePayload.userData.email) {
+                if (successUpdatePayload.userData.email !== undefined) {
                   state.userEmail = successUpdatePayload.userData.email;
                 }
-                if (state.userNickname !== successUpdatePayload.userData.nickname) {
+                if (successUpdatePayload.userData.nickname !== undefined) {
                   state.userNickname = successUpdatePayload.userData.nickname;
                 }
-                if (state.userRole !== successUpdatePayload.userData.role) {
+                if (successUpdatePayload.userData.role !== undefined) {
                   state.userRole = successUpdatePayload.userData.role;
                 }
-                if (successUpdatePayload.userData.age) {
+                if (successUpdatePayload.userData.age !== undefined) {
                   state.userAge = successUpdatePayload.userData.age;
                 }
-                if (successUpdatePayload.userData.country) {
+                if (successUpdatePayload.userData.country !== undefined) {
                   state.userCountry = successUpdatePayload.userData.country;
                 }
-                if (successUpdatePayload.userData.city) {
+                if (successUpdatePayload.userData.city !== undefined) {
                   state.userCity = successUpdatePayload.userData.city;
                 }
-                if (successUpdatePayload.userData.firstName) {
+                if (successUpdatePayload.userData.firstName !== undefined) {
                   state.userFirstName = successUpdatePayload.userData.firstName;
                 }
-                if (successUpdatePayload.userData.lastName) {
+                if (successUpdatePayload.userData.lastName !== undefined) {
                   state.userLastName = successUpdatePayload.userData.lastName;
                 }
                 if (successUpdatePayload.userData.avatar !== undefined) {
