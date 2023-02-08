@@ -21,6 +21,8 @@ import {
   IUpdateUserResponse,
   RoleType,
   IUpdateUserRequestData,
+  IGetUsersRequestData,
+  ISearchUsersResponse,
 } from 'types/types';
 import { requestData, requestMethods } from './dataAPI';
 import { setLocalStorageData } from './storage';
@@ -38,7 +40,7 @@ interface MainState {
   userFirstName: Nullable<string>;
   userLastName: Nullable<string>;
   avatarSrc: Nullable<string>;
-  foundUsers: Array<ITokenDecodeData>;
+  foundUsers: Nullable<ISearchUsersResponse>;
   guestUserData: Nullable<ITokenDecodeData>;
   currentLanguage: CurrentLanguageType;
   currentColorTheme: CurrentColorTheme;
@@ -61,7 +63,7 @@ const initialState: MainState = {
   userFirstName: null,
   userLastName: null,
   avatarSrc: null,
-  foundUsers: [],
+  foundUsers: null,
   guestUserData: null,
   currentLanguage: 'en',
   currentColorTheme: 'white',
@@ -84,7 +86,7 @@ const userReset = (state: WritableDraft<MainState>) => {
   state.userFirstName = null;
   state.userLastName = null;
   state.avatarSrc = null;
-  state.foundUsers = [];
+  state.foundUsers = null;
   state.guestUserData = null;
   state.isLoginNotificationSent = false;
   setLocalStorageData({ token: undefined });
@@ -148,6 +150,29 @@ export const authCheckUserAsync = createAsyncThunk(
 );
 
 // get user information thunks
+// get users by search key info
+export const getUsersAsync = createAsyncThunk(
+  'user/get-all',
+  async (data: IGetUsersRequestData): Promise<Nullable<ISearchUsersResponse>> => {
+    const params = new URLSearchParams();
+    params.set('lang', data.lang);
+    params.set('searchKey', data.searchKey);
+
+    const getUsersURL = `/api/user/?${params}`;
+    const getUsersResponse: Undefinable<Response> = await requestData(
+      getUsersURL,
+      requestMethods.get,
+      undefined,
+      undefined
+    );
+    if (getUsersResponse) {
+      const getUsersResponseData: ISearchUsersResponse = await getUsersResponse.json();
+      return getUsersResponseData;
+    }
+    return null;
+  }
+);
+
 // get specified user info
 export const getOneUserInfoAsync = createAsyncThunk(
   'user/get-one',
@@ -299,7 +324,7 @@ export const mainSlice = createSlice({
     },
     setFoundUsers(
       state: WritableDraft<MainState>,
-      { payload }: PayloadAction<Array<ITokenDecodeData>>
+      { payload }: PayloadAction<Nullable<ISearchUsersResponse>>
     ) {
       state.foundUsers = payload;
     },
@@ -411,7 +436,23 @@ export const mainSlice = createSlice({
         console.error('\x1b[40m\x1b[31m\x1b[1m', error.message);
       })
 
-      // get specified user authorization
+      // get users by search key info
+      .addCase(getUsersAsync.pending, (state) => {
+        state.userRequestStatus = 'loading';
+      })
+      .addCase(getUsersAsync.fulfilled, (state, { payload }) => {
+        state.userRequestStatus = 'idle';
+
+        if (payload) {
+          state.foundUsers = payload;
+        }
+      })
+      .addCase(getUsersAsync.rejected, (state, { error }) => {
+        state.userRequestStatus = 'failed';
+        console.error('\x1b[40m\x1b[31m\x1b[1m', error.message);
+      })
+
+      // get specified user data
       .addCase(getOneUserInfoAsync.pending, (state) => {
         state.userRequestStatus = 'loading';
       })

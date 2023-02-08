@@ -34,6 +34,11 @@ export interface IGetOneUserRequestData {
   token: string;
 }
 
+export interface IGetUsersRequestData {
+  lang: string;
+  searchKey: string;
+}
+
 export interface IDeleteUserRequestData {
   requestData: {
     lang: string;
@@ -49,49 +54,6 @@ export interface IUpdateUserRequestData {
   type: UpdateUserType;
   ownId: number;
 }
-
-// export interface IUpdateUserInfoRequestData {
-//   requestData: FormData;
-//   token: string;
-//   type: UpdateUserType;
-//   ownId: number;
-// }
-// requestData: {
-//   lang: CurrentLanguageType;
-//   id: number;
-//   nickname: string;
-//   email: string;
-//   password ?: string;
-//   age: number;
-//   country: string;
-//   city: string;
-//   firstName: string;
-//   lastName: string;
-// };
-
-// export interface IAvatarRequestData {
-//   requestData: FormData;
-//   token: string;
-//   type: UpdateUserType;
-//   ownId: number;
-// }
-// requestData: {
-//   lang: CurrentLanguageType;
-//   id: number;
-//   avatar: string | File;
-// };
-
-// export interface IRoleUpdateRequestData {
-//   requestData: FormData;
-//   token: string;
-//   type: UpdateUserType;
-//   ownId: number;
-// }
-// requestData: {
-//   lang: CurrentLanguageType;
-//   id: number;
-//   role: RoleType;
-// };
 
 export interface IRegistrationRequestData extends ILoginRequestData {
   nickname: string;
@@ -134,6 +96,22 @@ export interface IUpdateUserResponse {
   ownId: number;
 }
 
+export interface IFoundUserData {
+  id: number;
+  nickname: string;
+  firstName: Nullable<string>;
+  lastName: Nullable<string>;
+  city: Nullable<string>;
+  country: Nullable<string>;
+  avatarSrc: Nullable<string>;
+  role: string;
+}
+
+export interface ISearchUsersResponse {
+  count: number;
+  searchResult: Array<IFoundUserData>;
+  message: string;
+}
 export interface ILocalStorageSaveData {
   token?: string;
   currentLanguage?: CurrentLanguageType;

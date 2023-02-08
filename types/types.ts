@@ -61,6 +61,7 @@ export interface IServerToClientEvents {
 export interface IClientToServerEvents {
   userOnline: (onlineUserNickname: string) => void;
   userOffline: (onlineUserNickname: string) => void;
+  nicknameUpdated: (userNickname: string) => void;
 }
 
 export interface IInterServerEvents {
@@ -70,4 +71,21 @@ export interface IInterServerEvents {
 export interface ISocketData {
   name: string;
   age: number;
+}
+
+export interface IFoundUserData {
+  id?: number;
+  nickname: string;
+  firstName: Nullable<string>;
+  lastName: Nullable<string>;
+  city: Nullable<string>;
+  country: Nullable<string>;
+  avatarSrc?: string | FormidableFile;
+  role: string;
+}
+
+export interface ISearchUsersResponse {
+  count: number;
+  searchResult: Array<IFoundUserData>;
+  message: string;
 }
