@@ -19,4 +19,21 @@
       width: calc(min(100%, 480px));
     }
   }
+
+}
+
+.option {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  .nick {
+    font-size: 1.3rem;
+    text-transform: uppercase;
+  }
+  .info {
+    padding-left: 1em;
+    display: flex;
+    flex-direction: column;
+    opacity: 0.7;
+  }
 }
