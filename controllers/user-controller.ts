@@ -1,4 +1,4 @@
-import { Model, Op } from "sequelize";
+import { Op } from "sequelize";
 import { Response, NextFunction } from 'express';
 import fs from 'fs';
 import path from 'path';
@@ -439,7 +439,7 @@ class UserController {
   async update(request: IRequestModified, response: Response, next: NextFunction): Promise<void | Response> {
     try {
       const { id } = request.params;
-      const { requesterId, role } = request;
+      const { requesterId } = request;
       if (!fs.existsSync(path.join(__dirname, "..", "temp"))) {
         fs.mkdirSync(path.join(__dirname, "..", "temp"),
           { recursive: true }

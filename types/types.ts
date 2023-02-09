@@ -40,6 +40,30 @@ export interface IUserModel {
   lastName: Nullable<string>;
 }
 
+export interface IPostModel {
+  id?: number;
+  date: string;
+  postText: string;
+  media: string | FormidableFile;
+}
+
+export interface ICommentModel {
+  id?: number;
+  date: string;
+  commentText: string;
+  authorNickname: string;
+}
+
+export interface IMessageModel {
+  id?: number;
+  date: string;
+  messageText: string;
+  authorNickname: string;
+  recipientId: number;
+  recipientNickname: string;
+  isRead: boolean;
+}
+
 export interface IRequestModified extends Request {
   user?: IUserModel;
   role?: RoleType;

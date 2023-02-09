@@ -3,7 +3,7 @@ import express from "express";
 import { userController } from '../controllers/user-controller'
 import { checkAuthMiddleware } from '../middleware/check-auth';
 import { checkRoleMiddleware } from '../middleware/check-role';
-import { roleAndIdAccessMiddleware } from '../middleware/role-id-acsess';
+import { roleAndIdAccessMiddleware } from '../middleware/role-id-access';
 
 export const userRouter = express.Router();
 userRouter.get("/authcheck", checkAuthMiddleware, userController.authCheck);
