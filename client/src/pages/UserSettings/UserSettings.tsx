@@ -16,7 +16,6 @@ import {
   updateUserAsync,
   deleteUserAsync,
   getAvatarSrc,
-  getOneUserInfoAsync,
 } from 'app/mainSlice';
 import Avatar from 'components/Avatar';
 import styles from './UserSettings.module.scss';
@@ -35,11 +34,7 @@ import {
   NICKNAME_PATTERN,
   PASSWORD_OR_EMPTY_PATTERN,
 } from 'consts';
-import {
-  IDeleteUserRequestData,
-  IGetOneUserRequestData,
-  IUpdateUserRequestData,
-} from 'types/types';
+import { IDeleteUserRequestData, IUpdateUserRequestData } from 'types/types';
 import { Socket } from 'socket.io-client';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import { Modal } from 'components/Modal/Modal';
@@ -249,16 +244,6 @@ export const UserSettings: FC<Props> = ({ socket }) => {
       socket.emit('nicknameUpdated', nickname);
     }
   }, [nickname]);
-
-  useEffect(() => {
-    if (token && ownId) {
-      const getOneUserRequestData: IGetOneUserRequestData = {
-        token,
-        requestData: { id: ownId, lang: currentLanguage },
-      };
-      dispatch(getOneUserInfoAsync(getOneUserRequestData));
-    }
-  }, []);
 
   return isAuthorized ? (
     <div className={styles.wrapper}>

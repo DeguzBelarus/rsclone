@@ -26,6 +26,11 @@ export interface ILoginRequestData {
   lang: string;
 }
 
+export interface IAuthCheckRequestData {
+  lang: string;
+  token: string;
+}
+
 export interface IGetOneUserRequestData {
   requestData: {
     lang: string;
@@ -69,6 +74,10 @@ export interface ITokenDecodeData {
   email: string;
   nickname: string;
   role: RoleType;
+  token?: string;
+}
+
+export interface IFullUserData extends ITokenDecodeData {
   age?: Nullable<number>;
   country?: Nullable<string>;
   city?: Nullable<string>;
@@ -78,10 +87,11 @@ export interface ITokenDecodeData {
 }
 
 export interface IGetOneUserResponse {
-  userData?: ITokenDecodeData;
+  userData?: IFullUserData;
   message: string;
   statusCode?: number;
   ownId: number;
+  token?: string;
 }
 
 export interface IDeleteUserResponse {
