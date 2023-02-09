@@ -26,25 +26,12 @@ export interface FormidableFile {
   hash: Nullable<string | object>;
 }
 
-export interface IUserModel {
-  id?: number;
-  email: string;
-  nickname: string;
-  password: string;
-  role: RoleType;
-  age: Nullable<number>;
-  country: Nullable<string>;
-  city: Nullable<string>;
-  avatar?: string | FormidableFile;
-  firstName: Nullable<string>;
-  lastName: Nullable<string>;
-}
-
 export interface IPostModel {
   id?: number;
   date: string;
   postText: string;
   media: string | FormidableFile;
+  userId: number;
 }
 
 export interface ICommentModel {
@@ -112,4 +99,19 @@ export interface ISearchUsersResponse {
   count: number;
   searchResult: Array<IFoundUserData>;
   message: string;
+}
+
+export interface IUserModel {
+  id?: number;
+  email: string;
+  nickname: string;
+  password: string;
+  role: RoleType;
+  age: Nullable<number>;
+  country: Nullable<string>;
+  city: Nullable<string>;
+  avatar?: string | FormidableFile;
+  firstName: Nullable<string>;
+  lastName: Nullable<string>;
+  posts?: Array<IPostModel>;
 }

@@ -23,17 +23,17 @@ export interface IRequestMethods {
 export interface ILoginRequestData {
   email: string;
   password: string;
-  lang: string;
+  lang: CurrentLanguageType;
 }
 
 export interface IAuthCheckRequestData {
-  lang: string;
+  lang: CurrentLanguageType;
   token: string;
 }
 
 export interface IGetOneUserRequestData {
   requestData: {
-    lang: string;
+    lang: CurrentLanguageType;
     id: number;
   };
   token: string;
@@ -46,7 +46,7 @@ export interface IGetUsersRequestData {
 
 export interface IDeleteUserRequestData {
   requestData: {
-    lang: string;
+    lang: CurrentLanguageType;
     id: number;
     ownId: number;
   };
@@ -60,6 +60,12 @@ export interface IUpdateUserRequestData {
   ownId: number;
 }
 
+export interface ICreatePostRequestData {
+  requestData: FormData;
+  token: string;
+  ownId: number;
+}
+
 export interface IRegistrationRequestData extends ILoginRequestData {
   nickname: string;
 }
@@ -69,21 +75,18 @@ export interface IAuthResponse {
   message: string;
 }
 
+export interface ICreatePostResponse {
+  message: string;
+  statusCode?: number;
+  ownId: number;
+}
+
 export interface ITokenDecodeData {
   id: number;
   email: string;
   nickname: string;
   role: RoleType;
   token?: string;
-}
-
-export interface IFullUserData extends ITokenDecodeData {
-  age?: Nullable<number>;
-  country?: Nullable<string>;
-  city?: Nullable<string>;
-  avatar?: Nullable<string>;
-  firstName?: Nullable<string>;
-  lastName?: Nullable<string>;
 }
 
 export interface IGetOneUserResponse {
@@ -155,4 +158,14 @@ export interface IMessageModel {
   recipientId: number;
   recipientNickname: string;
   isRead: boolean;
+}
+
+export interface IFullUserData extends ITokenDecodeData {
+  age?: Nullable<number>;
+  country?: Nullable<string>;
+  city?: Nullable<string>;
+  avatar?: Nullable<string>;
+  firstName?: Nullable<string>;
+  lastName?: Nullable<string>;
+  posts?: Array<IPostModel>;
 }

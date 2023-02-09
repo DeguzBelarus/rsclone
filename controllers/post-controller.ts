@@ -67,7 +67,8 @@ class PostController {
               const newPost = await Post.create({
                 date,
                 postText,
-                media: mediaNewFullName
+                media: mediaNewFullName,
+                userId: Number(id),
               });
 
               if (!fs.existsSync(path.join(__dirname, "..", "static", `${id}`, "posts"))) {
@@ -100,6 +101,7 @@ class PostController {
             date,
             postText,
             media: '',
+            userId: Number(id),
           });
 
           return response.status(201).json({

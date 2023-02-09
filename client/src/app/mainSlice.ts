@@ -25,11 +25,17 @@ import {
   ISearchUsersResponse,
   ITokenDecodeData,
   IAuthCheckRequestData,
+  IPostModel,
+  IMessageModel,
+  ICreatePostRequestData,
+  ICreatePostResponse,
 } from 'types/types';
 import { requestData, requestMethods } from './dataAPI';
 import { setLocalStorageData } from './storage';
 
 interface MainState {
+  posts: Array<IPostModel>;
+  messages: Array<IMessageModel>;
   token: Nullable<string>;
   isAuthorized: boolean;
   userId: Nullable<number>;
@@ -53,6 +59,8 @@ interface MainState {
 }
 
 const initialState: MainState = {
+  posts: [],
+  messages: [],
   token: null,
   isAuthorized: false,
   userId: null,
@@ -342,6 +350,48 @@ export const deleteUserAsync = createAsyncThunk(
   }
 );
 
+// posts thunks
+// create a new post
+export const createPostAsync = createAsyncThunk(
+  'post/create',
+  async (
+    data: ICreatePostRequestData
+  ): Promise<Nullable<ICreatePostResponse | IGetOneUserResponse>> => {
+    const createPostURL = `/api/post/${data.ownId}/creation`;
+    const createPostResponse: Undefinable<Response> = await requestData(
+      createPostURL,
+      requestMethods.post,
+      data.requestData,
+      data.token
+    );
+    if (createPostResponse) {
+      if (!createPostResponse.ok) {
+        const createPostResponseData: ICreatePostResponse = await createPostResponse.json();
+        createPostResponseData.statusCode = createPostResponse.status;
+        return createPostResponseData;
+      } else {
+        const params = new URLSearchParams();
+        params.set('lang', String(data.requestData.get('lang')));
+
+        const getOneUserURL = `/api/user/${data.ownId}?${params}`;
+        const getOneUserResponse: Undefinable<Response> = await requestData(
+          getOneUserURL,
+          requestMethods.get,
+          undefined,
+          data.token
+        );
+        if (getOneUserResponse) {
+          const createPostResponseData: ICreatePostResponse = await createPostResponse.json();
+          const getOneUserResponseData: IGetOneUserResponse = await getOneUserResponse.json();
+          getOneUserResponseData.message = createPostResponseData.message;
+          return getOneUserResponseData;
+        }
+      }
+    }
+    return null;
+  }
+);
+
 export const mainSlice = createSlice({
   name: 'main',
   initialState,
@@ -429,6 +479,12 @@ export const mainSlice = createSlice({
     ) {
       state.userRequestStatus = payload;
     },
+    setPosts(state: WritableDraft<MainState>, { payload }: PayloadAction<Array<IPostModel>>) {
+      state.posts = payload;
+    },
+    setMessages(state: WritableDraft<MainState>, { payload }: PayloadAction<Array<IMessageModel>>) {
+      state.messages = payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -495,6 +551,9 @@ export const mainSlice = createSlice({
             if (fullUserData.userData?.lastName !== undefined) {
               state.userLastName = fullUserData.userData.lastName;
             }
+            if (fullUserData.userData?.posts !== undefined) {
+              state.posts = fullUserData.userData.posts;
+            }
           }
           state.alert = { message: payload.message, severity: payload.token ? 'success' : 'error' };
         }
@@ -546,6 +605,9 @@ export const mainSlice = createSlice({
             }
             if (fullUserData.userData?.lastName !== undefined) {
               state.userLastName = fullUserData.userData.lastName;
+            }
+            if (fullUserData.userData?.posts !== undefined) {
+              state.posts = fullUserData.userData.posts;
             }
           }
         }
@@ -613,6 +675,9 @@ export const mainSlice = createSlice({
               if (payload.userData.avatar) {
                 state.avatarSrc = payload.userData.avatar;
               }
+              if (payload.userData?.posts !== undefined) {
+                state.posts = payload.userData.posts;
+              }
             }
           }
         }
@@ -664,6 +729,9 @@ export const mainSlice = createSlice({
                 if (successUpdatePayload.userData.avatar !== undefined) {
                   state.avatarSrc = successUpdatePayload.userData.avatar;
                 }
+                if (successUpdatePayload.userData.posts !== undefined) {
+                  state.posts = successUpdatePayload.userData.posts;
+                }
               }
 
               state.alert = {
@@ -707,6 +775,33 @@ export const mainSlice = createSlice({
       .addCase(deleteUserAsync.rejected, (state, { error }) => {
         state.userRequestStatus = 'failed';
         console.error('\x1b[40m\x1b[31m\x1b[1m', error.message);
+      })
+
+      // create a new post
+      .addCase(createPostAsync.pending, (state) => {
+        state.userRequestStatus = 'loading';
+      })
+      .addCase(createPostAsync.fulfilled, (state, { payload }) => {
+        state.userRequestStatus = 'idle';
+
+        if (payload) {
+          const successCreationPostData = payload as IGetOneUserResponse;
+          if (
+            (payload.statusCode === 201 || payload.statusCode === 200) &&
+            successCreationPostData.userData?.posts
+          ) {
+            state.posts = successCreationPostData.userData.posts;
+          }
+          state.alert = {
+            message: payload.message,
+            severity:
+              payload.statusCode === 201 || payload.statusCode === 200 ? 'success' : 'error',
+          };
+        }
+      })
+      .addCase(createPostAsync.rejected, (state, { error }) => {
+        state.userRequestStatus = 'failed';
+        console.error('\x1b[40m\x1b[31m\x1b[1m', error.message);
       });
   },
 });
@@ -732,6 +827,9 @@ export const {
     setGuestUserData,
     setUsersOnline,
     setIsLoginNotificationSent,
+    setUserRequestStatus,
+    setMessages,
+    setPosts,
   },
 } = mainSlice;
 
@@ -758,5 +856,7 @@ export const getCurrentColorTheme = ({ main: { currentColorTheme } }: RootState)
 export const getAlert = ({ main: { alert } }: RootState) => alert;
 export const getUserRequestStatus = ({ main: { userRequestStatus } }: RootState) =>
   userRequestStatus;
+export const getPosts = ({ main: { posts } }: RootState) => posts;
+export const geMessages = ({ main: { messages } }: RootState) => messages;
 
 export const { reducer } = mainSlice;
