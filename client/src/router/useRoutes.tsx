@@ -11,6 +11,7 @@ import { Socket } from 'socket.io-client';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import { useAppSelector } from 'app/hooks';
 import { getIsAuthorized, getUserId, getUserRequestStatus } from 'app/mainSlice';
+import { AllPostsPage } from 'pages/AllPostsPage/AllPostsPage';
 
 export const useRoutes = (socket: Socket<DefaultEventsMap, DefaultEventsMap>) => {
   const isAuthorized = useAppSelector(getIsAuthorized);
@@ -28,8 +29,8 @@ export const useRoutes = (socket: Socket<DefaultEventsMap, DefaultEventsMap>) =>
           <Route path="user/:id" element={<UserRoom socket={socket} />} />
           <Route path="user/*" element={<UserRoom socket={socket} />} />
           <Route path="settings" element={<UserSettings socket={socket} />} />
-          <Route path="post/:id" element={<PostPage />} />
-          <Route path="post/*" element={<PostPage />} />
+          <Route path="/posts/" element={<AllPostsPage />} />
+          <Route path="/posts/:id" element={<PostPage />} />
           <Route
             path="*"
             element={userRequestStatus === 'loading' ? <ProcessingPage /> : <Page404 />}
