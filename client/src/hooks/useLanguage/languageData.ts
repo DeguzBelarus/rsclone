@@ -23,6 +23,7 @@ const LANGUAGE_DATA: LangaugeData = {
 
     [lng.languageSelect]: 'App language',
     [lng.userMessages]: 'Messages',
+    [lng.userPosts]: 'Posts',
     [lng.userAddPost]: 'Create new post',
 
     [lng.settings]: 'Settings',
@@ -84,6 +85,7 @@ const LANGUAGE_DATA: LangaugeData = {
 
     [lng.languageSelect]: 'Язык приложения',
     [lng.userMessages]: 'Сообщения',
+    [lng.userPosts]: 'Посты',
     [lng.userAddPost]: 'Написать пост',
 
     [lng.settings]: 'Настройки',

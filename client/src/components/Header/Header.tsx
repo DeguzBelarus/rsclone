@@ -31,6 +31,7 @@ import {
   Login as LoginIcon,
   PersonAdd as RegisterIcon,
   Message as MessageIcon,
+  Dns as PostIcon,
   PostAdd,
 } from '@mui/icons-material';
 import { blue, amber } from '@mui/material/colors';
@@ -43,6 +44,7 @@ import Avatar from 'components/Avatar';
 import { Socket } from 'socket.io-client';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import { HeaderSearch } from 'components/HeaderSearch/HeaderSearch';
+import combineClasses from 'lib/combineClasses';
 
 interface Props {
   socket: Socket<DefaultEventsMap, DefaultEventsMap>;
@@ -71,6 +73,8 @@ export const Header: FC<Props> = ({ socket }) => {
 
   const handleMessages = () => navigate('/messages');
 
+  const handlePosts = () => navigate('/posts');
+
   const handleAddPost = () => navigate('/posts/new');
 
   const authorizedMenu = [
@@ -94,20 +98,26 @@ export const Header: FC<Props> = ({ socket }) => {
       </ListItemIcon>
       <ListItemText>{language(lng.userMessages)}</ListItemText>
     </MenuItem>,
-    <MenuItem key="4" onClick={handleAddPost} sx={{ display: { sm: 'none' } }}>
+    <MenuItem key="4" onClick={handlePosts} sx={{ display: { sm: 'none' } }}>
+      <ListItemIcon>
+        <PostIcon />
+      </ListItemIcon>
+      <ListItemText>{language(lng.userPosts)}</ListItemText>
+    </MenuItem>,
+    <MenuItem key="5" onClick={handleAddPost} sx={{ display: { sm: 'none' } }}>
       <ListItemIcon>
         <PostAdd />
       </ListItemIcon>
       <ListItemText>{language(lng.userAddPost)}</ListItemText>
     </MenuItem>,
-    <MenuItem key="5" onClick={() => navigate('/settings')}>
+    <MenuItem key="6" onClick={() => navigate('/settings')}>
       <ListItemIcon>
         <SettingsIcon />
       </ListItemIcon>
       <ListItemText>{language(lng.settings)}</ListItemText>
     </MenuItem>,
-    <Divider key="6" />,
-    <MenuItem key="7" onClick={handleUserLogout}>
+    <Divider key="7" />,
+    <MenuItem key="8" onClick={handleUserLogout}>
       <ListItemIcon>
         <LogoutIcon />
       </ListItemIcon>
@@ -132,7 +142,11 @@ export const Header: FC<Props> = ({ socket }) => {
 
   return (
     <AppBar
-      className={styles.header + ' ' + (searchFocused ? styles.focused : '')}
+      className={combineClasses(
+        styles.header,
+        [styles.focused, searchFocused],
+        [styles.authorized, isAuthorized]
+      )}
       sx={{
         backgroundColor: searchFocused ? theme.palette.primary.dark : undefined,
         transition: 'background-color 0.5s linear',
@@ -142,7 +156,7 @@ export const Header: FC<Props> = ({ socket }) => {
         <h1 className={styles.logo}>
           <Link to={userId === null ? '/' : `user/${userId}`}>RS Social</Link>
         </h1>
-        <HeaderSearch onFocusChange={(focused) => setSearchFocused(focused)} />
+        {isAuthorized && <HeaderSearch onFocusChange={(focused) => setSearchFocused(focused)} />}
         <LanguageSwitch className={styles.language} />
 
         {isAuthorized && (
@@ -150,6 +164,14 @@ export const Header: FC<Props> = ({ socket }) => {
             <Tooltip title={language(lng.userAddPost)} sx={{ display: { xs: 'none', sm: 'flex' } }}>
               <IconButton color="inherit" onClick={handleAddPost}>
                 <PostAdd />
+              </IconButton>
+            </Tooltip>
+            <Tooltip
+              title={`${language(lng.userPosts)}`}
+              sx={{ display: { xs: 'none', sm: 'flex' } }}
+            >
+              <IconButton color="inherit" onClick={handlePosts}>
+                <PostIcon />
               </IconButton>
             </Tooltip>
             <Tooltip
