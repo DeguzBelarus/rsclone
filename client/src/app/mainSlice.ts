@@ -8,7 +8,7 @@ import {
   IAuthResponse,
   ILoginRequestData,
   IRegistrationRequestData,
-  ITokenDecodeData,
+  IFullUserData,
   Nullable,
   RequestStatus,
   Undefinable,
@@ -23,6 +23,8 @@ import {
   IUpdateUserRequestData,
   IGetUsersRequestData,
   ISearchUsersResponse,
+  ITokenDecodeData,
+  IAuthCheckRequestData,
 } from 'types/types';
 import { requestData, requestMethods } from './dataAPI';
 import { setLocalStorageData } from './storage';
@@ -41,7 +43,7 @@ interface MainState {
   userLastName: Nullable<string>;
   avatarSrc: Nullable<string>;
   foundUsers: Nullable<ISearchUsersResponse>;
-  guestUserData: Nullable<ITokenDecodeData>;
+  guestUserData: Nullable<IFullUserData>;
   currentLanguage: CurrentLanguageType;
   currentColorTheme: CurrentColorTheme;
   usersOnline: Array<string>;
@@ -105,8 +107,32 @@ export const registrationUserAsync = createAsyncThunk(
       JSON.stringify(data)
     );
     if (createUserResponse) {
-      const createUserResponseData: IAuthResponse = await createUserResponse.json();
-      return createUserResponseData;
+      if (!createUserResponse.ok) {
+        const createUserResponseData: IAuthResponse = await createUserResponse.json();
+        return createUserResponseData;
+      } else {
+        const params = new URLSearchParams();
+        params.set('lang', data.lang);
+
+        const createUserResponseData: IAuthResponse = await createUserResponse.json();
+        if (createUserResponseData.token) {
+          const tokenDecodeData: ITokenDecodeData = jwtDecode(createUserResponseData.token);
+
+          const getOneUserURL = `/api/user/${tokenDecodeData.id}?${params}`;
+          const getOneUserResponse: Undefinable<Response> = await requestData(
+            getOneUserURL,
+            requestMethods.get,
+            undefined,
+            createUserResponseData.token
+          );
+          if (getOneUserResponse) {
+            const getOneUserResponseData: IGetOneUserResponse = await getOneUserResponse.json();
+            getOneUserResponseData.token = createUserResponseData.token;
+            getOneUserResponseData.message = createUserResponseData.message;
+            return getOneUserResponseData;
+          }
+        }
+      }
     }
     return null;
   }
@@ -115,7 +141,7 @@ export const registrationUserAsync = createAsyncThunk(
 // login thunk
 export const loginUserAsync = createAsyncThunk(
   'user/login',
-  async (data: ILoginRequestData): Promise<Nullable<IAuthResponse>> => {
+  async (data: ILoginRequestData): Promise<Nullable<IAuthResponse | IGetOneUserResponse>> => {
     const loginURL = '/api/user/login';
     const loginUserResponse: Undefinable<Response> = await requestData(
       loginURL,
@@ -123,8 +149,32 @@ export const loginUserAsync = createAsyncThunk(
       JSON.stringify(data)
     );
     if (loginUserResponse) {
-      const loginUserResponseData: IAuthResponse = await loginUserResponse.json();
-      return loginUserResponseData;
+      if (!loginUserResponse.ok) {
+        const loginUserResponseData: IAuthResponse = await loginUserResponse.json();
+        return loginUserResponseData;
+      } else {
+        const params = new URLSearchParams();
+        params.set('lang', data.lang);
+
+        const loginUserResponseData: IAuthResponse = await loginUserResponse.json();
+        if (loginUserResponseData.token) {
+          const tokenDecodeData: ITokenDecodeData = jwtDecode(loginUserResponseData.token);
+
+          const getOneUserURL = `/api/user/${tokenDecodeData.id}?${params}`;
+          const getOneUserResponse: Undefinable<Response> = await requestData(
+            getOneUserURL,
+            requestMethods.get,
+            undefined,
+            loginUserResponseData.token
+          );
+          if (getOneUserResponse) {
+            const getOneUserResponseData: IGetOneUserResponse = await getOneUserResponse.json();
+            getOneUserResponseData.token = loginUserResponseData.token;
+            getOneUserResponseData.message = loginUserResponseData.message;
+            return getOneUserResponseData;
+          }
+        }
+      }
     }
     return null;
   }
@@ -133,23 +183,69 @@ export const loginUserAsync = createAsyncThunk(
 // auth check thunk
 export const authCheckUserAsync = createAsyncThunk(
   'user/auth-check',
-  async (token: string): Promise<Nullable<IAuthResponse>> => {
+  async (data: IAuthCheckRequestData): Promise<Nullable<IAuthResponse | IGetOneUserResponse>> => {
     const authCheckURL = '/api/user/authcheck';
     const authCheckResponse: Undefinable<Response> = await requestData(
       authCheckURL,
       requestMethods.get,
       undefined,
-      token
+      data.token
     );
     if (authCheckResponse) {
-      const authCheckResponseData: IAuthResponse = await authCheckResponse.json();
-      return authCheckResponseData;
+      if (!authCheckResponse.ok) {
+        const authCheckResponseData: IAuthResponse = await authCheckResponse.json();
+        return authCheckResponseData;
+      } else {
+        const params = new URLSearchParams();
+        params.set('lang', data.lang);
+
+        const authCheckResponseData: IAuthResponse = await authCheckResponse.json();
+        if (authCheckResponseData.token) {
+          const tokenDecodeData: ITokenDecodeData = jwtDecode(authCheckResponseData.token);
+
+          const getOneUserURL = `/api/user/${tokenDecodeData.id}?${params}`;
+          const getOneUserResponse: Undefinable<Response> = await requestData(
+            getOneUserURL,
+            requestMethods.get,
+            undefined,
+            data.token
+          );
+          if (getOneUserResponse) {
+            const getOneUserResponseData: IGetOneUserResponse = await getOneUserResponse.json();
+            getOneUserResponseData.token = authCheckResponseData.token;
+            getOneUserResponseData.message = authCheckResponseData.message;
+            return getOneUserResponseData;
+          }
+        }
+      }
     }
     return null;
   }
 );
 
 // get user information thunks
+// get specified user info
+export const getOneUserInfoAsync = createAsyncThunk(
+  'user/get-one',
+  async (data: IGetOneUserRequestData): Promise<Nullable<IGetOneUserResponse>> => {
+    const params = new URLSearchParams();
+    params.set('lang', data.requestData.lang);
+
+    const getOneUserURL = `/api/user/${data.requestData.id}?${params}`;
+    const getOneUserResponse: Undefinable<Response> = await requestData(
+      getOneUserURL,
+      requestMethods.get,
+      undefined,
+      data.token
+    );
+    if (getOneUserResponse) {
+      const getOneUserResponseData: IGetOneUserResponse = await getOneUserResponse.json();
+      return getOneUserResponseData;
+    }
+    return null;
+  }
+);
+
 // get users by search key info
 export const getUsersAsync = createAsyncThunk(
   'user/get-all',
@@ -168,28 +264,6 @@ export const getUsersAsync = createAsyncThunk(
     if (getUsersResponse) {
       const getUsersResponseData: ISearchUsersResponse = await getUsersResponse.json();
       return getUsersResponseData;
-    }
-    return null;
-  }
-);
-
-// get specified user info
-export const getOneUserInfoAsync = createAsyncThunk(
-  'user/get-one',
-  async (data: IGetOneUserRequestData): Promise<Nullable<IGetOneUserResponse>> => {
-    const params = new URLSearchParams();
-    params.set('lang', data.requestData.lang);
-
-    const getOneUserURL = `/api/user/${data.requestData.id}?${params}`;
-    const getOneUserResponse: Undefinable<Response> = await requestData(
-      getOneUserURL,
-      requestMethods.get,
-      undefined,
-      data.token
-    );
-    if (getOneUserResponse) {
-      const getOneUserResponseData: IGetOneUserResponse = await getOneUserResponse.json();
-      return getOneUserResponseData;
     }
     return null;
   }
@@ -336,7 +410,7 @@ export const mainSlice = createSlice({
     },
     setGuestUserData(
       state: WritableDraft<MainState>,
-      { payload }: PayloadAction<Nullable<ITokenDecodeData>>
+      { payload }: PayloadAction<Nullable<IFullUserData>>
     ) {
       state.guestUserData = payload;
     },
@@ -394,6 +468,7 @@ export const mainSlice = createSlice({
 
         if (payload) {
           if (payload.token) {
+            const fullUserData = payload as IGetOneUserResponse;
             const tokenDecodeData: ITokenDecodeData = jwtDecode(payload.token);
             state.userId = tokenDecodeData.id;
             state.userEmail = tokenDecodeData.email;
@@ -402,6 +477,24 @@ export const mainSlice = createSlice({
             state.isAuthorized = true;
             state.token = payload.token;
             setLocalStorageData({ token: payload.token });
+            if (fullUserData.userData?.age !== undefined) {
+              state.userAge = fullUserData.userData.age;
+            }
+            if (fullUserData.userData?.country !== undefined) {
+              state.userCountry = fullUserData.userData.country;
+            }
+            if (fullUserData.userData?.city !== undefined) {
+              state.userCity = fullUserData.userData.city;
+            }
+            if (fullUserData.userData?.avatar !== undefined) {
+              state.avatarSrc = fullUserData.userData.avatar;
+            }
+            if (fullUserData.userData?.firstName !== undefined) {
+              state.userFirstName = fullUserData.userData.firstName;
+            }
+            if (fullUserData.userData?.lastName !== undefined) {
+              state.userLastName = fullUserData.userData.lastName;
+            }
           }
           state.alert = { message: payload.message, severity: payload.token ? 'success' : 'error' };
         }
@@ -420,14 +513,40 @@ export const mainSlice = createSlice({
 
         if (payload) {
           if (payload.token) {
-            const tokenDecodeData: ITokenDecodeData = jwtDecode(payload.token);
-            state.userId = tokenDecodeData.id;
-            state.userEmail = tokenDecodeData.email;
-            state.userNickname = tokenDecodeData.nickname;
-            state.userRole = tokenDecodeData.role;
+            const fullUserData = payload as IGetOneUserResponse;
+            if (fullUserData.userData?.id !== undefined) {
+              state.userId = fullUserData.userData.id;
+            }
+            if (fullUserData.userData?.email !== undefined) {
+              state.userEmail = fullUserData.userData.email;
+            }
+            if (fullUserData.userData?.nickname !== undefined) {
+              state.userNickname = fullUserData.userData.nickname;
+            }
+            if (fullUserData.userData?.role !== undefined) {
+              state.userRole = fullUserData.userData.role;
+            }
             state.isAuthorized = true;
             state.token = payload.token;
             setLocalStorageData({ token: payload.token });
+            if (fullUserData.userData?.age !== undefined) {
+              state.userAge = fullUserData.userData.age;
+            }
+            if (fullUserData.userData?.country !== undefined) {
+              state.userCountry = fullUserData.userData.country;
+            }
+            if (fullUserData.userData?.city !== undefined) {
+              state.userCity = fullUserData.userData.city;
+            }
+            if (fullUserData.userData?.avatar !== undefined) {
+              state.avatarSrc = fullUserData.userData.avatar;
+            }
+            if (fullUserData.userData?.firstName !== undefined) {
+              state.userFirstName = fullUserData.userData.firstName;
+            }
+            if (fullUserData.userData?.lastName !== undefined) {
+              state.userLastName = fullUserData.userData.lastName;
+            }
           }
         }
       })

@@ -50,13 +50,6 @@ export const UserRoom: FC<Props> = ({ socket }) => {
       if (!isOwnPage) {
         setIsOwnPage(true);
       }
-      if (token && userId) {
-        const getOneUserRequestData: IGetOneUserRequestData = {
-          token,
-          requestData: { id: userId, lang: currentLanguage },
-        };
-        dispatch(getOneUserInfoAsync(getOneUserRequestData));
-      }
     }
     if (id && Number(id) !== userId) {
       setIsOwnPage(false);
