@@ -21,7 +21,11 @@ export default function Avatar({ size = 32, user, avatarSrc }: AvatarProps) {
   useEffect(() => {
     if (user === undefined) {
       setSrc(
-        isAuthorized ? (ownAvatarSrc ? `/${userId}/avatar/${ownAvatarSrc}` : undefined) : undefined
+        isAuthorized
+          ? ownAvatarSrc && ownAvatarSrc !== ''
+            ? `/${userId}/avatar/${ownAvatarSrc}`
+            : undefined
+          : undefined
       );
     } else {
       setSrc(avatarSrc ? `/${user}/avatar/${avatarSrc}` : undefined);
