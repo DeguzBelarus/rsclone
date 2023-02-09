@@ -42,5 +42,10 @@
         width: 0;  
       }
     }
+    .language, .userButton {
+      @media screen and (max-width: $mobile-breakpoint) {
+        display: none;
+      }
+    }
   }
 }

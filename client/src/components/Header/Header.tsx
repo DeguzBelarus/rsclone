@@ -143,7 +143,7 @@ export const Header: FC<Props> = ({ socket }) => {
           <Link to={userId === null ? '/' : `user/${userId}`}>RS Social</Link>
         </h1>
         <HeaderSearch onFocusChange={(focused) => setSearchFocused(focused)} />
-        <LanguageSwitch />
+        <LanguageSwitch className={styles.language} />
 
         {isAuthorized && (
           <>

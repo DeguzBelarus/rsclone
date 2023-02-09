@@ -1,20 +1,36 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Avatar as MUIAvatar } from '@mui/material';
 import { Person as PersonIcon } from '@mui/icons-material';
 import { purple } from '@mui/material/colors';
 import { useAppSelector } from 'app/hooks';
 import { getAvatarSrc, getIsAuthorized, getUserId } from 'app/mainSlice';
-import { Nullable } from 'types/types';
 
 interface AvatarProps {
   size?: number | string;
+  user?: number;
+  avatarSrc?: string;
 }
 
-export default function Avatar({ size = 32 }: AvatarProps) {
+export default function Avatar({ size = 32, user, avatarSrc }: AvatarProps) {
   const isAuthorized = useAppSelector(getIsAuthorized);
-  const avatarSrc = useAppSelector(getAvatarSrc);
-  const userId = useAppSelector<Nullable<number>>(getUserId);
-  const src = isAuthorized && avatarSrc ? `/${userId}/avatar/${avatarSrc}` || undefined : undefined;
+  const ownAvatarSrc = useAppSelector(getAvatarSrc);
+  const userId = useAppSelector(getUserId);
+
+  const [src, setSrc] = useState<string>();
+
+  useEffect(() => {
+    if (user === undefined) {
+      setSrc(
+        isAuthorized
+          ? ownAvatarSrc && ownAvatarSrc !== ''
+            ? `/${userId}/avatar/${ownAvatarSrc}`
+            : undefined
+          : undefined
+      );
+    } else {
+      setSrc(avatarSrc ? `/${user}/avatar/${avatarSrc}` : undefined);
+    }
+  }, [user, avatarSrc, ownAvatarSrc, isAuthorized, userId]);
 
   return (
     <MUIAvatar

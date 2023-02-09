@@ -279,7 +279,11 @@ export const UserSettings: FC<Props> = ({ socket }) => {
           </Tooltip>
           <Tooltip title={language(lng.deletePhoto)} placement="top">
             <span>
-              <IconButton color="warning" onClick={avatarDelete} disabled={avatarSrc === null}>
+              <IconButton
+                color="warning"
+                onClick={avatarDelete}
+                disabled={avatarSrc === null || avatarSrc === undefined || avatarSrc === ''}
+              >
                 <DeleteForever />
               </IconButton>
             </span>

@@ -9,7 +9,11 @@ import useLanguage from 'hooks/useLanguage';
 import { lng } from 'hooks/useLanguage/types';
 import { CustomMenu } from './CustomMenu/CustomMenu';
 
-export const LanguageSwitch = () => {
+interface LanguageSwitchProps {
+  className?: string;
+}
+
+export const LanguageSwitch = ({ className }: LanguageSwitchProps) => {
   const currentLangauge = useAppSelector(getCurrentLanguage);
   const dispatch = useAppDispatch();
   const language = useLanguage();
@@ -32,7 +36,7 @@ export const LanguageSwitch = () => {
   return (
     <>
       <Tooltip title={language(lng.languageSelect)}>
-        <IconButton color="inherit" onClick={handleMenuOpen}>
+        <IconButton className={className} color="inherit" onClick={handleMenuOpen}>
           <Badge badgeContent={currentLangauge} color="secondary">
             <LanguageIcon />
           </Badge>
