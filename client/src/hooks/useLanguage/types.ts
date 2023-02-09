@@ -55,6 +55,10 @@ export enum lng {
 
   confirm,
   cancel,
+
+  searchPlaceholder,
+  searchWelcome,
+  searchNotFound,
 }
 
 export type LangaugeData = {

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { Autocomplete, InputBase, useTheme } from '@mui/material';
 import styles from './HeaderSearch.module.scss';
 import { Search as SearchIcon } from '@mui/icons-material';
@@ -7,49 +7,11 @@ import joinStrings from 'lib/joinStrings';
 import Avatar from 'components/Avatar';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { useNavigate } from 'react-router-dom';
-
-interface SearchOption {
-  id: number;
-  nickname: string;
-  firstName?: string;
-  lastName?: string;
-  city?: string;
-  country?: string;
-  avatarSrc?: string;
-}
-
-// type SearchOption = string;
-const defaultOptions: SearchOption[] = [
-  {
-    id: 5,
-    nickname: 'Pavel',
-    city: 'Prague',
-    country: 'Czechia',
-    avatarSrc: 'dbc9cbba796564618767bad00.jpeg',
-  },
-  { id: 13, nickname: 'Nick5', firstName: 'Nicholas' },
-  { id: 14, nickname: 'Nick6', firstName: 'Nicholas' },
-  { id: 15, nickname: 'Nick7', firstName: 'Nicholas' },
-  { id: 16, nickname: 'Nick8d', firstName: 'Nicholas' },
-  {
-    id: 6,
-    nickname: 'Tom',
-    city: 'New York',
-    country: 'USA',
-    firstName: 'Thomas',
-    lastName: 'Jefferson',
-    avatarSrc: 'dbc9cbba796564618767bad01.png',
-  },
-  {
-    id: 7,
-    nickname: 'Jane',
-    city: 'LA',
-    country: 'USA',
-    firstName: 'Jane',
-    lastName: 'Blake',
-    avatarSrc: 'dbc9cbba796564618767bad02.png',
-  },
-];
+import { useAppDispatch, useAppSelector } from 'app/hooks';
+import { getCurrentLanguage, getUsersAsync } from 'app/mainSlice';
+import { IFoundUserData } from 'types/types';
+import useLanguage from 'hooks/useLanguage';
+import { lng } from 'hooks/useLanguage/types';
 
 const SEARCH_ID = 'header-search-autocomplete';
 
@@ -59,15 +21,56 @@ interface HeaderSearchProps {
 
 export const HeaderSearch = ({ onFocusChange }: HeaderSearchProps) => {
   const [inputFocus, setInputFocus] = useState(false);
-  const [value, setValue] = React.useState<SearchOption | null>(null);
-  const [inputValue, setInputValue] = React.useState('');
-  const [options, setOptions] = useState<SearchOption[]>(defaultOptions);
+  const [value, setValue] = useState<IFoundUserData | null>(null);
+  const [inputValue, setInputValue] = useState('');
+  const [freeSolo, setFreeSolo] = useState(true);
   const theme = useTheme();
+  const language = useLanguage();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const currentLanguage = useAppSelector(getCurrentLanguage);
+  const options = useAppSelector(({ main: { foundUsers } }) => {
+    return foundUsers ? foundUsers.searchResult : [];
+  });
 
-  const inputFocusHandle = (focused: boolean) => {
+  const handleInputChange = (value: string) => {
+    setInputValue(value);
+    dispatch(getUsersAsync({ lang: currentLanguage, searchKey: value }));
+  };
+
+  const handleChange = (value: IFoundUserData | string | null) => {
+    if (typeof value === 'string') return;
+    handleInputChange('');
+    setValue(null);
+    if (value?.id) navigate(`/user/${value?.id}`);
+  };
+
+  const handleInputFocus = (focused: boolean) => {
     if (onFocusChange) onFocusChange(focused);
     setInputFocus(focused);
+    setFreeSolo(true);
+    if (focused) {
+      setTimeout(() => setFreeSolo(false), 500);
+    } else {
+      handleInputChange('');
+    }
+  };
+
+  const makeStrong = (str?: string): string | React.ReactNode | undefined => {
+    if (!str) return;
+    if (inputValue === '') return str;
+    const search = inputValue.toLocaleLowerCase();
+    const startIndex = str.toLocaleLowerCase().indexOf(search);
+    if (startIndex < 0) return str;
+    const endIndex = startIndex + search.length;
+
+    return (
+      <>
+        {str.slice(0, startIndex)}
+        <strong>{str.slice(startIndex, endIndex)}</strong>
+        {str.slice(endIndex)}
+      </>
+    );
   };
 
   return (
@@ -89,28 +92,22 @@ export const HeaderSearch = ({ onFocusChange }: HeaderSearchProps) => {
           id={SEARCH_ID}
           className={styles.input}
           disablePortal
-          options={defaultOptions}
+          freeSolo={freeSolo}
+          noOptionsText={
+            inputValue === ''
+              ? language(lng.searchWelcome)
+              : language(lng.searchNotFound).replace('%', inputValue)
+          }
+          options={options}
           getOptionLabel={(option) => (typeof option === 'string' ? option : option.nickname)}
           isOptionEqualToValue={(option, value) => option.id === value.id}
-          noOptionsText="No users were found"
           forcePopupIcon={false}
-          //Turn off auto filtering on typing
           filterOptions={(option) => option}
           value={value}
-          onChange={(_, value) => {
-            setInputValue('');
-            setValue(null);
-            if (value?.id) navigate(`/user/${value?.id}`);
-            // setOptions(value ? [value, ...options] : options);
-            // setValue(value);
-          }}
+          onChange={(_, value) => handleChange(value)}
           inputValue={inputValue}
-          onInputChange={(_, value) => setInputValue(value)}
-          ListboxProps={{
-            style: {
-              maxHeight: 'min(80vh, 50rem)',
-            },
-          }}
+          onInputChange={(_, value, reason) => reason !== 'reset' && handleInputChange(value)}
+          ListboxProps={{ style: { maxHeight: 'min(80vh, 50rem)' } }}
           renderInput={(params) => {
             const { InputLabelProps, InputProps, ...rest } = params;
             return (
@@ -118,10 +115,10 @@ export const HeaderSearch = ({ onFocusChange }: HeaderSearchProps) => {
                 {...InputProps}
                 {...rest}
                 className={styles.input}
-                placeholder="Search users..."
+                placeholder={language(lng.searchPlaceholder)}
                 sx={{ color: theme.palette.common.white }}
-                onFocus={() => inputFocusHandle(true)}
-                onBlur={() => inputFocusHandle(false)}
+                onFocus={() => handleInputFocus(true)}
+                onBlur={() => handleInputFocus(false)}
               />
             );
           }}
@@ -129,16 +126,16 @@ export const HeaderSearch = ({ onFocusChange }: HeaderSearchProps) => {
             return (
               <li {...props}>
                 <div className={styles.option}>
-                  <Avatar user={option.id} avatarSrc={option.avatarSrc} size="2em" />
+                  <Avatar user={option.id} avatarSrc={option.avatarSrc || undefined} size="2em" />
 
                   <div className={styles.text}>
-                    <div className={styles.nick}>{option.nickname}</div>
+                    <div className={styles.nick}>{makeStrong(option.nickname)}</div>
                     <div className={styles.info}>
-                      <div>{joinStrings(' ', option.firstName, option.lastName)}</div>
+                      <div>{makeStrong(joinStrings(' ', option.firstName, option.lastName))}</div>
                       {(option.city || option.country) && (
                         <div className={styles.location}>
                           <LocationOnIcon sx={{ opacity: 0.6 }} />
-                          {joinStrings(', ', option.city, option.country)}
+                          {makeStrong(joinStrings(', ', option.city, option.country))}
                         </div>
                       )}
                     </div>
