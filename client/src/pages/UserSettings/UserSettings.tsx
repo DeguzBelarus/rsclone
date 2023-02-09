@@ -282,7 +282,7 @@ export const UserSettings: FC<Props> = ({ socket }) => {
               <IconButton
                 color="warning"
                 onClick={avatarDelete}
-                disabled={avatarSrc && avatarSrc !== ''}
+                disabled={avatarSrc !== null && avatarSrc !== undefined && avatarSrc !== ''}
               >
                 <DeleteForever />
               </IconButton>
