@@ -58,7 +58,7 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.cancel]: 'Cancel',
 
     [lng.searchPlaceholder]: 'Search users...',
-    [lng.searchWelcome]: 'Start typing to look for users.',
+    [lng.searchWelcome]: 'Start typing to look for users...',
     [lng.searchNotFound]: 'Users were not found for this input (%)',
   },
 
@@ -120,7 +120,7 @@ const LANGUAGE_DATA: LangaugeData = {
 
     [lng.searchPlaceholder]: 'Поиск',
     [lng.searchWelcome]: 'Начните ввод, чтобы начать поиск пользователей',
-    [lng.searchNotFound]: 'Пользователи % по строке не найдены',
+    [lng.searchNotFound]: `Пользователи по запросу '%' не были найдены`,
   },
 };
 

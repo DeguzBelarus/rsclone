@@ -65,11 +65,11 @@ export const HeaderSearch = ({ onFocusChange }: HeaderSearchProps) => {
     const endIndex = startIndex + search.length;
 
     return (
-      <>
+      <span style={{ whiteSpace: 'pre' }}>
         {str.slice(0, startIndex)}
         <strong>{str.slice(startIndex, endIndex)}</strong>
         {str.slice(endIndex)}
-      </>
+      </span>
     );
   };
 

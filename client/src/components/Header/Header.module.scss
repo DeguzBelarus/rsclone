@@ -42,5 +42,10 @@
         width: 0;  
       }
     }
+    .language, .userButton {
+      @media screen and (max-width: 900px) {
+        display: none;
+      }
+    }
   }
 }
