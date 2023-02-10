@@ -19,6 +19,7 @@ export const FabButton = ({ className, value, icon }: FabButtonProps) => {
       variant="extended"
       color="secondary"
       aria-label="add"
+      sx={{ position: 'fixed' }}
     >
       {icon ? icon : <AddIcon />}
       <Box sx={{ ml: 1 }}>{value}</Box>

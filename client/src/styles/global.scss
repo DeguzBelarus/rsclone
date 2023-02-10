@@ -37,6 +37,7 @@ main {
 
     & > div {
       min-width: calc(min(100%, var(--max-page-width)));
+      max-width: var(--max-page-width);
     }
   }
 }
