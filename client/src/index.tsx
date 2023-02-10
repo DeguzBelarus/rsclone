@@ -6,7 +6,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { store } from './app/store';
 
 import { App } from '../src/components/App';
-import './index.scss';
+import './styles/global.scss';
 
 const socket = io();
 const container = document.getElementById('root')!;
