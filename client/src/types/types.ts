@@ -156,6 +156,17 @@ export interface IPostModel {
   postHeading: string;
   postText: string;
   media: string | File;
+  userId: number;
+}
+
+export interface IGetOnePostRequest {
+  id: number;
+  lang: CurrentLanguageType;
+}
+
+export interface IGetOnePostResponse {
+  postData: IPostModel;
+  message: string;
 }
 
 export interface ICommentModel {
