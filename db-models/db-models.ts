@@ -61,6 +61,9 @@ export const Post: Nullable<ModelDefined<IPostModel, IPostModel>> = sequelizeCon
     date: {
       type: DataTypes.STRING,
     },
+    postHeading: {
+      type: DataTypes.STRING,
+    },
     postText: {
       type: DataTypes.STRING,
     },

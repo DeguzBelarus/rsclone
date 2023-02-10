@@ -27,7 +27,7 @@ class PostController {
         if (error) {
           console.error('\x1b[40m\x1b[31m\x1b[1m', error);
         }
-        let { lang, date, postText, media,
+        let { lang, date, postText, media, postHeading,
         } = fields as formidable.Fields & IPostModel & { lang: CurrentLanguageType };
 
         if (requesterId && id) {
@@ -38,7 +38,7 @@ class PostController {
         }
 
         if (Post) {
-          if (!lang || !date || !postText) {
+          if (!lang || !date || !postText || !postHeading) {
             return next(
               ApiError.badRequest(
                 lang === "ru" ?
@@ -47,13 +47,21 @@ class PostController {
               )
             );
           }
-
-          if (postText.length > 500) {
+          if (postHeading.length > 200) {
             return next(
               ApiError.badRequest(
                 lang === "ru" ?
-                  "Максимальное количество символов в тексте поста - 500" :
-                  "The maximum number of characters in the text of the post is 500"
+                  "Максимальное количество символов в заголовке поста - 200" :
+                  "The maximum number of characters in the title of a post is 200"
+              )
+            );
+          }
+          if (postText.length > 1000) {
+            return next(
+              ApiError.badRequest(
+                lang === "ru" ?
+                  "Максимальное количество символов в тексте поста - 1000" :
+                  "The maximum number of characters in the text of the post is 1000"
               )
             );
           }
@@ -66,6 +74,7 @@ class PostController {
             if (mediaFile.newFilename) {
               const newPost = await Post.create({
                 date,
+                postHeading,
                 postText,
                 media: mediaNewFullName,
                 userId: Number(id),
@@ -99,6 +108,7 @@ class PostController {
 
           await Post.create({
             date,
+            postHeading,
             postText,
             media: '',
             userId: Number(id),

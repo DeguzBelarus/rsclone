@@ -29,6 +29,7 @@ export interface FormidableFile {
 export interface IPostModel {
   id?: number;
   date: string;
+  postHeading:string;
   postText: string;
   media: string | FormidableFile;
   userId: number;
