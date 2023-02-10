@@ -35,6 +35,7 @@ import { setLocalStorageData } from './storage';
 
 interface MainState {
   posts: Array<IPostModel>;
+  currentPost: Nullable<IPostModel>;
   messages: Array<IMessageModel>;
   token: Nullable<string>;
   isAuthorized: boolean;
@@ -60,6 +61,7 @@ interface MainState {
 
 const initialState: MainState = {
   posts: [],
+  currentPost: null,
   messages: [],
   token: null,
   isAuthorized: false,
@@ -485,6 +487,12 @@ export const mainSlice = createSlice({
     setMessages(state: WritableDraft<MainState>, { payload }: PayloadAction<Array<IMessageModel>>) {
       state.messages = payload;
     },
+    setCurrentPost(
+      state: WritableDraft<MainState>,
+      { payload }: PayloadAction<Nullable<IPostModel>>
+    ) {
+      state.currentPost = payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -830,6 +838,7 @@ export const {
     setUserRequestStatus,
     setMessages,
     setPosts,
+    setCurrentPost,
   },
 } = mainSlice;
 
@@ -857,6 +866,7 @@ export const getAlert = ({ main: { alert } }: RootState) => alert;
 export const getUserRequestStatus = ({ main: { userRequestStatus } }: RootState) =>
   userRequestStatus;
 export const getPosts = ({ main: { posts } }: RootState) => posts;
-export const geMessages = ({ main: { messages } }: RootState) => messages;
+export const getCurrentPost = ({ main: { currentPost } }: RootState) => currentPost;
+export const getMessages = ({ main: { messages } }: RootState) => messages;
 
 export const { reducer } = mainSlice;
