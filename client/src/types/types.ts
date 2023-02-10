@@ -66,6 +66,13 @@ export interface ICreatePostRequestData {
   ownId: number;
 }
 
+export interface IDeletePostRequestData {
+  lang: CurrentLanguageType;
+  id: number;
+  ownId: number;
+  token: string;
+}
+
 export interface IRegistrationRequestData extends ILoginRequestData {
   nickname: string;
 }
@@ -98,6 +105,12 @@ export interface IGetOneUserResponse {
 }
 
 export interface IDeleteUserResponse {
+  message?: string;
+  statusCode?: number;
+  ownId: number;
+}
+
+export interface IDeletePostResponse {
   message?: string;
   statusCode?: number;
   ownId: number;
