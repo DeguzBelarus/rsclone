@@ -7,3 +7,4 @@ import { roleAndIdAccessMiddleware } from '../middleware/role-id-access';
 export const postRouter = express.Router();
 postRouter.post("/:id/creation", roleAndIdAccessMiddleware, postController.create);
 postRouter.delete("/:id/delete", roleAndIdAccessMiddleware, postController.delete);
+postRouter.get("/:id", postController.getOnePost);

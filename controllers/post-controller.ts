@@ -1,4 +1,4 @@
-import { Response, NextFunction } from 'express';
+import { Response, NextFunction, Request } from 'express';
 import fs from 'fs';
 import path from 'path';
 import formidable from 'formidable';
@@ -133,6 +133,38 @@ class PostController {
           });
         }
       })
+    } catch (exception: unknown) {
+      if (exception instanceof Error) {
+        next(ApiError.badRequest(exception.message));
+      }
+    }
+  }
+
+  async getOnePost(request: Request, response: Response, next: NextFunction) {
+    try {
+      if (Post) {
+        const { id } = request.params;
+        const { lang } = request.query;
+
+        const foundPost = await Post.findOne({ where: { id } });
+        if (foundPost) {
+          const { id, date, media, postHeading, postText, userId } = foundPost.dataValues;
+          return response.json({
+            postData: { id, date, media, postHeading, postText, userId },
+            message: lang === 'ru' ?
+              "Данные поста успешно получены" :
+              "The post data has been successfully received",
+          });
+        } else {
+          return next(
+            ApiError.notFound(
+              lang === 'ru' ?
+                "Пост не найден" :
+                "Post not found"
+            )
+          );
+        }
+      }
     } catch (exception: unknown) {
       if (exception instanceof Error) {
         next(ApiError.badRequest(exception.message));
