@@ -49,11 +49,12 @@
       align-self: end;
     }
   }
-    @media screen and (min-width: $mobile-breakpoint) {
-      grid-template-areas: 
-        "settings-avatar settings-inputs"
-        "settings-danger settings-inputs";
 
-      grid-template-columns: auto 1fr;
+  @media screen and (min-width: $mobile-breakpoint) {
+    grid-template-areas: 
+      "settings-avatar settings-inputs"
+      "settings-danger settings-inputs";
+
+    grid-template-columns: auto 1fr;
   }
 }

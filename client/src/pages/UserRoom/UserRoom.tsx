@@ -22,6 +22,12 @@ import {
 } from 'app/mainSlice';
 import { IGetOneUserRequestData, Nullable, RoleType } from 'types/types';
 import styles from './UserRoom.module.scss';
+import useLanguage from 'hooks/useLanguage';
+import { Chip } from '@mui/material';
+import FaceIcon from '@mui/icons-material/Face';
+import VerifiedIcon from '@mui/icons-material/Verified';
+import Avatar from 'components/Avatar';
+import { lng } from 'hooks/useLanguage/types';
 
 interface Props {
   socket: Socket<DefaultEventsMap, DefaultEventsMap>;
@@ -30,6 +36,7 @@ interface Props {
 export const UserRoom: FC<Props> = ({ socket }) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const language = useLanguage();
   const { id } = useParams();
 
   const [isOwnPage, setIsOwnPage] = useState<boolean>(true);
@@ -64,7 +71,6 @@ export const UserRoom: FC<Props> = ({ socket }) => {
   }, [id]);
 
   useEffect(() => {
-    console.log(id, isLoginNotificationSent);
     if (!isLoginNotificationSent) {
       if (!id) {
         navigate(`/user/${userId}`);
@@ -77,59 +83,68 @@ export const UserRoom: FC<Props> = ({ socket }) => {
     };
   }, []);
 
+  const renderUser = (
+    id?: Nullable<number>,
+    nick?: Nullable<string>,
+    email?: Nullable<string>,
+    avatar?: Nullable<string>,
+    own = false,
+    admin = false
+  ) => {
+    return (
+      <div className={styles.info}>
+        <Avatar size="min(40vw, 20rem)" user={id || undefined} avatarSrc={avatar || undefined} />
+        <span className={styles.nickname}>
+          <span className={styles.nick}>{nick}</span>
+          {own && <VerifiedIcon className={styles.verified} color="success" fontSize="large" />}
+        </span>
+        <div className={styles.additional}>
+          {admin && <span>({language(lng.admin)})</span>}
+          <span>{email}</span>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className={styles.wrapper}>
-      <span>{`users online: ${usersOnline.length}`}</span>
-      {isOwnPage ? (
-        <>
-          {isAuthorized && (
-            <div className="user-data">
-              <div>
-                {avatarSrc && userId ? (
-                  <img
-                    width={200}
-                    src={`/${userId}/avatar/${avatarSrc}`}
-                    alt={currentLanguage === 'ru' ? 'аватарка пользователя' : 'user avatar'}
-                  />
-                ) : null}
-              </div>
-              <div>Email: {userEmail}</div>
-              <div>Nickname: {userNickname}</div>
-              <div>own page</div>
-            </div>
-          )}
-        </>
-      ) : (
-        <>
-          {isAuthorized && id && guestUserData ? (
-            <>
-              {isAuthorized && (
-                <div className="user-data">
-                  <div>
-                    {guestUserData.avatar ? (
-                      <img
-                        width={200}
-                        src={`/${id}/avatar/${guestUserData.avatar}`}
-                        alt={currentLanguage === 'ru' ? 'аватарка пользователя' : 'user avatar'}
-                      />
-                    ) : null}
-                  </div>
-                  {role === 'ADMIN' && guestUserData.email ? (
-                    <>
-                      <span>admin rights additional info:</span>
-                      <div>{`${guestUserData.nickname} email: ${guestUserData.email}`}</div>
-                    </>
-                  ) : null}
-                  <div>Nickname: {guestUserData.nickname}</div>
-                  <div>guest page</div>
-                </div>
-              )}
-            </>
-          ) : (
-            <span>user not found</span>
-          )}
-        </>
-      )}
+      <div className={styles.user}>
+        <Chip
+          className={styles.online}
+          color="success"
+          icon={<FaceIcon />}
+          label={`online: ${usersOnline.length}`}
+        />
+        {isOwnPage ? (
+          <>
+            {isAuthorized &&
+              renderUser(userId, userNickname, userEmail, avatarSrc, isOwnPage, role === 'ADMIN')}
+          </>
+        ) : (
+          <>
+            {isAuthorized && id && guestUserData ? (
+              renderUser(
+                Number(id),
+                guestUserData.nickname,
+                role === 'ADMIN' ? guestUserData.email : null,
+                guestUserData.avatar
+              )
+            ) : (
+              <span>user not found</span>
+            )}
+          </>
+        )}
+      </div>
+      <div className={styles.posts}>
+        {[
+          'Lorem ipsum dolor sit amet consectetur adipisicing elit. Omnis suscipit, possimus animi quis hic odit maxime culpa nemo ab atque?',
+          ,
+          'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Unde, reiciendis consequatur! Amet praesentium asperiores quo, molestias veniam sequi inventore aliquid quam ad nihil est, impedit doloribus dolorum ratione temporibus vitae, ab fugiat. Reiciendis dolores quos ut excepturi odit velit porro. Dolorum aliquam reprehenderit repellendus ducimus cumque quas obcaecati incidunt minus quos earum eligendi debitis harum qui neque praesentium quisquam ullam odit temporibus necessitatibus soluta, consectetur architecto? Perferendis, voluptatem aperiam! Quod unde aliquid temporibus totam nesciunt dolorum obcaecati quidem quasi esse.',
+          'Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, minus quia eius error provident incidunt reiciendis sed cupiditate consequatur eaque repellat aut officia vel officiis laudantium in deserunt modi ducimus sapiente ipsam praesentium ipsum dicta quibusdam! Vel aliquid velit voluptatibus et numquam sed at explicabo eveniet! Quis veritatis, nisi rerum, maxime exercitationem accusamus aliquam nesciunt id, suscipit maiores alias deserunt natus unde quasi illum accusantium incidunt dolore. Quia ducimus sequi laborum ex odio, ipsam veritatis, consequatur quisquam qui cupiditate excepturi laboriosam placeat perferendis, aspernatur labore adipisci illo inventore aut unde impedit odit iure! Sit esse praesentium aliquam ab, ea provident.',
+        ].map((item, index) => (
+          <div key={index}>{item}</div>
+        ))}
+      </div>
     </div>
   );
 };

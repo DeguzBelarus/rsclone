@@ -60,6 +60,8 @@ export enum lng {
   searchPlaceholder,
   searchWelcome,
   searchNotFound,
+
+  admin,
 }
 
 export type LangaugeData = {
