@@ -31,6 +31,8 @@ import {
   ICreatePostResponse,
   IDeletePostRequestData,
   IDeletePostResponse,
+  IGetOnePostRequest,
+  IGetOnePostResponse,
 } from 'types/types';
 import { requestData, requestMethods } from './dataAPI';
 import { setLocalStorageData } from './storage';
@@ -436,6 +438,28 @@ export const deletePostAsync = createAsyncThunk(
           return getOneUserResponseData;
         }
       }
+    }
+    return null;
+  }
+);
+
+// get the specified post data
+export const getOnePostAsync = createAsyncThunk(
+  'post/get-one',
+  async (data: IGetOnePostRequest): Promise<Nullable<IGetOnePostResponse>> => {
+    const params = new URLSearchParams();
+    params.set('lang', data.lang);
+
+    const getOnePostURL = `api/post/${data.id}?${params}`;
+    const getOnePostResponse: Undefinable<Response> = await requestData(
+      getOnePostURL,
+      requestMethods.get,
+      undefined,
+      undefined
+    );
+    if (getOnePostResponse) {
+      const getOnePostResponseData: IGetOnePostResponse = await getOnePostResponse.json();
+      return getOnePostResponseData;
     }
     return null;
   }
@@ -894,6 +918,22 @@ export const mainSlice = createSlice({
         }
       })
       .addCase(deletePostAsync.rejected, (state, { error }) => {
+        state.userRequestStatus = 'failed';
+        console.error('\x1b[40m\x1b[31m\x1b[1m', error.message);
+      })
+
+      // get the specified post data
+      .addCase(getOnePostAsync.pending, (state) => {
+        state.userRequestStatus = 'loading';
+      })
+      .addCase(getOnePostAsync.fulfilled, (state, { payload }) => {
+        state.userRequestStatus = 'idle';
+
+        if (payload) {
+          state.currentPost = payload.postData;
+        }
+      })
+      .addCase(getOnePostAsync.rejected, (state, { error }) => {
         state.userRequestStatus = 'failed';
         console.error('\x1b[40m\x1b[31m\x1b[1m', error.message);
       });
