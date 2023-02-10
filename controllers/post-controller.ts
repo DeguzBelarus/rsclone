@@ -187,6 +187,7 @@ class PostController {
           }
 
           return response.json({
+            postOwnerId: foundPostForDeleting.dataValues.userId,
             message: lang === 'ru' ?
               "Пост удалён!" :
               "The post has been deleted!",

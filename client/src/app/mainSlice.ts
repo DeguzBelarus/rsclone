@@ -29,6 +29,8 @@ import {
   IMessageModel,
   ICreatePostRequestData,
   ICreatePostResponse,
+  IDeletePostRequestData,
+  IDeletePostResponse,
 } from 'types/types';
 import { requestData, requestMethods } from './dataAPI';
 import { setLocalStorageData } from './storage';
@@ -386,6 +388,51 @@ export const createPostAsync = createAsyncThunk(
           const createPostResponseData: ICreatePostResponse = await createPostResponse.json();
           const getOneUserResponseData: IGetOneUserResponse = await getOneUserResponse.json();
           getOneUserResponseData.message = createPostResponseData.message;
+          return getOneUserResponseData;
+        }
+      }
+    }
+    return null;
+  }
+);
+
+// delete specified post
+export const deletePostAsync = createAsyncThunk(
+  'post/delete',
+  async (
+    data: IDeletePostRequestData
+  ): Promise<Nullable<IDeleteUserResponse | IGetOneUserResponse>> => {
+    const params = new URLSearchParams();
+    params.set('lang', data.lang);
+
+    const deletePostURL = `api/post/${data.id}/delete?${params}`;
+    const deletePostResponse: Undefinable<Response> = await requestData(
+      deletePostURL,
+      requestMethods.delete,
+      undefined,
+      data.token
+    );
+    if (deletePostResponse) {
+      if (!deletePostResponse.ok || deletePostResponse.status === 204) {
+        const deletePostResponseData: IDeletePostResponse = await deletePostResponse.json();
+        deletePostResponseData.statusCode = deletePostResponse.status;
+        return deletePostResponseData;
+      } else {
+        const deletePostResponseData: IDeletePostResponse = await deletePostResponse.json();
+
+        const params = new URLSearchParams();
+        params.set('lang', data.lang);
+
+        const getOneUserURL = `/api/user/${deletePostResponseData.postOwnerId}?${params}`;
+        const getOneUserResponse: Undefinable<Response> = await requestData(
+          getOneUserURL,
+          requestMethods.get,
+          undefined,
+          data.token
+        );
+        if (getOneUserResponse) {
+          const getOneUserResponseData: IGetOneUserResponse = await getOneUserResponse.json();
+          getOneUserResponseData.message = deletePostResponseData.message;
           return getOneUserResponseData;
         }
       }
@@ -808,6 +855,46 @@ export const mainSlice = createSlice({
         }
       })
       .addCase(createPostAsync.rejected, (state, { error }) => {
+        state.userRequestStatus = 'failed';
+        console.error('\x1b[40m\x1b[31m\x1b[1m', error.message);
+      })
+
+      // delete post
+      .addCase(deletePostAsync.pending, (state) => {
+        state.userRequestStatus = 'loading';
+      })
+      .addCase(deletePostAsync.fulfilled, (state, { payload }) => {
+        state.userRequestStatus = 'idle';
+
+        if (payload) {
+          if (payload.statusCode === 200) {
+            const successPostDeletionData = payload as IGetOneUserResponse;
+            if (state.currentPost) {
+              state.currentPost = null;
+            } else {
+              if (successPostDeletionData.userData?.posts) {
+                if (state.guestUserData) {
+                  state.guestUserData.posts = successPostDeletionData.userData.posts;
+                } else {
+                  state.posts = successPostDeletionData.userData.posts;
+                }
+              }
+            }
+
+            state.alert = {
+              message: payload.message,
+              severity: 'success',
+            };
+          } else {
+            state.alert = {
+              message: payload.message,
+              severity: 'error',
+            };
+          }
+          // state.foundUsers = payload;
+        }
+      })
+      .addCase(deletePostAsync.rejected, (state, { error }) => {
         state.userRequestStatus = 'failed';
         console.error('\x1b[40m\x1b[31m\x1b[1m', error.message);
       });

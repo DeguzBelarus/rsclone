@@ -111,9 +111,10 @@ export interface IDeleteUserResponse {
 }
 
 export interface IDeletePostResponse {
-  message?: string;
+  message: string;
   statusCode?: number;
   ownId: number;
+  postOwnerId?: number;
 }
 
 export interface IUpdateUserResponse {
