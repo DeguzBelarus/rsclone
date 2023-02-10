@@ -1,10 +1,8 @@
 @import '../../styles/variables';
 
-.user-room-wrapper {
-  width: 100%;
-  @include flex-all-center;
-  @include user-select-none;
-  flex-direction: column;
+.wrapper {
+  display: grid;
+  // min-width: 100%;
 
   .user-data {
     margin-top: 2em;

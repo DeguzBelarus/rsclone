@@ -21,7 +21,7 @@ import {
   getUsersOnline,
 } from 'app/mainSlice';
 import { IGetOneUserRequestData, Nullable, RoleType } from 'types/types';
-import './UserRoom.scss';
+import styles from './UserRoom.module.scss';
 
 interface Props {
   socket: Socket<DefaultEventsMap, DefaultEventsMap>;
@@ -78,7 +78,7 @@ export const UserRoom: FC<Props> = ({ socket }) => {
   }, []);
 
   return (
-    <div className="user-room-wrapper">
+    <div className={styles.wrapper}>
       <span>{`users online: ${usersOnline.length}`}</span>
       {isOwnPage ? (
         <>
