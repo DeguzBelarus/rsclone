@@ -28,6 +28,7 @@ import FaceIcon from '@mui/icons-material/Face';
 import VerifiedIcon from '@mui/icons-material/Verified';
 import Avatar from 'components/Avatar';
 import { lng } from 'hooks/useLanguage/types';
+import { FabButton } from 'components/FabButton/FabButton';
 
 interface Props {
   socket: Socket<DefaultEventsMap, DefaultEventsMap>;
@@ -145,6 +146,7 @@ export const UserRoom: FC<Props> = ({ socket }) => {
           <div key={index}>{item}</div>
         ))}
       </div>
+      {isOwnPage && <FabButton value={language(lng.userAddPost)} />}
     </div>
   );
 };
