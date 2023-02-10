@@ -891,7 +891,6 @@ export const mainSlice = createSlice({
               severity: 'error',
             };
           }
-          // state.foundUsers = payload;
         }
       })
       .addCase(deletePostAsync.rejected, (state, { error }) => {
