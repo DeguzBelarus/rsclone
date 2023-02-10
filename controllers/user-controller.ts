@@ -1,4 +1,4 @@
-import { Model, Op } from "sequelize";
+import { Op } from "sequelize";
 import { Response, NextFunction } from 'express';
 import fs from 'fs';
 import path from 'path';
@@ -6,7 +6,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import formidable from 'formidable';
 
-import { User } from '../db-models/db-models';
+import { User, Post } from '../db-models/db-models';
 import { CurrentLanguageType, IUserModel, IRequestModified, FormidableFile, IFoundUserData, ISearchUsersResponse } from '../types/types';
 import { ApiError } from '../error-handler/error-handler';
 import { Undefinable } from '../client/src/types/types';
@@ -303,35 +303,38 @@ class UserController {
 
   async getOneUser(request: IRequestModified, response: Response, next: NextFunction) {
     try {
-      if (User) {
+      if (User && Post) {
         const { userId } = request.params;
         const { lang } = request.query;
         const { requesterId, role } = request;
 
         const foundUser = await User.findOne({
           where: { id: Number(userId) },
+          include: [
+            { model: Post, as: "posts" },
+          ],
         });
 
         if (foundUser) {
-          const { id, age, city, country, email, firstName, lastName, nickname, role: userRole, avatar
+          const { id, age, city, country, email, firstName, lastName, nickname, role: userRole, avatar, posts
           } = foundUser.dataValues;
           if (Number(userId) === requesterId) {
             response.json({
-              userData: { id, age, city, country, email, firstName, lastName, nickname, role: userRole, avatar },
+              userData: { id, age, city, country, email, firstName, lastName, nickname, role: userRole, avatar, posts },
               message: lang === 'ru' ?
                 "Получены собственные данные пользователя" :
                 "The user's own data was obtained",
             });
           } else if (role === 'ADMIN') {
             response.json({
-              userData: { id, age, city, country, email, firstName, lastName, nickname, role: userRole, avatar },
+              userData: { id, age, city, country, email, firstName, lastName, nickname, role: userRole, avatar, posts },
               message: lang === 'ru' ?
                 "Данные пользователя получены администратором" :
                 "The user's data was received by the administrator",
             });
           } else {
             response.json({
-              userData: { id, age, city, country, firstName, lastName, nickname, role: userRole, avatar },
+              userData: { id, age, city, country, firstName, lastName, nickname, role: userRole, avatar, posts },
               message: lang === 'ru' ?
                 "Данные пользователя получены" :
                 "User data received",
@@ -439,7 +442,7 @@ class UserController {
   async update(request: IRequestModified, response: Response, next: NextFunction): Promise<void | Response> {
     try {
       const { id } = request.params;
-      const { requesterId, role } = request;
+      const { requesterId } = request;
       if (!fs.existsSync(path.join(__dirname, "..", "temp"))) {
         fs.mkdirSync(path.join(__dirname, "..", "temp"),
           { recursive: true }

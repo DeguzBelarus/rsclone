@@ -26,18 +26,29 @@ export interface FormidableFile {
   hash: Nullable<string | object>;
 }
 
-export interface IUserModel {
+export interface IPostModel {
   id?: number;
-  email: string;
-  nickname: string;
-  password: string;
-  role: RoleType;
-  age: Nullable<number>;
-  country: Nullable<string>;
-  city: Nullable<string>;
-  avatar?: string | FormidableFile;
-  firstName: Nullable<string>;
-  lastName: Nullable<string>;
+  date: string;
+  postText: string;
+  media: string | FormidableFile;
+  userId: number;
+}
+
+export interface ICommentModel {
+  id?: number;
+  date: string;
+  commentText: string;
+  authorNickname: string;
+}
+
+export interface IMessageModel {
+  id?: number;
+  date: string;
+  messageText: string;
+  authorNickname: string;
+  recipientId: number;
+  recipientNickname: string;
+  isRead: boolean;
 }
 
 export interface IRequestModified extends Request {
@@ -88,4 +99,19 @@ export interface ISearchUsersResponse {
   count: number;
   searchResult: Array<IFoundUserData>;
   message: string;
+}
+
+export interface IUserModel {
+  id?: number;
+  email: string;
+  nickname: string;
+  password: string;
+  role: RoleType;
+  age: Nullable<number>;
+  country: Nullable<string>;
+  city: Nullable<string>;
+  avatar?: string | FormidableFile;
+  firstName: Nullable<string>;
+  lastName: Nullable<string>;
+  posts?: Array<IPostModel>;
 }

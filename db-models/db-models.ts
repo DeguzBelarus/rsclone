@@ -1,52 +1,137 @@
 import { DataTypes, ModelDefined } from 'sequelize';
 import { Nullable } from '../client/src/types/types';
 import { sequelizeConfig } from '../sequelizeConfig';
-import { IUserModel } from '../types/types';
+import { ICommentModel, IMessageModel, IPostModel, IUserModel } from '../types/types';
 
 export const User: Nullable<ModelDefined<IUserModel, IUserModel>> = sequelizeConfig
   ? sequelizeConfig.define("user", {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
-      autoIncrement: true
+      autoIncrement: true,
     },
     email: {
       type: DataTypes.STRING,
-      unique: true
+      unique: true,
     },
     nickname: {
       type: DataTypes.STRING,
-      unique: true
+      unique: true,
     },
     password: {
-      type: DataTypes.STRING
+      type: DataTypes.STRING,
     },
     role: {
       type: DataTypes.STRING,
-      defaultValue: "USER"
+      defaultValue: "USER",
     },
     age: {
       type: DataTypes.INTEGER,
-      allowNull: true
+      allowNull: true,
     },
     country: {
       type: DataTypes.STRING,
-      allowNull: true
+      allowNull: true,
     },
     city: {
       type: DataTypes.STRING,
-      allowNull: true
+      allowNull: true,
     },
     avatar: {
       type: DataTypes.STRING,
-      allowNull: true
+      allowNull: true,
     },
     firstName: {
       type: DataTypes.STRING,
-      allowNull: true
+      allowNull: true,
     },
     lastName: {
       type: DataTypes.STRING,
-      allowNull: true
+      allowNull: true,
     }
   }) : null;
+
+export const Post: Nullable<ModelDefined<IPostModel, IPostModel>> = sequelizeConfig
+  ? sequelizeConfig.define("posts", {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
+    },
+    date: {
+      type: DataTypes.STRING,
+    },
+    postText: {
+      type: DataTypes.STRING,
+    },
+    media: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+  }) : null;
+
+export const Comment: Nullable<ModelDefined<ICommentModel, ICommentModel>> = sequelizeConfig
+  ? sequelizeConfig.define("comments", {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
+    },
+    date: {
+      type: DataTypes.STRING,
+    },
+    commentText: {
+      type: DataTypes.STRING,
+    },
+    authorNickname: {
+      type: DataTypes.STRING,
+    },
+  }) : null;
+
+export const Message: Nullable<ModelDefined<IMessageModel, IMessageModel>> = sequelizeConfig
+  ? sequelizeConfig.define("messages", {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
+    },
+    date: {
+      type: DataTypes.STRING,
+    },
+    messageText: {
+      type: DataTypes.STRING,
+    },
+    authorNickname: {
+      type: DataTypes.STRING,
+    },
+    recipientId: {
+      type: DataTypes.INTEGER,
+    },
+    recipientNickname: {
+      type: DataTypes.STRING,
+    },
+    isRead: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+  }) : null;
+
+if (User && Post && Comment) {
+  User.hasMany(Post, {
+    as: "posts",
+    foreignKey: "userId",
+  });
+  Post.belongsTo(User);
+
+  User.hasMany(Comment, {
+    as: "comments",
+    foreignKey: "userId",
+  });
+  Comment.belongsTo(User);
+
+  Post.hasMany(Comment, {
+    as: "comments",
+    foreignKey: "postId",
+  });
+  Comment.belongsTo(Post);
+}
