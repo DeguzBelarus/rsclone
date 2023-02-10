@@ -139,6 +139,7 @@ export interface AlertMessage {
 export interface IPostModel {
   id?: number;
   date: string;
+  postHeading: string;
   postText: string;
   media: string | File;
 }
