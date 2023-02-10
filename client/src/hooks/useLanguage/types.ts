@@ -22,6 +22,7 @@ export enum lng {
 
   languageSelect,
   userMessages,
+  userPosts,
   userAddPost,
 
   settings,

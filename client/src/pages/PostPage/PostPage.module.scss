@@ -1,11 +1,6 @@
 @import '../../css_variables/variables';
 
-.processing-wrapper {
+.wrapper {
   @include flex-all-center;
   @include user-select-none;
-
-  .processing-heading {
-    font-size: 40px;
-    color: deeppink;
-  }
 }

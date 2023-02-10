@@ -5,7 +5,7 @@
 
   .toolbar {
     display: grid;
-    grid-template-columns: auto 1fr auto auto auto auto;
+    grid-template-columns: 1fr auto auto;
     gap: 0.3rem;
     .logo {
       margin-right: auto;
@@ -47,5 +47,9 @@
         display: none;
       }
     }
+  }
+
+  &.authorized .toolbar {
+    grid-template-columns: auto 1fr auto auto auto auto auto;
   }
 }
