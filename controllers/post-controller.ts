@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import formidable from 'formidable';
 
-import { Post } from '../db-models/db-models';
+import { Post, Comment } from '../db-models/db-models';
 import { CurrentLanguageType, IPostModel, FormidableFile, IRequestModified } from '../types/types';
 import { ApiError } from '../error-handler/error-handler';
 import { Undefinable } from '../client/src/types/types';
@@ -35,6 +35,18 @@ class PostController {
             return next(
               ApiError.forbidden(lang === 'ru' ? "Нет прав" : "No rights"));
           }
+        } else {
+          const mediaFile = files.media as FormidableFile;
+          if (mediaFile) {
+            fs.readdirSync(tempFolderPath).forEach((file) => {
+              if (file !== '.gitignore') {
+                fs.unlinkSync(path.join(__dirname, "..", "temp", file))
+              }
+            })
+          }
+
+          return next(
+            ApiError.forbidden(lang === 'ru' ? "Нет прав" : "No rights"));
         }
 
         if (Post) {
@@ -121,6 +133,73 @@ class PostController {
           });
         }
       })
+    } catch (exception: unknown) {
+      if (exception instanceof Error) {
+        next(ApiError.badRequest(exception.message));
+      }
+    }
+  }
+
+  async delete(request: IRequestModified, response: Response, next: NextFunction): Promise<void | Response> {
+    try {
+      const { requesterId, role } = request;
+      const { id } = request.params;
+      const { lang } = request.query;
+
+      if (Post && Comment) {
+        const foundPostForDeleting = await Post.findOne({
+          where: { id: Number(id) },
+        });
+        if (foundPostForDeleting) {
+          if (requesterId && role) {
+            if (requesterId !== foundPostForDeleting.dataValues.userId && role !== 'ADMIN') {
+              return next(
+                ApiError.forbidden(lang === 'ru' ? "Нет прав" : "No rights"));
+            }
+          } else {
+            return next(
+              ApiError.forbidden(lang === 'ru' ? "Нет прав" : "No rights"));
+          }
+
+          await Post.destroy({ where: { id } });
+
+          const foundCommentsForDeleting = await Comment.findOne({
+            where: {
+              postId: foundPostForDeleting.dataValues.id,
+            }
+          })
+          if (foundCommentsForDeleting) {
+            await Comment.destroy({
+              where: {
+                postId: foundPostForDeleting.dataValues.id,
+              }
+            });
+          }
+
+          if (fs.existsSync(path.join(__dirname, "..", "static",
+            `${foundPostForDeleting.dataValues.userId}`, "posts",
+            `${foundPostForDeleting.dataValues.id}`))) {
+            fs.rmdirSync(path.join(__dirname, "..", "static",
+              `${foundPostForDeleting.dataValues.userId}`, "posts",
+              `${foundPostForDeleting.dataValues.id}`),
+              { recursive: true }
+            );
+          }
+
+          return response.json({
+            message: lang === 'ru' ?
+              "Пост удалён!" :
+              "The post has been deleted!",
+          });
+        } else {
+          return response.status(204).json({
+            message:
+              lang === "ru"
+                ? "Указанный пост не найден"
+                : "The specified post was not found",
+          });
+        }
+      }
     } catch (exception: unknown) {
       if (exception instanceof Error) {
         next(ApiError.badRequest(exception.message));
