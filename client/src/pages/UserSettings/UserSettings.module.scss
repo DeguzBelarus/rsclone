@@ -1,9 +1,9 @@
 @import '../../styles/variables';
 
 .wrapper {
+  --max-page-width: 900px;
   display: grid;
   gap: 0rem 4rem;
-  min-width: 100%;
 
   grid-template-areas: 
   "settings-avatar"
@@ -49,12 +49,12 @@
       align-self: end;
     }
   }
-    @media screen and (min-width: $mobile-breakpoint) {
-      grid-template-areas: 
-        "settings-avatar settings-inputs"
-        "settings-danger settings-inputs";
 
-      grid-template-columns: auto 1fr;
-      min-width: calc(min(100%, 900px));
+  @media screen and (min-width: $mobile-breakpoint) {
+    grid-template-areas: 
+      "settings-avatar settings-inputs"
+      "settings-danger settings-inputs";
+
+    grid-template-columns: auto 1fr;
   }
 }

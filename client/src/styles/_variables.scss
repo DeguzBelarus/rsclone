@@ -13,6 +13,8 @@ $mobile-breakpoint: 600px;
 :root {
   --header-height: 56px;
   --footer-height: 46px;
+  --max-page-width: 1100px;
+
 
   @media screen and (min-width: $mobile-breakpoint) {
     --header-height: 64px;
