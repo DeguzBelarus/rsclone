@@ -76,7 +76,6 @@ export const EditPostModal = ({ id, open, onClose, onSuccess }: EditPostModalPro
 
     const requestData = new FormData();
     requestData.append('lang', currentLanguage);
-    requestData.append('date', String(Date.now()));
     requestData.append('postHeading', titleValue);
     requestData.append('postText', bodyValue);
     if (id === undefined) {
