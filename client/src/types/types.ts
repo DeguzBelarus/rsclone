@@ -174,6 +174,20 @@ export interface IGetOnePostResponse {
   message: string;
 }
 
+export interface IUpdatePostRequest {
+  lang: CurrentLanguageType;
+  postId: number;
+  token: string;
+  requestData: {
+    postHeading: string;
+    postText: string;
+  };
+}
+
+export interface IUpdatePostResponse {
+  message: string;
+}
+
 export interface IGetAllPostsResponse {
   postsData: Array<IPostModel>;
   message: string;
