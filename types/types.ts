@@ -29,6 +29,7 @@ export interface FormidableFile {
 export interface IPostModel {
   id?: number;
   date: string;
+  editDate?: string;
   postHeading: string;
   postText: string;
   media: string | FormidableFile;
@@ -38,6 +39,7 @@ export interface IPostModel {
 export interface ICommentModel {
   id?: number;
   date: string;
+  editDate?: string;
   commentText: string;
   authorNickname: string;
   postId: number;

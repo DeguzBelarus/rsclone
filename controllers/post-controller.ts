@@ -27,7 +27,7 @@ class PostController {
         if (error) {
           console.error('\x1b[40m\x1b[31m\x1b[1m', error);
         }
-        let { lang, date, postText, media, postHeading,
+        let { lang, postText, media, postHeading,
         } = fields as formidable.Fields & IPostModel & { lang: CurrentLanguageType };
 
         if (requesterId && id) {
@@ -50,7 +50,7 @@ class PostController {
         }
 
         if (Post) {
-          if (!lang || !date || !postText || !postHeading) {
+          if (!lang || !postText || !postHeading) {
             return next(
               ApiError.badRequest(
                 lang === "ru" ?
@@ -85,7 +85,7 @@ class PostController {
 
             if (mediaFile.newFilename) {
               const newPost = await Post.create({
-                date,
+                date: String(Date.now()),
                 postHeading,
                 postText,
                 media: mediaNewFullName,
@@ -119,7 +119,7 @@ class PostController {
           }
 
           await Post.create({
-            date,
+            date: String(Date.now()),
             postHeading,
             postText,
             media: '',
