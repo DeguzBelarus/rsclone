@@ -79,7 +79,7 @@ class PostController {
           }
 
           const mediaFile = files.media as FormidableFile;
-          if (mediaFile && typeof media !== 'string') {
+          if (mediaFile) {
             let mediaNewFullName: Undefinable<string>;
             mediaNewFullName = `${mediaFile.newFilename}.${mediaFile.mimetype?.split('/')[1]}`;
 
