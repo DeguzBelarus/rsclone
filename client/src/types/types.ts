@@ -150,16 +150,6 @@ export interface AlertMessage {
   persist?: boolean;
 }
 
-export interface IPostModel {
-  id?: number;
-  date: string;
-  editDate?: string;
-  postHeading: string;
-  postText: string;
-  media: string | File;
-  userId: number;
-}
-
 export interface IGetOnePostRequest {
   id: number;
   lang: CurrentLanguageType;
@@ -172,6 +162,7 @@ export interface IGetAllPostsRequest {
 export interface IGetOnePostResponse {
   postData: IPostModel;
   message: string;
+  statusCode?: number;
 }
 
 export interface IUpdatePostRequest {
@@ -186,6 +177,7 @@ export interface IUpdatePostRequest {
 
 export interface IUpdatePostResponse {
   message: string;
+  statusCode?: number;
 }
 
 export interface IGetAllPostsResponse {
@@ -199,6 +191,17 @@ export interface ICommentModel {
   editDate?: string;
   commentText: string;
   authorNickname: string;
+}
+
+export interface IPostModel {
+  id?: number;
+  date: string;
+  editDate?: string;
+  postHeading: string;
+  postText: string;
+  media: string | File;
+  userId: number;
+  comments?: Array<ICommentModel>;
 }
 
 export interface IMessageModel {
