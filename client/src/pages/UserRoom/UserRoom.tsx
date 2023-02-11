@@ -29,6 +29,7 @@ import VerifiedIcon from '@mui/icons-material/Verified';
 import Avatar from 'components/Avatar';
 import { lng } from 'hooks/useLanguage/types';
 import { FabButton } from 'components/FabButton/FabButton';
+import { EditPostModal } from 'components/EditPostModal/EditPostModal';
 
 interface Props {
   socket: Socket<DefaultEventsMap, DefaultEventsMap>;
@@ -41,6 +42,7 @@ export const UserRoom: FC<Props> = ({ socket }) => {
   const { id } = useParams();
 
   const [isOwnPage, setIsOwnPage] = useState<boolean>(true);
+  const [newPostModalOpen, setNewPostModalOpen] = useState(false);
   const userId = useAppSelector<Nullable<number>>(getUserId);
   const token = useAppSelector<Nullable<string>>(getToken);
   const role = useAppSelector<Nullable<RoleType>>(getUserRole);
@@ -146,7 +148,10 @@ export const UserRoom: FC<Props> = ({ socket }) => {
           <div key={index}>{item}</div>
         ))}
       </div>
-      {isOwnPage && <FabButton value={language(lng.userAddPost)} />}
+      {isOwnPage && (
+        <FabButton value={language(lng.userAddPost)} onClick={() => setNewPostModalOpen(true)} />
+      )}
+      <EditPostModal open={newPostModalOpen} onClose={() => setNewPostModalOpen(false)} />
     </div>
   );
 };

@@ -57,12 +57,22 @@ const LANGUAGE_DATA: LangaugeData = {
 
     [lng.confirm]: 'Confirm',
     [lng.cancel]: 'Cancel',
+    [lng.save]: 'Save',
 
     [lng.searchPlaceholder]: 'Search users...',
     [lng.searchWelcome]: 'Start typing to look for users...',
     [lng.searchNotFound]: 'Users were not found for this input (%)',
 
     [lng.admin]: 'admin',
+
+    [lng.newPostTitle]: 'New post',
+    [lng.editPostTitle]: 'Edit post',
+    [lng.postTitle]: 'Heading',
+    [lng.postTitleHint]: 'Please add post heading',
+    [lng.postBody]: 'Post body',
+    [lng.postBodyHint]: 'Please add post body',
+    [lng.postUploadMedia]: 'Upload media',
+    [lng.postUploadMediaDelete]: 'Delete media',
   },
 
   ru: {
@@ -121,12 +131,22 @@ const LANGUAGE_DATA: LangaugeData = {
 
     [lng.confirm]: 'Подтвердить',
     [lng.cancel]: 'Отменить',
+    [lng.save]: 'Сохранить',
 
     [lng.searchPlaceholder]: 'Поиск',
     [lng.searchWelcome]: 'Начните ввод, чтобы начать поиск пользователей',
     [lng.searchNotFound]: `Пользователи по запросу '%' не были найдены`,
 
     [lng.admin]: 'администратор',
+
+    [lng.newPostTitle]: 'Новый пост',
+    [lng.editPostTitle]: 'Редактировать пост',
+    [lng.postTitle]: 'Заголовок',
+    [lng.postTitleHint]: 'Добавьте заголовок поста',
+    [lng.postBody]: 'Пост',
+    [lng.postBodyHint]: 'Добавьте тело поста',
+    [lng.postUploadMedia]: 'Загрузить медиа',
+    [lng.postUploadMediaDelete]: 'Удалить медиа',
   },
 };
 
