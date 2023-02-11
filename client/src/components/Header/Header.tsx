@@ -45,6 +45,7 @@ import { Socket } from 'socket.io-client';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import { HeaderSearch } from 'components/HeaderSearch/HeaderSearch';
 import combineClasses from 'lib/combineClasses';
+import { EditPostModal } from 'components/EditPostModal/EditPostModal';
 
 interface Props {
   socket: Socket<DefaultEventsMap, DefaultEventsMap>;
@@ -53,6 +54,8 @@ interface Props {
 export const Header: FC<Props> = ({ socket }) => {
   const [userMenuAnchor, setUserMenuAnchor] = useState<HTMLElement>();
   const [searchFocused, setSearchFocused] = useState(false);
+  const [newPostModalOpen, setNewPostModalOpen] = useState(false);
+
   const isAuthorized = useAppSelector(getIsAuthorized);
   const userName = useAppSelector(getUserNickname);
   const userRole = useAppSelector(getUserRole);
@@ -73,9 +76,9 @@ export const Header: FC<Props> = ({ socket }) => {
 
   const handleMessages = () => navigate('/messages');
 
-  const handlePosts = () => navigate('/posts');
+  const handleAddPost = () => setNewPostModalOpen(true);
 
-  const handleAddPost = () => navigate('/posts/new');
+  const handlePosts = () => navigate('/posts');
 
   const authorizedMenu = [
     <MenuItem key="1" sx={{ display: { sm: 'none' }, cursor: 'default', pointerEvents: 'none' }}>
@@ -220,6 +223,7 @@ export const Header: FC<Props> = ({ socket }) => {
           {isAuthorized ? authorizedMenu : unauthorizedMenu}
         </CustomMenu>
       </Toolbar>
+      <EditPostModal open={newPostModalOpen} onClose={() => setNewPostModalOpen(false)} />
     </AppBar>
   );
 };
