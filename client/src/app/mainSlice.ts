@@ -29,12 +29,17 @@ import {
   IMessageModel,
   ICreatePostRequestData,
   ICreatePostResponse,
+  IDeletePostRequestData,
+  IDeletePostResponse,
+  IGetOnePostRequest,
+  IGetOnePostResponse,
 } from 'types/types';
 import { requestData, requestMethods } from './dataAPI';
 import { setLocalStorageData } from './storage';
 
 interface MainState {
   posts: Array<IPostModel>;
+  currentPost: Nullable<IPostModel>;
   messages: Array<IMessageModel>;
   token: Nullable<string>;
   isAuthorized: boolean;
@@ -60,6 +65,7 @@ interface MainState {
 
 const initialState: MainState = {
   posts: [],
+  currentPost: null,
   messages: [],
   token: null,
   isAuthorized: false,
@@ -392,6 +398,73 @@ export const createPostAsync = createAsyncThunk(
   }
 );
 
+// delete specified post
+export const deletePostAsync = createAsyncThunk(
+  'post/delete',
+  async (
+    data: IDeletePostRequestData
+  ): Promise<Nullable<IDeleteUserResponse | IGetOneUserResponse>> => {
+    const params = new URLSearchParams();
+    params.set('lang', data.lang);
+
+    const deletePostURL = `api/post/${data.id}/delete?${params}`;
+    const deletePostResponse: Undefinable<Response> = await requestData(
+      deletePostURL,
+      requestMethods.delete,
+      undefined,
+      data.token
+    );
+    if (deletePostResponse) {
+      if (!deletePostResponse.ok || deletePostResponse.status === 204) {
+        const deletePostResponseData: IDeletePostResponse = await deletePostResponse.json();
+        deletePostResponseData.statusCode = deletePostResponse.status;
+        return deletePostResponseData;
+      } else {
+        const deletePostResponseData: IDeletePostResponse = await deletePostResponse.json();
+
+        const params = new URLSearchParams();
+        params.set('lang', data.lang);
+
+        const getOneUserURL = `/api/user/${deletePostResponseData.postOwnerId}?${params}`;
+        const getOneUserResponse: Undefinable<Response> = await requestData(
+          getOneUserURL,
+          requestMethods.get,
+          undefined,
+          data.token
+        );
+        if (getOneUserResponse) {
+          const getOneUserResponseData: IGetOneUserResponse = await getOneUserResponse.json();
+          getOneUserResponseData.message = deletePostResponseData.message;
+          return getOneUserResponseData;
+        }
+      }
+    }
+    return null;
+  }
+);
+
+// get the specified post data
+export const getOnePostAsync = createAsyncThunk(
+  'post/get-one',
+  async (data: IGetOnePostRequest): Promise<Nullable<IGetOnePostResponse>> => {
+    const params = new URLSearchParams();
+    params.set('lang', data.lang);
+
+    const getOnePostURL = `api/post/${data.id}?${params}`;
+    const getOnePostResponse: Undefinable<Response> = await requestData(
+      getOnePostURL,
+      requestMethods.get,
+      undefined,
+      undefined
+    );
+    if (getOnePostResponse) {
+      const getOnePostResponseData: IGetOnePostResponse = await getOnePostResponse.json();
+      return getOnePostResponseData;
+    }
+    return null;
+  }
+);
+
 export const mainSlice = createSlice({
   name: 'main',
   initialState,
@@ -484,6 +557,12 @@ export const mainSlice = createSlice({
     },
     setMessages(state: WritableDraft<MainState>, { payload }: PayloadAction<Array<IMessageModel>>) {
       state.messages = payload;
+    },
+    setCurrentPost(
+      state: WritableDraft<MainState>,
+      { payload }: PayloadAction<Nullable<IPostModel>>
+    ) {
+      state.currentPost = payload;
     },
   },
   extraReducers: (builder) => {
@@ -802,6 +881,61 @@ export const mainSlice = createSlice({
       .addCase(createPostAsync.rejected, (state, { error }) => {
         state.userRequestStatus = 'failed';
         console.error('\x1b[40m\x1b[31m\x1b[1m', error.message);
+      })
+
+      // delete post
+      .addCase(deletePostAsync.pending, (state) => {
+        state.userRequestStatus = 'loading';
+      })
+      .addCase(deletePostAsync.fulfilled, (state, { payload }) => {
+        state.userRequestStatus = 'idle';
+
+        if (payload) {
+          if (payload.statusCode === 200) {
+            const successPostDeletionData = payload as IGetOneUserResponse;
+            if (state.currentPost) {
+              state.currentPost = null;
+            } else {
+              if (successPostDeletionData.userData?.posts) {
+                if (state.guestUserData) {
+                  state.guestUserData.posts = successPostDeletionData.userData.posts;
+                } else {
+                  state.posts = successPostDeletionData.userData.posts;
+                }
+              }
+            }
+
+            state.alert = {
+              message: payload.message,
+              severity: 'success',
+            };
+          } else {
+            state.alert = {
+              message: payload.message,
+              severity: 'error',
+            };
+          }
+        }
+      })
+      .addCase(deletePostAsync.rejected, (state, { error }) => {
+        state.userRequestStatus = 'failed';
+        console.error('\x1b[40m\x1b[31m\x1b[1m', error.message);
+      })
+
+      // get the specified post data
+      .addCase(getOnePostAsync.pending, (state) => {
+        state.userRequestStatus = 'loading';
+      })
+      .addCase(getOnePostAsync.fulfilled, (state, { payload }) => {
+        state.userRequestStatus = 'idle';
+
+        if (payload) {
+          state.currentPost = payload.postData;
+        }
+      })
+      .addCase(getOnePostAsync.rejected, (state, { error }) => {
+        state.userRequestStatus = 'failed';
+        console.error('\x1b[40m\x1b[31m\x1b[1m', error.message);
       });
   },
 });
@@ -830,6 +964,7 @@ export const {
     setUserRequestStatus,
     setMessages,
     setPosts,
+    setCurrentPost,
   },
 } = mainSlice;
 
@@ -857,6 +992,7 @@ export const getAlert = ({ main: { alert } }: RootState) => alert;
 export const getUserRequestStatus = ({ main: { userRequestStatus } }: RootState) =>
   userRequestStatus;
 export const getPosts = ({ main: { posts } }: RootState) => posts;
-export const geMessages = ({ main: { messages } }: RootState) => messages;
+export const getCurrentPost = ({ main: { currentPost } }: RootState) => currentPost;
+export const getMessages = ({ main: { messages } }: RootState) => messages;
 
 export const { reducer } = mainSlice;
