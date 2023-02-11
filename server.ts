@@ -56,7 +56,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("userOnline", (onlineUserNickname) => {
-    const isConnectedUserAlreadyAdded = usersOnline.find((user: UserOnlineData) => user.socketId === socket.id);
+    const isConnectedUserAlreadyAdded = usersOnline.find((user: UserOnlineData) => user.nickname === onlineUserNickname);
     if (!isConnectedUserAlreadyAdded) {
       usersOnline.push({ socketId: socket.id, nickname: onlineUserNickname })
       console.log(`user ${onlineUserNickname} is online`);
