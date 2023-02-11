@@ -33,12 +33,15 @@ import {
   IDeletePostResponse,
   IGetOnePostRequest,
   IGetOnePostResponse,
+  IGetAllPostsRequest,
+  IGetAllPostsResponse,
 } from 'types/types';
 import { requestData, requestMethods } from './dataAPI';
 import { setLocalStorageData } from './storage';
 
 interface MainState {
   posts: Array<IPostModel>;
+  allPosts: Array<IPostModel>;
   currentPost: Nullable<IPostModel>;
   messages: Array<IMessageModel>;
   token: Nullable<string>;
@@ -65,6 +68,7 @@ interface MainState {
 
 const initialState: MainState = {
   posts: [],
+  allPosts: [],
   currentPost: null,
   messages: [],
   token: null,
@@ -443,6 +447,28 @@ export const deletePostAsync = createAsyncThunk(
   }
 );
 
+// get all posts data
+export const getAllPostsAsync = createAsyncThunk(
+  'post/get-all',
+  async (data: IGetAllPostsRequest): Promise<Nullable<IGetAllPostsResponse>> => {
+    const params = new URLSearchParams();
+    params.set('lang', data.lang);
+
+    const getAllPostsURL = `api/post/?${params}`;
+    const getAllPostsResponse: Undefinable<Response> = await requestData(
+      getAllPostsURL,
+      requestMethods.get,
+      undefined,
+      undefined
+    );
+    if (getAllPostsResponse) {
+      const getAllPostsResponseData: IGetAllPostsResponse = await getAllPostsResponse.json();
+      return getAllPostsResponseData;
+    }
+    return null;
+  }
+);
+
 // get the specified post data
 export const getOnePostAsync = createAsyncThunk(
   'post/get-one',
@@ -563,6 +589,9 @@ export const mainSlice = createSlice({
       { payload }: PayloadAction<Nullable<IPostModel>>
     ) {
       state.currentPost = payload;
+    },
+    setAllPosts(state: WritableDraft<MainState>, { payload }: PayloadAction<Array<IPostModel>>) {
+      state.allPosts = payload;
     },
   },
   extraReducers: (builder) => {
@@ -936,6 +965,22 @@ export const mainSlice = createSlice({
       .addCase(getOnePostAsync.rejected, (state, { error }) => {
         state.userRequestStatus = 'failed';
         console.error('\x1b[40m\x1b[31m\x1b[1m', error.message);
+      })
+
+      // get all posts data
+      .addCase(getAllPostsAsync.pending, (state) => {
+        state.userRequestStatus = 'loading';
+      })
+      .addCase(getAllPostsAsync.fulfilled, (state, { payload }) => {
+        state.userRequestStatus = 'idle';
+
+        if (payload) {
+          state.allPosts = payload.postsData;
+        }
+      })
+      .addCase(getAllPostsAsync.rejected, (state, { error }) => {
+        state.userRequestStatus = 'failed';
+        console.error('\x1b[40m\x1b[31m\x1b[1m', error.message);
       });
   },
 });
@@ -965,6 +1010,7 @@ export const {
     setMessages,
     setPosts,
     setCurrentPost,
+    setAllPosts,
   },
 } = mainSlice;
 
