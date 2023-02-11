@@ -394,6 +394,7 @@ export const createPostAsync = createAsyncThunk(
           const createPostResponseData: ICreatePostResponse = await createPostResponse.json();
           const getOneUserResponseData: IGetOneUserResponse = await getOneUserResponse.json();
           getOneUserResponseData.message = createPostResponseData.message;
+          getOneUserResponseData.statusCode = createPostResponse.status;
           return getOneUserResponseData;
         }
       }
