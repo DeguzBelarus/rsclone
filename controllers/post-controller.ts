@@ -182,15 +182,17 @@ class PostController {
 
   async getOnePost(request: Request, response: Response, next: NextFunction) {
     try {
-      if (Post) {
+      if (Post && Comment) {
         const { id } = request.params;
         const { lang } = request.query;
 
-        const foundPost = await Post.findOne({ where: { id } });
+        const foundPost = await Post.findOne({
+          where: { id }, include: [{ model: Comment, as: "comments" }],
+        });
         if (foundPost) {
-          const { id, date, media, postHeading, postText, userId, editDate } = foundPost.dataValues;
+          const { id, date, media, postHeading, postText, userId, editDate, comments } = foundPost.dataValues;
           return response.json({
-            postData: { id, date, media, postHeading, postText, userId, editDate },
+            postData: { id, date, media, postHeading, postText, userId, editDate, comments },
             message: lang === 'ru' ?
               "Данные поста успешно получены" :
               "The post data has been successfully received",

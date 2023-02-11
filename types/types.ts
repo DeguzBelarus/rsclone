@@ -26,16 +26,6 @@ export interface FormidableFile {
   hash: Nullable<string | object>;
 }
 
-export interface IPostModel {
-  id?: number;
-  date: string;
-  editDate?: string;
-  postHeading: string;
-  postText: string;
-  media: string | FormidableFile;
-  userId: number;
-}
-
 export interface ICommentModel {
   id?: number;
   date: string;
@@ -44,6 +34,17 @@ export interface ICommentModel {
   authorNickname: string;
   postId: number;
   userId: number;
+}
+
+export interface IPostModel {
+  id?: number;
+  date: string;
+  editDate?: string;
+  postHeading: string;
+  postText: string;
+  media: string | FormidableFile;
+  userId: number;
+  comments?: Array<ICommentModel>;
 }
 
 export interface IMessageModel {
