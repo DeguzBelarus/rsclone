@@ -140,6 +140,46 @@ class PostController {
     }
   }
 
+  async getAllPosts(request: Request, response: Response, next: NextFunction) {
+    try {
+      if (Post) {
+        const { lang } = request.query;
+
+        const foundPosts = await Post.findAll();
+        if (foundPosts) {
+          return response.json({
+            postsData: foundPosts.map((post) => {
+              return {
+                id: post.dataValues.id,
+                date: post.dataValues.date,
+                editDate: post.dataValues.editDate,
+                postHeading: post.dataValues.postHeading,
+                postText: post.dataValues.postText,
+                media: post.dataValues.media,
+                userId: post.dataValues.userId,
+              }
+            }),
+            message: lang === 'ru' ?
+              "Данные о всех постах успешно получены" :
+              "Data on all posts has been successfully received",
+          });
+        } else {
+          return next(
+            ApiError.internalServerError(
+              lang === 'ru' ?
+                "Невозможно получить данные о всех постах" :
+                "It is impossible to get data on all posts"
+            )
+          );
+        }
+      }
+    } catch (exception: unknown) {
+      if (exception instanceof Error) {
+        next(ApiError.badRequest(exception.message));
+      }
+    }
+  }
+
   async getOnePost(request: Request, response: Response, next: NextFunction) {
     try {
       if (Post) {
@@ -148,9 +188,9 @@ class PostController {
 
         const foundPost = await Post.findOne({ where: { id } });
         if (foundPost) {
-          const { id, date, media, postHeading, postText, userId } = foundPost.dataValues;
+          const { id, date, media, postHeading, postText, userId, editDate } = foundPost.dataValues;
           return response.json({
-            postData: { id, date, media, postHeading, postText, userId },
+            postData: { id, date, media, postHeading, postText, userId, editDate },
             message: lang === 'ru' ?
               "Данные поста успешно получены" :
               "The post data has been successfully received",
