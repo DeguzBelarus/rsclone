@@ -153,6 +153,7 @@ export interface AlertMessage {
 export interface IPostModel {
   id?: number;
   date: string;
+  editDate?: string;
   postHeading: string;
   postText: string;
   media: string | File;
@@ -164,14 +165,24 @@ export interface IGetOnePostRequest {
   lang: CurrentLanguageType;
 }
 
+export interface IGetAllPostsRequest {
+  lang: CurrentLanguageType;
+}
+
 export interface IGetOnePostResponse {
   postData: IPostModel;
+  message: string;
+}
+
+export interface IGetAllPostsResponse {
+  postsData: Array<IPostModel>;
   message: string;
 }
 
 export interface ICommentModel {
   id?: number;
   date: string;
+  editDate?: string;
   commentText: string;
   authorNickname: string;
 }

@@ -61,6 +61,10 @@ export const Post: Nullable<ModelDefined<IPostModel, IPostModel>> = sequelizeCon
     date: {
       type: DataTypes.STRING,
     },
+    editDate: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     postHeading: {
       type: DataTypes.STRING,
     },
@@ -82,6 +86,10 @@ export const Comment: Nullable<ModelDefined<ICommentModel, ICommentModel>> = seq
     },
     date: {
       type: DataTypes.STRING,
+    },
+    editDate: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
     commentText: {
       type: DataTypes.STRING,
