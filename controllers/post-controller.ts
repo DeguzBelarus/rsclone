@@ -279,6 +279,83 @@ class PostController {
       }
     }
   }
+
+  async update(request: IRequestModified, response: Response, next: NextFunction): Promise<void | Response> {
+    try {
+      const { requesterId } = request;
+      const { lang } = request.query;
+      const { id } = request.params;
+      const { postHeading, postText } = request.body;
+
+      if (!id || !lang || !postText || !postHeading) {
+        return next(
+          ApiError.badRequest(
+            lang === 'ru' ?
+              "Недостаточно данных для выполнения операции" :
+              "Not enough data to perform the operation"
+          )
+        );
+      }
+
+      if (postHeading.length > 200) {
+        return next(
+          ApiError.badRequest(
+            lang === "ru" ?
+              "Максимальное количество символов в заголовке поста - 200" :
+              "The maximum number of characters in the title of a post is 200"
+          )
+        );
+      }
+      if (postText.length > 1000) {
+        return next(
+          ApiError.badRequest(
+            lang === "ru" ?
+              "Максимальное количество символов в тексте поста - 1000" :
+              "The maximum number of characters in the text of the post is 1000"
+          )
+        );
+      }
+
+      if (Post) {
+        const foundPostForUpdating = await Post.findOne({ where: { id }, });
+        if (!foundPostForUpdating) {
+          return next(
+            ApiError.badRequest(
+              lang === 'ru' ?
+                "Указанный пост не найден" :
+                "The specified post was not found"
+            )
+          );
+        }
+
+        if (requesterId) {
+          if (foundPostForUpdating.dataValues.userId !== requesterId) {
+            return next(
+              ApiError.forbidden(lang === 'ru' ? "Нет прав" : "No rights"));
+          }
+        } else {
+          return next(
+            ApiError.forbidden(lang === 'ru' ? "Нет прав" : "No rights"));
+        }
+
+        await foundPostForUpdating.update({
+          editDate: String(Date.now()),
+          postHeading,
+          postText,
+        });
+
+        return response.status(200).json({
+          message: lang === 'ru' ?
+            "Пост успешно обновлен" :
+            "The post was successfully updated",
+        });
+      }
+    } catch (exception: unknown) {
+      if (exception instanceof Error) {
+        next(ApiError.badRequest(exception.message));
+      }
+    }
+  }
 };
 
 export const postController = new PostController();
