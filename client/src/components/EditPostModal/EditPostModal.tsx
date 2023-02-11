@@ -57,6 +57,7 @@ export const EditPostModal = ({ id, open, onClose, onSuccess }: EditPostModalPro
     setTitleError(false);
     setBodyError(false);
     setMediaValue(undefined);
+    setTouched(false);
   };
 
   const handleClose = () => {
@@ -66,10 +67,12 @@ export const EditPostModal = ({ id, open, onClose, onSuccess }: EditPostModalPro
   const handleMediaChange = (event: ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     setMediaValue(files ? files[0] : undefined);
+    setTouched(true);
   };
 
   const handleSave = async () => {
-    if (!token || userId === null) return;
+    const isValid = touched && validateTitle(titleValue) && validateBody(bodyValue);
+    if (!isValid || !token || userId === null) return;
 
     const requestData = new FormData();
     requestData.append('lang', currentLanguage);
@@ -89,7 +92,6 @@ export const EditPostModal = ({ id, open, onClose, onSuccess }: EditPostModalPro
 
     const result = await dispatch(createPostAsync(postData));
     if (result && result.meta.requestStatus === 'fulfilled') {
-      console.log(result.payload);
       handleClose();
       if (onSuccess) onSuccess();
     }
@@ -128,37 +130,39 @@ export const EditPostModal = ({ id, open, onClose, onSuccess }: EditPostModalPro
           onChange={validateBody}
           helperText={bodyError ? language(lng.postBodyHint) : ' '}
         />
-        <div className={styles.media}>
-          <Tooltip title={language(lng.postUploadMedia)}>
-            <IconButton component="label" color="primary">
-              <input
-                id="avatar-image"
-                accept="image/*"
-                hidden
-                type="file"
-                onChange={handleMediaChange}
-              />
-              <AddAPhoto />
-            </IconButton>
-          </Tooltip>
-          {mediaValue && (
-            <Tooltip title={language(lng.postUploadMediaDelete)}>
-              <IconButton
-                component="label"
-                color="warning"
-                onClick={() => setMediaValue(undefined)}
-              >
-                <DeleteForever />
+        {id === undefined && (
+          <div className={styles.media}>
+            <Tooltip title={language(lng.postUploadMedia)}>
+              <IconButton component="label" color="primary">
+                <input
+                  id="avatar-image"
+                  accept="image/*"
+                  hidden
+                  type="file"
+                  onChange={handleMediaChange}
+                />
+                <AddAPhoto />
               </IconButton>
             </Tooltip>
-          )}
-          <span className={styles.file}>{mediaValue && mediaValue.name}</span>
-        </div>
+            {mediaValue && (
+              <Tooltip title={language(lng.postUploadMediaDelete)}>
+                <IconButton
+                  component="label"
+                  color="warning"
+                  onClick={() => setMediaValue(undefined)}
+                >
+                  <DeleteForever />
+                </IconButton>
+              </Tooltip>
+            )}
+            <span className={styles.file}>{mediaValue && mediaValue.name}</span>
+          </div>
+        )}
         {mediaValue && <img className={styles.preview} src={URL.createObjectURL(mediaValue)} />}
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>{language(lng.cancel)}</Button>
-        <Button color="success" variant="contained" onClick={handleSave}>
+        <Button color="success" variant="contained" onClick={handleSave} disabled={!touched}>
           {language(lng.save)}
         </Button>
       </DialogActions>
