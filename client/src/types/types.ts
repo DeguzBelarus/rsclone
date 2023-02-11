@@ -165,8 +165,17 @@ export interface IGetOnePostRequest {
   lang: CurrentLanguageType;
 }
 
+export interface IGetAllPostsRequest {
+  lang: CurrentLanguageType;
+}
+
 export interface IGetOnePostResponse {
   postData: IPostModel;
+  message: string;
+}
+
+export interface IGetAllPostsResponse {
+  postsData: Array<IPostModel>;
   message: string;
 }
 
