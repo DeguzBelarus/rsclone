@@ -1,5 +1,5 @@
 import { Fab } from '@mui/material';
-import React from 'react';
+import React, { MouseEventHandler } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import combineClasses from 'lib/combineClasses';
 
@@ -10,15 +10,17 @@ interface FabButtonProps {
   className?: string;
   value?: string;
   icon?: React.ReactNode;
+  onClick?: MouseEventHandler;
 }
 
-export const FabButton = ({ className, value, icon }: FabButtonProps) => {
+export const FabButton = ({ className, value, icon, onClick }: FabButtonProps) => {
   return (
     <Fab
       className={combineClasses(styles.button, className)}
       variant="extended"
       color="secondary"
       aria-label="add"
+      onClick={onClick}
       sx={{ position: 'fixed' }}
     >
       {icon ? icon : <AddIcon />}

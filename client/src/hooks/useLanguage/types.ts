@@ -56,12 +56,22 @@ export enum lng {
 
   confirm,
   cancel,
+  save,
 
   searchPlaceholder,
   searchWelcome,
   searchNotFound,
 
   admin,
+
+  newPostTitle,
+  editPostTitle,
+  postTitle,
+  postTitleHint,
+  postBody,
+  postBodyHint,
+  postUploadMedia,
+  postUploadMediaDelete,
 }
 
 export type LangaugeData = {

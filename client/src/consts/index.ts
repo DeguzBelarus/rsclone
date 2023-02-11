@@ -10,6 +10,9 @@ export const CITY_PATTERN = /^.{3,}$|^$/;
 export const FIRST_NAME_PATTERN = /^.{3,}$|^$/;
 export const LAST_NAME_PATTERN = /^.{3,}$|^$/;
 
+export const POST_TITLE_PATTERN = /^.+$/;
+export const POST_BODY_PATTERN = /^.+$/s;
+
 export const ALERT_AUTO_HIDE_DURATION = 4000;
 
 export const LANGUAGES = ['en', 'ru'];

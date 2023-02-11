@@ -6,12 +6,16 @@ export default function useValidateInput(
   error: React.Dispatch<React.SetStateAction<boolean>>,
   setTouched: React.Dispatch<React.SetStateAction<boolean>>
 ) {
-  return function (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | string) {
+  return function (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | string): boolean {
     const value = typeof event === 'string' ? event : event.target.value;
     setter(value);
-    if (pattern instanceof RegExp) {
-      error(!pattern.test(value));
-    } else error(pattern(value));
+    const valid = pattern instanceof RegExp ? pattern.test(value) : !pattern(value);
+
+    // if (pattern instanceof RegExp) {
+    //   error(!pattern.test(value));
+    // } else error(pattern(value));
+    error(!valid);
     setTouched(true);
+    return valid;
   };
 }
