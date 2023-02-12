@@ -24,6 +24,7 @@ import {
   getUserId,
   updatePostAsync,
 } from 'app/mainSlice';
+import { ICreatePostRequestData, IUpdatePostRequest } from '../../types/types';
 import { AddAPhoto, DeleteForever } from '@mui/icons-material';
 import { MediaContainer } from 'components/MediaContainer/MediaContainer';
 
@@ -99,7 +100,7 @@ export const EditPostModal = ({
   };
 
   const editPost = async (id: number, token: string): Promise<boolean> => {
-    const postData = {
+    const postData: IUpdatePostRequest = {
       lang: currentLanguage,
       postId: id,
       token,

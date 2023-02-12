@@ -1,5 +1,3 @@
-import useLanguage from 'hooks/useLanguage';
-import { lng } from 'hooks/useLanguage/types';
 import getURLContentType from 'lib/URLContentType';
 import React from 'react';
 
@@ -25,7 +23,12 @@ export const MediaContainer = ({ src, fileName, maxHeight, contain }: MediaConta
         />
       )}
       {contentType === 'video' && (
-        <video className={styles.video}>
+        <video
+          className={styles.video}
+          controls
+          autoPlay
+          style={{ maxHeight: maxHeight, width: '100%', objectFit: contain ? 'contain' : 'cover' }}
+        >
           <source src={src} />
         </video>
       )}
