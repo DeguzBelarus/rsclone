@@ -19,6 +19,7 @@ import {
   getIsLoginNotificationSent,
   setIsLoginNotificationSent,
   getUsersOnline,
+  getAllPostsAsync,
 } from 'app/mainSlice';
 import { IGetOneUserRequestData, Nullable, RoleType } from 'types/types';
 import styles from './UserRoom.module.scss';
@@ -30,6 +31,7 @@ import Avatar from 'components/Avatar';
 import { lng } from 'hooks/useLanguage/types';
 import { FabButton } from 'components/FabButton/FabButton';
 import { EditPostModal } from 'components/EditPostModal/EditPostModal';
+import { Posts } from 'components/Posts/Posts';
 
 interface Props {
   socket: Socket<DefaultEventsMap, DefaultEventsMap>;
@@ -139,6 +141,7 @@ export const UserRoom: FC<Props> = ({ socket }) => {
         )}
       </div>
       <div className={styles.posts}>
+        <Posts data={[]} />
         {[
           'Lorem ipsum dolor sit amet consectetur adipisicing elit. Omnis suscipit, possimus animi quis hic odit maxime culpa nemo ab atque?',
           ,
