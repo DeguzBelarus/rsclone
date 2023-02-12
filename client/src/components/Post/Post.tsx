@@ -2,13 +2,13 @@ import { DeleteForever, Edit as EditIcon, Share as ShareIcon } from '@mui/icons-
 import { Card, CardActions, CardContent, IconButton, Tooltip } from '@mui/material';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { deletePostAsync, getCurrentLanguage, getToken, getUserId } from 'app/mainSlice';
+import { ConfirmModal } from 'components/ConfirmModal/ConfirmModal';
 import { EditPostModal } from 'components/EditPostModal/EditPostModal';
 import { MediaContainer } from 'components/MediaContainer/MediaContainer';
 import useLanguage from 'hooks/useLanguage';
 import { lng } from 'hooks/useLanguage/types';
 import React, { useState } from 'react';
 import { IPostModel } from 'types/types';
-import { Modal } from 'components/Modal/Modal';
 
 import styles from './Post.module.scss';
 
@@ -87,14 +87,14 @@ export const Post = ({ data }: PostProps) => {
           setText(text);
         }}
       />
-      <Modal
+      <ConfirmModal
         open={deletePostModalOpen}
         title={language(lng.postDelete)}
         onClose={() => setDeletePostModalOpen(false)}
         onSuccess={handleDelete}
       >
         {language(lng.postDeleteMsg)}
-      </Modal>
+      </ConfirmModal>
     </Card>
   );
 };

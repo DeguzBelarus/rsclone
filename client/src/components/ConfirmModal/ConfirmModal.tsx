@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogTitle, DialogActions, Button } from '@mui/
 import useLanguage from 'hooks/useLanguage';
 import { lng } from 'hooks/useLanguage/types';
 
-export interface ModalProps {
+export interface ConfirmModalProps {
   open: boolean;
   title?: string;
   onSuccess?: () => void;
@@ -12,7 +12,7 @@ export interface ModalProps {
   children?: React.ReactNode;
 }
 
-export const Modal = ({ open, title, onClose, onSuccess, children }: ModalProps) => {
+export const ConfirmModal = ({ open, title, onClose, onSuccess, children }: ConfirmModalProps) => {
   const langauge = useLanguage();
 
   const handleClose = () => {
