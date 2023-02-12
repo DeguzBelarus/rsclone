@@ -534,7 +534,7 @@ export const updatePostAsync = createAsyncThunk(
           const updatePostResponseData: IDeletePostResponse = await updatePostResponse.json();
           const getOnePostResponseData: IGetOnePostResponse = await getOnePostResponse.json();
           getOnePostResponseData.message = updatePostResponseData.message;
-          getOnePostResponseData.statusCode = updatePostResponseData.statusCode;
+          getOnePostResponseData.statusCode = updatePostResponse.status;
           return getOnePostResponseData;
         }
       }
