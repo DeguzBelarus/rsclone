@@ -7,12 +7,20 @@ import { lng } from 'hooks/useLanguage/types';
 export interface ConfirmModalProps {
   open: boolean;
   title?: string;
+  closeOnly?: boolean;
   onSuccess?: () => void;
   onClose?: () => void;
   children?: React.ReactNode;
 }
 
-export const ConfirmModal = ({ open, title, onClose, onSuccess, children }: ConfirmModalProps) => {
+export const ConfirmModal = ({
+  open,
+  title,
+  closeOnly,
+  onClose,
+  onSuccess,
+  children,
+}: ConfirmModalProps) => {
   const langauge = useLanguage();
 
   const handleClose = () => {
@@ -29,8 +37,14 @@ export const ConfirmModal = ({ open, title, onClose, onSuccess, children }: Conf
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>{children}</DialogContent>
       <DialogActions>
-        <Button onClick={handleClose}>{langauge(lng.cancel)}</Button>
-        <Button onClick={handleConfirm}>{langauge(lng.confirm)}</Button>
+        {closeOnly ? (
+          <Button onClick={handleClose}>{langauge(lng.close)}</Button>
+        ) : (
+          <>
+            <Button onClick={handleClose}>{langauge(lng.cancel)}</Button>
+            <Button onClick={handleConfirm}>{langauge(lng.confirm)}</Button>
+          </>
+        )}
       </DialogActions>
     </Dialog>
   );

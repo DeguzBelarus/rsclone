@@ -56,6 +56,7 @@ export enum lng {
 
   confirm,
   cancel,
+  close,
   save,
 
   searchPlaceholder,
@@ -76,7 +77,8 @@ export enum lng {
   postDelete,
   postDeleteMsg,
   postEdit,
-  postShare,
+  postCopyLink,
+  postCopyLinkSuccess,
 }
 
 export type LangaugeData = {

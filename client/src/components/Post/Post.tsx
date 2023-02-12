@@ -1,7 +1,7 @@
-import { DeleteForever, Edit as EditIcon, Share as ShareIcon } from '@mui/icons-material';
-import { Card, CardActions, CardContent, IconButton, Tooltip } from '@mui/material';
+import { DeleteForever, Edit as EditIcon, Link as CopyLinkIcon } from '@mui/icons-material';
+import { Card, CardActions, CardContent, IconButton, TextField, Tooltip } from '@mui/material';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
-import { deletePostAsync, getCurrentLanguage, getToken, getUserId } from 'app/mainSlice';
+import { deletePostAsync, getCurrentLanguage, getToken, getUserId, setAlert } from 'app/mainSlice';
 import { ConfirmModal } from 'components/ConfirmModal/ConfirmModal';
 import { EditPostModal } from 'components/EditPostModal/EditPostModal';
 import { MediaContainer } from 'components/MediaContainer/MediaContainer';
@@ -42,8 +42,15 @@ export const Post = ({ data }: PostProps) => {
     dispatch(deletePostAsync(deleteRequest));
   };
 
-  const handleShare = () => {
-    console.log('share');
+  const handleCopyLink = () => {
+    const link = `${window.location.origin}/posts/${id}`;
+    navigator.clipboard.writeText(link);
+    dispatch(
+      setAlert({
+        message: language(lng.postCopyLinkSuccess).replace('%', link),
+        severity: 'success',
+      })
+    );
   };
 
   return (
@@ -61,9 +68,9 @@ export const Post = ({ data }: PostProps) => {
             <EditIcon />
           </IconButton>
         </Tooltip>
-        <Tooltip title={language(lng.postShare)}>
-          <IconButton component="label" onClick={handleShare}>
-            <ShareIcon />
+        <Tooltip title={language(lng.postCopyLink)}>
+          <IconButton component="label" onClick={handleCopyLink}>
+            <CopyLinkIcon />
           </IconButton>
         </Tooltip>
         <Tooltip title={language(lng.postDelete)}>

@@ -58,6 +58,7 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.confirm]: 'Confirm',
     [lng.cancel]: 'Cancel',
     [lng.save]: 'Save',
+    [lng.close]: 'Close',
 
     [lng.searchPlaceholder]: 'Search users...',
     [lng.searchWelcome]: 'Start typing to look for users...',
@@ -77,7 +78,8 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.postDelete]: 'Delete post',
     [lng.postDeleteMsg]: 'Are you sure you want to delete this post? This cannot be undone.',
     [lng.postEdit]: 'Edit post',
-    [lng.postShare]: 'Share post',
+    [lng.postCopyLink]: 'Copy post link',
+    [lng.postCopyLinkSuccess]: 'The link was copied to clipboard (%)',
   },
 
   ru: {
@@ -136,6 +138,7 @@ const LANGUAGE_DATA: LangaugeData = {
 
     [lng.confirm]: 'Подтвердить',
     [lng.cancel]: 'Отменить',
+    [lng.close]: 'Закрыть',
     [lng.save]: 'Сохранить',
 
     [lng.searchPlaceholder]: 'Поиск',
@@ -157,7 +160,8 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.postDeleteMsg]: 'Вы уверены, что хотите удалить этот пост? Это действие необратимо.',
 
     [lng.postEdit]: 'Редактировать пост',
-    [lng.postShare]: 'Поделиться постом',
+    [lng.postCopyLink]: 'Скопировать ссылку',
+    [lng.postCopyLinkSuccess]: 'Ссылка на пост была скопирована (%)',
   },
 };
 
