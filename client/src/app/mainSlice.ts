@@ -1302,6 +1302,7 @@ export const getAlert = ({ main: { alert } }: RootState) => alert;
 export const getUserRequestStatus = ({ main: { userRequestStatus } }: RootState) =>
   userRequestStatus;
 export const getPosts = ({ main: { posts } }: RootState) => posts;
+export const getAllPosts = ({ main: { allPosts } }: RootState) => allPosts;
 export const getCurrentPost = ({ main: { currentPost } }: RootState) => currentPost;
 export const getMessages = ({ main: { messages } }: RootState) => messages;
 
