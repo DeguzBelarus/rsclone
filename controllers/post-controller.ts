@@ -235,8 +235,6 @@ class PostController {
               ApiError.forbidden(lang === 'ru' ? "Нет прав" : "No rights"));
           }
 
-          await Post.destroy({ where: { id } });
-
           const foundCommentsForDeleting = await Comment.findOne({
             where: {
               postId: foundPostForDeleting.dataValues.id,
@@ -249,6 +247,8 @@ class PostController {
               }
             });
           }
+
+          await Post.destroy({ where: { id } });
 
           if (fs.existsSync(path.join(__dirname, "..", "static",
             `${foundPostForDeleting.dataValues.userId}`, "posts",
