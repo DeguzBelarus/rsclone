@@ -29,9 +29,10 @@ import styles from './Post.module.scss';
 interface PostProps {
   data: IPostModel;
   single?: boolean;
+  onDelete?: () => void;
 }
 
-export const Post = ({ data, single }: PostProps) => {
+export const Post = ({ data, single, onDelete }: PostProps) => {
   const language = useLanguage();
   const dispatch = useAppDispatch();
   const token = useAppSelector(getToken);
@@ -50,7 +51,7 @@ export const Post = ({ data, single }: PostProps) => {
   const mediaURL = media && media !== '' ? `/${userId}/posts/${id}/${media}` : undefined;
   const isEditable = role === 'ADMIN' || userId === ownId;
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (!id || !token || !ownId) return;
     const deleteRequest = {
       lang,
@@ -58,7 +59,8 @@ export const Post = ({ data, single }: PostProps) => {
       ownId,
       token,
     };
-    dispatch(deletePostAsync(deleteRequest));
+    const result = await dispatch(deletePostAsync(deleteRequest));
+    if (result.meta.requestStatus === 'fulfilled' && onDelete) onDelete();
   };
 
   const handleCopyLink = () => {
