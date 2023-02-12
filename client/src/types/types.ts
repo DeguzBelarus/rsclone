@@ -165,6 +165,21 @@ export interface IGetOnePostResponse {
   statusCode?: number;
 }
 
+export interface ICreateCommentRequest {
+  lang: CurrentLanguageType;
+  token: string;
+  postId: number;
+  userId: number;
+  requestData: {
+    commentText: string;
+  };
+}
+
+export interface ICreateCommentResponse {
+  message: string;
+  statusCode?: number;
+}
+
 export interface IUpdatePostRequest {
   lang: CurrentLanguageType;
   postId: number;
