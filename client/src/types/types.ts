@@ -229,6 +229,17 @@ export interface IMessageModel {
   isRead: boolean;
 }
 
+export interface IDeleteCommentRequest {
+  lang: CurrentLanguageType;
+  commentId: number;
+  token: string;
+}
+
+export interface IDeleteCommentResponse {
+  message: string;
+  statusCode?: number;
+}
+
 export interface IFullUserData extends ITokenDecodeData {
   age?: Nullable<number>;
   country?: Nullable<string>;
