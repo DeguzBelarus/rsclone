@@ -24,9 +24,7 @@ export const Post = ({ data }: PostProps) => {
   const { userId, id, media } = data;
   const mediaURL = media && media !== '' ? `/${userId}/posts/${id}/${media}` : undefined;
 
-  const handleEdit = () => {
-    console.log('edit');
-  };
+  const handleEdit = () => {};
 
   const handleDelete = () => {
     if (!id || !token || !ownId) return;
@@ -45,7 +43,6 @@ export const Post = ({ data }: PostProps) => {
 
   return (
     <Card className={styles.post}>
-      {/* <CardHeader title={data.postHeading} /> */}
       <CardContent sx={{ padding: '0' }}>
         <div className={styles.media}>
           <MediaContainer src={mediaURL} />

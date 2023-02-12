@@ -7,14 +7,23 @@ import styles from './MediaContainer.module.scss';
 
 interface MediaContainerProps {
   src?: string;
+  fileName?: string;
+  maxHeight?: string;
+  contain?: boolean;
 }
 
-export const MediaContainer = ({ src }: MediaContainerProps) => {
-  const contentType = getURLContentType(src || '');
-
+export const MediaContainer = ({ src, fileName, maxHeight, contain }: MediaContainerProps) => {
+  const contentType = getURLContentType(fileName || src || '');
   return (
     <>
-      {contentType === 'img' && <img className={styles.image} src={src} alt="Post image" />}
+      {contentType === 'img' && (
+        <img
+          className={styles.image}
+          src={src}
+          alt="Post image"
+          style={{ maxHeight: maxHeight, width: '100%', objectFit: contain ? 'contain' : 'cover' }}
+        />
+      )}
       {contentType === 'video' && (
         <video className={styles.video}>
           <source src={src} />

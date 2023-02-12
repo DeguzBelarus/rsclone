@@ -20,6 +20,7 @@ import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { createPostAsync, getCurrentLanguage, getToken, getUserId } from 'app/mainSlice';
 import { ICreatePostRequestData } from '../../types/types';
 import { AddAPhoto, DeleteForever } from '@mui/icons-material';
+import { MediaContainer } from 'components/MediaContainer/MediaContainer';
 
 export interface EditPostModalProps {
   open: boolean;
@@ -34,6 +35,7 @@ export const EditPostModal = ({ id, open, onClose, onSuccess }: EditPostModalPro
   const [titleError, setTitleError] = useState(false);
   const [bodyError, setBodyError] = useState(false);
   const [mediaValue, setMediaValue] = useState<File>();
+  const [mediaFileName, setMediaFileName] = useState<string>();
   const [touched, setTouched] = useState(false);
 
   const language = useLanguage();
@@ -66,6 +68,7 @@ export const EditPostModal = ({ id, open, onClose, onSuccess }: EditPostModalPro
 
   const handleMediaChange = (event: ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
+    setMediaFileName(files && files[0] ? files[0].name : undefined);
     setMediaValue(files ? files[0] : undefined);
     setTouched(true);
   };
@@ -157,7 +160,14 @@ export const EditPostModal = ({ id, open, onClose, onSuccess }: EditPostModalPro
             <span className={styles.file}>{mediaValue && mediaValue.name}</span>
           </div>
         )}
-        {mediaValue && <img className={styles.preview} src={URL.createObjectURL(mediaValue)} />}
+        {mediaValue && (
+          <MediaContainer
+            fileName={mediaFileName}
+            src={URL.createObjectURL(mediaValue)}
+            contain
+            maxHeight="min(250px, 30vh)"
+          />
+        )}
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>{language(lng.cancel)}</Button>
