@@ -66,6 +66,8 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.searchNotFound]: 'Users were not found for this input (%)',
 
     [lng.admin]: 'admin',
+    [lng.online]: 'Online',
+    [lng.offline]: 'Offline',
 
     [lng.newPostTitle]: 'New post',
     [lng.editPostTitle]: 'Edit post',
@@ -150,6 +152,8 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.searchNotFound]: `Пользователи по запросу '%' не были найдены`,
 
     [lng.admin]: 'администратор',
+    [lng.online]: 'Онлайн',
+    [lng.offline]: 'Оффлайн',
 
     [lng.newPostTitle]: 'Новый пост',
     [lng.editPostTitle]: 'Редактировать пост',

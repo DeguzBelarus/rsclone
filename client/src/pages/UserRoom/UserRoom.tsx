@@ -29,7 +29,7 @@ import {
 import { IGetOneUserRequestData, Nullable, RoleType } from 'types/types';
 import styles from './UserRoom.module.scss';
 import useLanguage from 'hooks/useLanguage';
-import { Chip } from '@mui/material';
+import { Chip, Tooltip } from '@mui/material';
 import FaceIcon from '@mui/icons-material/Face';
 import DotIcon from '@mui/icons-material/FiberManualRecord';
 import Avatar from 'components/Avatar';
@@ -119,17 +119,30 @@ export const UserRoom: FC<Props> = ({ socket }) => {
   ) => {
     return (
       <div className={styles.user}>
-        <Chip
-          className={styles.online}
-          color="success"
-          icon={<FaceIcon />}
-          label={`online: ${usersOnline.length}`}
-        />
+        <Tooltip
+          arrow
+          title={
+            <ul>
+              {usersOnline.map((nickname) => (
+                <li key={nickname}>{nickname}</li>
+              ))}
+            </ul>
+          }
+        >
+          <Chip
+            className={styles.online}
+            color="success"
+            icon={<FaceIcon />}
+            label={`online: ${usersOnline.length}`}
+          />
+        </Tooltip>
         <div className={styles.info}>
           <Avatar size="min(40vw, 20rem)" user={id || undefined} avatarSrc={avatar || undefined} />
           <span className={styles.nickname}>
             <span className={styles.nick}>{nick}</span>
-            {online && <DotIcon color="success" />}
+            <Tooltip arrow title={language(online ? lng.online : lng.offline)}>
+              <DotIcon color={online ? 'success' : 'disabled'} />
+            </Tooltip>
           </span>
           <div className={styles.additional}>
             {admin && <span>({language(lng.admin)})</span>}
@@ -179,7 +192,7 @@ export const UserRoom: FC<Props> = ({ socket }) => {
               guestUserData.lastName,
               guestUserData.avatar,
               guestUserData.role === 'ADMIN',
-              usersOnline.find((id) => Number(id) === guestUserData.id) !== undefined
+              usersOnline.find((nickname) => nickname === guestUserData.nickname) !== undefined
             )}
             {guestUserData.posts && <Posts data={guestUserData.posts} />}
           </>

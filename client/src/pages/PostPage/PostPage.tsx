@@ -1,5 +1,5 @@
 import { useAppDispatch, useAppSelector } from 'app/hooks';
-import { getCurrentLanguage, getCurrentPost, getOnePostAsync } from 'app/mainSlice';
+import { getCurrentLanguage, getCurrentPost, getOnePostAsync, setCurrentPost } from 'app/mainSlice';
 import { Post } from 'components/Post/Post';
 import useLanguage from 'hooks/useLanguage';
 import { lng } from 'hooks/useLanguage/types';
@@ -20,6 +20,9 @@ export const PostPage: FC = (): JSX.Element => {
     if (!Number.isNaN(postId)) {
       dispatch(getOnePostAsync({ id: postId, lang }));
     }
+    return () => {
+      dispatch(setCurrentPost(null));
+    };
   }, [id]);
 
   return post ? (

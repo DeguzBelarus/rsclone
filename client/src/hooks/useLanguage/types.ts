@@ -65,6 +65,8 @@ export enum lng {
   searchNotFound,
 
   admin,
+  online,
+  offline,
 
   newPostTitle,
   editPostTitle,
