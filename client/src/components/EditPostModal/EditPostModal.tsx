@@ -34,7 +34,7 @@ export interface EditPostModalProps {
   postText?: string;
   postHeading?: string;
   onClose?: () => void;
-  onSuccess?: () => void;
+  onSuccess?: (heading: string, text: string) => void;
 }
 
 export const EditPostModal = ({
@@ -88,43 +88,40 @@ export const EditPostModal = ({
     setTouched(true);
   };
 
+  const createPost = async (ownId: number, token: string): Promise<boolean> => {
+    const requestData = new FormData();
+    requestData.append('lang', currentLanguage);
+    requestData.append('postHeading', titleValue);
+    requestData.append('postText', bodyValue);
+    if (mediaValue) requestData.append('media', mediaValue);
+
+    const result = await dispatch(createPostAsync({ ownId, token, requestData }));
+    return result && result.meta.requestStatus === 'fulfilled';
+  };
+
+  const editPost = async (id: number, token: string): Promise<boolean> => {
+    const postData: IUpdatePostRequest = {
+      lang: currentLanguage,
+      postId: id,
+      token,
+      requestData: {
+        postHeading: titleValue,
+        postText: bodyValue,
+      },
+    };
+    const result = await dispatch(updatePostAsync(postData));
+    return result && result.meta.requestStatus === 'fulfilled';
+  };
+
   const handleSave = async () => {
     const isValid = touched && validateTitle(titleValue) && validateBody(bodyValue);
     if (!isValid || !token || userId === null) return;
 
-    if (id === undefined) {
-      const requestData = new FormData();
-      requestData.append('lang', currentLanguage);
-      requestData.append('postHeading', titleValue);
-      requestData.append('postText', bodyValue);
-      if (mediaValue) requestData.append('media', mediaValue);
+    const result = id === undefined ? await createPost(userId, token) : await editPost(id, token);
 
-      const postData: ICreatePostRequestData = {
-        ownId: userId,
-        token,
-        requestData,
-      };
-
-      const result = await dispatch(createPostAsync(postData));
-      if (result && result.meta.requestStatus === 'fulfilled') {
-        handleClose();
-        if (onSuccess) onSuccess();
-      }
-    } else {
-      const postData: IUpdatePostRequest = {
-        lang: currentLanguage,
-        postId: id,
-        token,
-        requestData: {
-          postHeading: titleValue,
-          postText: bodyValue,
-        },
-      };
-      const result = await dispatch(updatePostAsync(postData));
-      if (result && result.meta.requestStatus === 'fulfilled') {
-        handleClose();
-        if (onSuccess) onSuccess();
-      }
+    if (result) {
+      handleClose();
+      if (onSuccess) onSuccess(titleValue, bodyValue);
     }
   };
 

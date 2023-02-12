@@ -29,8 +29,8 @@ export const Modal = ({ open, title, onClose, onSuccess, children }: ModalProps)
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>{children}</DialogContent>
       <DialogActions>
-        <Button onClick={handleConfirm}>{langauge(lng.confirm)}</Button>
         <Button onClick={handleClose}>{langauge(lng.cancel)}</Button>
+        <Button onClick={handleConfirm}>{langauge(lng.confirm)}</Button>
       </DialogActions>
     </Dialog>
   );

@@ -74,6 +74,7 @@ export enum lng {
   postUploadMediaDelete,
 
   postDelete,
+  postDeleteMsg,
   postEdit,
   postShare,
 }

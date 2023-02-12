@@ -75,6 +75,7 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.postUploadMediaDelete]: 'Delete media',
 
     [lng.postDelete]: 'Delete post',
+    [lng.postDeleteMsg]: 'Are you sure you want to delete this post? This cannot be undone.',
     [lng.postEdit]: 'Edit post',
     [lng.postShare]: 'Share post',
   },
@@ -153,6 +154,8 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.postUploadMediaDelete]: 'Удалить медиа',
 
     [lng.postDelete]: 'Удалить пост',
+    [lng.postDeleteMsg]: 'Вы уверены, что хотите удалить этот пост? Это действие необратимо.',
+
     [lng.postEdit]: 'Редактировать пост',
     [lng.postShare]: 'Поделиться постом',
   },
