@@ -27,13 +27,15 @@ export const MediaContainer = ({ src, fileName, maxHeight, contain }: MediaConta
           className={styles.video}
           controls
           autoPlay
+          muted
+          loop
           style={{ maxHeight: maxHeight, width: '100%', objectFit: contain ? 'contain' : 'cover' }}
         >
           <source src={src} />
         </video>
       )}
       {contentType === 'audio' && (
-        <audio className={styles.audio}>
+        <audio controls className={styles.audio} style={{ width: '100%', margin: '1rem' }}>
           <source src={src} />
         </audio>
       )}
