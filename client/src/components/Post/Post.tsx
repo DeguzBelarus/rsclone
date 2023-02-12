@@ -60,7 +60,9 @@ export const Post = ({ data }: PostProps) => {
           <MediaContainer src={mediaURL} />
         </div>
         <div className={styles.heading}>{heading}</div>
-        <div className={styles.body}>{text}</div>
+        <div className={styles.body}>
+          <pre>{text}</pre>
+        </div>
       </CardContent>
       <CardActions disableSpacing>
         <Tooltip title={language(lng.postEdit)}>
