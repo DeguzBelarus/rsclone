@@ -88,6 +88,51 @@ class CommentController {
       }
     }
   }
+
+  async delete(request: IRequestModified, response: Response, next: NextFunction): Promise<void | Response> {
+    try {
+      const { requesterId, role } = request;
+      const { id } = request.params;
+      const { lang } = request.query;
+
+      if (Comment) {
+        const foundCommentForDeleting = await Comment.findOne({
+          where: { id: Number(id) },
+        });
+        if (foundCommentForDeleting) {
+          if (requesterId && role) {
+            if ((requesterId !== foundCommentForDeleting.dataValues.userId) || role !== 'ADMIN') {
+              return next(
+                ApiError.forbidden(lang === 'ru' ? "Нет прав" : "No rights"));
+            }
+          } else {
+            return next(
+              ApiError.forbidden(lang === 'ru' ? "Нет прав" : "No rights"));
+          }
+
+          await Comment.destroy({ where: { id } });
+
+          return response.json({
+            commentOwnerId: foundCommentForDeleting.dataValues.userId,
+            message: lang === 'ru' ?
+              "Комментарий удалён!" :
+              "The comment has been deleted!",
+          });
+        } else {
+          return response.status(204).json({
+            message:
+              lang === "ru"
+                ? "Указанный комментарий не найден"
+                : "The specified comment was not found",
+          });
+        }
+      }
+    } catch (exception: unknown) {
+      if (exception instanceof Error) {
+        next(ApiError.badRequest(exception.message));
+      }
+    }
+  }
 };
 
 export const commentController = new CommentController();
