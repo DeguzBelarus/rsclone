@@ -37,6 +37,8 @@ import {
   IGetAllPostsResponse,
   IUpdatePostRequest,
   IUpdatePostResponse,
+  ICreateCommentRequest,
+  ICreateCommentResponse,
 } from 'types/types';
 import { requestData, requestMethods } from './dataAPI';
 import { setLocalStorageData } from './storage';
@@ -531,6 +533,52 @@ export const updatePostAsync = createAsyncThunk(
           const getOnePostResponseData: IGetOnePostResponse = await getOnePostResponse.json();
           getOnePostResponseData.message = updatePostResponseData.message;
           getOnePostResponseData.statusCode = updatePostResponseData.statusCode;
+          return getOnePostResponseData;
+        }
+      }
+    }
+    return null;
+  }
+);
+
+// comments thunks
+// create a new comment
+export const createCommentAsync = createAsyncThunk(
+  'comment/create',
+  async (
+    data: ICreateCommentRequest
+  ): Promise<Nullable<ICreateCommentResponse | IGetOnePostResponse>> => {
+    const params = new URLSearchParams();
+    params.set('lang', data.lang);
+
+    const createCommentURL = `/api/comment/${data.postId}/${data.userId}/creation?${params}`;
+    const createCommentResponse: Undefinable<Response> = await requestData(
+      createCommentURL,
+      requestMethods.post,
+      JSON.stringify(data.requestData),
+      data.token
+    );
+    if (createCommentResponse) {
+      if (!createCommentResponse.ok) {
+        const createCommentResponseData: ICreatePostResponse = await createCommentResponse.json();
+        createCommentResponseData.statusCode = createCommentResponse.status;
+        return createCommentResponseData;
+      } else {
+        const params = new URLSearchParams();
+        params.set('lang', data.lang);
+
+        const getOnePostURL = `/api/post/${data.postId}?${params}`;
+        const getOnePostResponse: Undefinable<Response> = await requestData(
+          getOnePostURL,
+          requestMethods.get,
+          undefined,
+          undefined
+        );
+        if (getOnePostResponse) {
+          const createCommentResponseData: ICreatePostResponse = await createCommentResponse.json();
+          const getOnePostResponseData: IGetOnePostResponse = await getOnePostResponse.json();
+          getOnePostResponseData.statusCode = createCommentResponseData.statusCode;
+          getOnePostResponseData.message = createCommentResponseData.message;
           return getOnePostResponseData;
         }
       }
@@ -1058,6 +1106,36 @@ export const mainSlice = createSlice({
         }
       })
       .addCase(updatePostAsync.rejected, (state, { error }) => {
+        state.userRequestStatus = 'failed';
+        console.error('\x1b[40m\x1b[31m\x1b[1m', error.message);
+      })
+
+      // create a new comment
+      .addCase(createCommentAsync.pending, (state) => {
+        state.userRequestStatus = 'loading';
+      })
+      .addCase(createCommentAsync.fulfilled, (state, { payload }) => {
+        state.userRequestStatus = 'idle';
+
+        if (payload) {
+          const successCreationCommentData = payload as IGetOnePostResponse;
+          const failCreationCommentData = payload as ICreateCommentResponse;
+          if ((payload.statusCode === 201 || payload.statusCode === 200) && state.currentPost) {
+            state.currentPost.comments = successCreationCommentData.postData.comments;
+
+            state.alert = {
+              message: successCreationCommentData.message,
+              severity: 'success',
+            };
+          } else {
+            state.alert = {
+              message: failCreationCommentData.message,
+              severity: 'error',
+            };
+          }
+        }
+      })
+      .addCase(createCommentAsync.rejected, (state, { error }) => {
         state.userRequestStatus = 'failed';
         console.error('\x1b[40m\x1b[31m\x1b[1m', error.message);
       });
