@@ -20,6 +20,11 @@ import {
   setIsLoginNotificationSent,
   getUsersOnline,
   getPosts,
+  getUserAge,
+  getUserCity,
+  getUserCountry,
+  getUserFirstName,
+  getUserLastName,
 } from 'app/mainSlice';
 import { IGetOneUserRequestData, Nullable, RoleType } from 'types/types';
 import styles from './UserRoom.module.scss';
@@ -34,6 +39,7 @@ import { EditPostModal } from 'components/EditPostModal/EditPostModal';
 import { Posts } from 'components/Posts/Posts';
 import { Page404 } from 'pages/Page404/Page404';
 import { Post } from 'components/Post/Post';
+import joinStrings from 'lib/joinStrings';
 
 interface Props {
   socket: Socket<DefaultEventsMap, DefaultEventsMap>;
@@ -47,15 +53,20 @@ export const UserRoom: FC<Props> = ({ socket }) => {
 
   const [isOwnPage, setIsOwnPage] = useState<boolean>(true);
   const [newPostModalOpen, setNewPostModalOpen] = useState(false);
+  const isAuthorized = useAppSelector(getIsAuthorized);
   const userId = useAppSelector<Nullable<number>>(getUserId);
   const token = useAppSelector<Nullable<string>>(getToken);
   const role = useAppSelector<Nullable<RoleType>>(getUserRole);
   const avatarSrc = useAppSelector<Nullable<string>>(getAvatarSrc);
-  const guestUserData = useAppSelector(getGuestUserData);
-  const currentLanguage = useAppSelector(getCurrentLanguage);
-  const isAuthorized = useAppSelector(getIsAuthorized);
   const userEmail = useAppSelector(getUserEmail);
   const userNickname = useAppSelector(getUserNickname);
+  const userAge = useAppSelector(getUserAge);
+  const userCity = useAppSelector(getUserCity);
+  const userCountry = useAppSelector(getUserCountry);
+  const userFirstName = useAppSelector(getUserFirstName);
+  const userLastName = useAppSelector(getUserLastName);
+  const guestUserData = useAppSelector(getGuestUserData);
+  const lang = useAppSelector(getCurrentLanguage);
   const isLoginNotificationSent = useAppSelector(getIsLoginNotificationSent);
   const usersOnline = useAppSelector(getUsersOnline);
   const posts = useAppSelector(getPosts);
@@ -73,7 +84,7 @@ export const UserRoom: FC<Props> = ({ socket }) => {
       if (token) {
         const getOneUserRequestData: IGetOneUserRequestData = {
           token,
-          requestData: { id: Number(id), lang: currentLanguage },
+          requestData: { id: Number(id), lang },
         };
         dispatch(getOneUserInfoAsync(getOneUserRequestData));
       }
@@ -97,9 +108,14 @@ export const UserRoom: FC<Props> = ({ socket }) => {
     id?: Nullable<number>,
     nick?: Nullable<string>,
     email?: Nullable<string>,
+    age?: Nullable<string>,
+    city?: Nullable<string>,
+    country?: Nullable<string>,
+    firstName?: Nullable<string>,
+    lastName?: Nullable<string>,
     avatar?: Nullable<string>,
-    own = false,
-    admin = false
+    admin = false,
+    own = false
   ) => {
     return (
       <div className={styles.user}>
@@ -117,6 +133,10 @@ export const UserRoom: FC<Props> = ({ socket }) => {
           </span>
           <div className={styles.additional}>
             {admin && <span>({language(lng.admin)})</span>}
+            {(firstName || lastName || age) && (
+              <span>{joinStrings(', ', joinStrings(' ', firstName, lastName), age)}</span>
+            )}
+            {(city || country) && <span>{joinStrings(', ', city, country)}</span>}
             <span>{email}</span>
           </div>
         </div>
@@ -128,7 +148,19 @@ export const UserRoom: FC<Props> = ({ socket }) => {
     <div className={styles.wrapper}>
       {isOwnPage ? (
         <>
-          {renderUser(userId, userNickname, userEmail, avatarSrc, isOwnPage, role === 'ADMIN')}
+          {renderUser(
+            userId,
+            userNickname,
+            userEmail,
+            String(userAge || ''),
+            userCity,
+            userCountry,
+            userFirstName,
+            userLastName,
+            avatarSrc,
+            role === 'ADMIN',
+            isOwnPage
+          )}
           <Posts data={posts} />
           <FabButton value={language(lng.userAddPost)} onClick={() => setNewPostModalOpen(true)} />
         </>
@@ -139,7 +171,13 @@ export const UserRoom: FC<Props> = ({ socket }) => {
               Number(id),
               guestUserData.nickname,
               role === 'ADMIN' ? guestUserData.email : null,
-              guestUserData.avatar
+              String(guestUserData.age || ''),
+              guestUserData.city,
+              guestUserData.country,
+              guestUserData.firstName,
+              guestUserData.lastName,
+              guestUserData.avatar,
+              guestUserData.role === 'ADMIN'
             )}
             {guestUserData.posts && <Posts data={guestUserData.posts} />}
           </>
