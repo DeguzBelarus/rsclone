@@ -35,6 +35,8 @@ import {
   IGetOnePostResponse,
   IGetAllPostsRequest,
   IGetAllPostsResponse,
+  IUpdatePostRequest,
+  IUpdatePostResponse,
 } from 'types/types';
 import { requestData, requestMethods } from './dataAPI';
 import { setLocalStorageData } from './storage';
@@ -403,7 +405,7 @@ export const createPostAsync = createAsyncThunk(
   }
 );
 
-// delete specified post
+// delete the specified post
 export const deletePostAsync = createAsyncThunk(
   'post/delete',
   async (
@@ -487,6 +489,51 @@ export const getOnePostAsync = createAsyncThunk(
     if (getOnePostResponse) {
       const getOnePostResponseData: IGetOnePostResponse = await getOnePostResponse.json();
       return getOnePostResponseData;
+    }
+    return null;
+  }
+);
+
+// update the specified post
+export const updatePostAsync = createAsyncThunk(
+  'post/update',
+  async (
+    data: IUpdatePostRequest
+  ): Promise<Nullable<IUpdatePostResponse | IGetOnePostResponse>> => {
+    const params = new URLSearchParams();
+    params.set('lang', data.lang);
+
+    const updatePostURL = `api/post/${data.postId}/update?${params}`;
+    const updatePostResponse: Undefinable<Response> = await requestData(
+      updatePostURL,
+      requestMethods.put,
+      JSON.stringify(data.requestData),
+      data.token
+    );
+    if (updatePostResponse) {
+      if (!updatePostResponse.ok) {
+        const updatePostResponseData: IDeletePostResponse = await updatePostResponse.json();
+        updatePostResponseData.statusCode = updatePostResponse.status;
+        return updatePostResponseData;
+      } else {
+        const params = new URLSearchParams();
+        params.set('lang', data.lang);
+
+        const getOnePostURL = `api/post/${data.postId}?${params}`;
+        const getOnePostResponse: Undefinable<Response> = await requestData(
+          getOnePostURL,
+          requestMethods.get,
+          undefined,
+          undefined
+        );
+        if (getOnePostResponse) {
+          const updatePostResponseData: IDeletePostResponse = await updatePostResponse.json();
+          const getOnePostResponseData: IGetOnePostResponse = await getOnePostResponse.json();
+          getOnePostResponseData.message = updatePostResponseData.message;
+          getOnePostResponseData.statusCode = updatePostResponseData.statusCode;
+          return getOnePostResponseData;
+        }
+      }
     }
     return null;
   }
@@ -980,6 +1027,37 @@ export const mainSlice = createSlice({
         }
       })
       .addCase(getAllPostsAsync.rejected, (state, { error }) => {
+        state.userRequestStatus = 'failed';
+        console.error('\x1b[40m\x1b[31m\x1b[1m', error.message);
+      })
+
+      // update the specified post data
+      .addCase(updatePostAsync.pending, (state) => {
+        state.userRequestStatus = 'loading';
+      })
+      .addCase(updatePostAsync.fulfilled, (state, { payload }) => {
+        state.userRequestStatus = 'idle';
+
+        if (payload) {
+          if (payload.statusCode !== 200) {
+            const failedUpdatePayload = payload as IUpdatePostResponse;
+
+            state.alert = {
+              message: failedUpdatePayload.message,
+              severity: 'error',
+            };
+          } else {
+            const successUpdatePayload = payload as IGetOnePostResponse;
+            state.currentPost = successUpdatePayload.postData;
+
+            state.alert = {
+              message: successUpdatePayload.message,
+              severity: 'success',
+            };
+          }
+        }
+      })
+      .addCase(updatePostAsync.rejected, (state, { error }) => {
         state.userRequestStatus = 'failed';
         console.error('\x1b[40m\x1b[31m\x1b[1m', error.message);
       });
