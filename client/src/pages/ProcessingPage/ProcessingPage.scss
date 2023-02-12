@@ -3,11 +3,34 @@
 .processing-wrapper {
   width: 100%;
   height: calc(100vh - #{($header-height + px)} - #{($footer-height + px)});
-  @include flex-all-center;
+  @include flex-column-all-center;
   @include user-select-none;
 
   .processing-heading {
-    font-size: 40px;
-    color: deeppink;
+    padding-top: 20px;
+    font-size: 3em;
+    letter-spacing: 4px;
+    color: $third-theme-color;
+    overflow: hidden;
+    position: relative;
+    width: max-content;
+  }
+  .processing-heading::before,
+  .processing-heading::after {
+    content: '';
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    position: absolute;
+  }
+  .processing-heading::before {
+    background: $main-theme-color;
+    animation: typing 0.3s steps(13) forwards;
+  }
+  @keyframes typing {
+    to {
+      left: 100%;
+    }
   }
 }
