@@ -80,6 +80,7 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.postEdit]: 'Edit post',
     [lng.postCopyLink]: 'Copy post link',
     [lng.postCopyLinkSuccess]: 'The link was copied to clipboard (%)',
+    [lng.postOpen]: 'Open post page',
   },
 
   ru: {
@@ -162,6 +163,7 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.postEdit]: 'Редактировать пост',
     [lng.postCopyLink]: 'Скопировать ссылку',
     [lng.postCopyLinkSuccess]: 'Ссылка на пост была скопирована (%)',
+    [lng.postOpen]: 'Открыть пост',
   },
 };
 

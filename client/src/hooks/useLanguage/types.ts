@@ -79,6 +79,7 @@ export enum lng {
   postEdit,
   postCopyLink,
   postCopyLinkSuccess,
+  postOpen,
 }
 
 export type LangaugeData = {

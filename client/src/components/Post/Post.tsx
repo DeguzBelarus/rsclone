@@ -1,5 +1,10 @@
-import { DeleteForever, Edit as EditIcon, Link as CopyLinkIcon } from '@mui/icons-material';
-import { Card, CardActions, CardContent, IconButton, TextField, Tooltip } from '@mui/material';
+import {
+  DeleteForever,
+  Edit as EditIcon,
+  Link as CopyLinkIcon,
+  Launch as OpenIcon,
+} from '@mui/icons-material';
+import { Card, CardActions, CardContent, IconButton, Tooltip } from '@mui/material';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { deletePostAsync, getCurrentLanguage, getToken, getUserId, setAlert } from 'app/mainSlice';
 import { ConfirmModal } from 'components/ConfirmModal/ConfirmModal';
@@ -8,20 +13,23 @@ import { MediaContainer } from 'components/MediaContainer/MediaContainer';
 import useLanguage from 'hooks/useLanguage';
 import { lng } from 'hooks/useLanguage/types';
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { IPostModel } from 'types/types';
 
 import styles from './Post.module.scss';
 
 interface PostProps {
   data: IPostModel;
+  single?: boolean;
 }
 
-export const Post = ({ data }: PostProps) => {
+export const Post = ({ data, single }: PostProps) => {
   const language = useLanguage();
   const dispatch = useAppDispatch();
   const token = useAppSelector(getToken);
   const lang = useAppSelector(getCurrentLanguage);
   const ownId = useAppSelector(getUserId);
+  const navigate = useNavigate();
 
   const [editPostModalOpen, setEditPostModalOpen] = useState(false);
   const [deletePostModalOpen, setDeletePostModalOpen] = useState(false);
@@ -84,12 +92,24 @@ export const Post = ({ data }: PostProps) => {
             <DeleteForever />
           </IconButton>
         </Tooltip>
+
+        {!single && (
+          <Tooltip title={language(lng.postOpen)}>
+            <IconButton
+              sx={{ marginLeft: 'auto' }}
+              component="label"
+              onClick={() => navigate(`/posts/${id}`)}
+            >
+              <OpenIcon />
+            </IconButton>
+          </Tooltip>
+        )}
       </CardActions>
       <EditPostModal
         open={editPostModalOpen}
         id={id}
-        postHeading={postHeading}
-        postText={postText}
+        postHeading={heading}
+        postText={text}
         onClose={() => setEditPostModalOpen(false)}
         onSuccess={(heading, text) => {
           setHeading(heading);
