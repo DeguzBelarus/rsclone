@@ -39,6 +39,8 @@ import {
   IUpdatePostResponse,
   ICreateCommentRequest,
   ICreateCommentResponse,
+  IDeleteCommentRequest,
+  IDeleteCommentResponse,
 } from 'types/types';
 import { requestData, requestMethods } from './dataAPI';
 import { setLocalStorageData } from './storage';
@@ -579,6 +581,54 @@ export const createCommentAsync = createAsyncThunk(
           const getOnePostResponseData: IGetOnePostResponse = await getOnePostResponse.json();
           getOnePostResponseData.statusCode = createCommentResponseData.statusCode;
           getOnePostResponseData.message = createCommentResponseData.message;
+          return getOnePostResponseData;
+        }
+      }
+    }
+    return null;
+  }
+);
+
+// delete the specified comment
+export const deleteCommentAsync = createAsyncThunk(
+  'comment/delete',
+  async (
+    data: IDeleteCommentRequest
+  ): Promise<Nullable<IDeleteCommentResponse | IGetOnePostResponse>> => {
+    const params = new URLSearchParams();
+    params.set('lang', data.lang);
+
+    const deleteCommentURL = `/api/comment/${data.id}/delete?${params}`;
+    const deleteCommentResponse: Undefinable<Response> = await requestData(
+      deleteCommentURL,
+      requestMethods.delete,
+      undefined,
+      data.token
+    );
+    if (deleteCommentResponse) {
+      if (!deleteCommentResponse.ok || deleteCommentResponse.status === 204) {
+        const deleteCommentResponseData: IDeleteCommentResponse =
+          await deleteCommentResponse.json();
+        deleteCommentResponseData.statusCode = deleteCommentResponse.status;
+        return deleteCommentResponseData;
+      } else {
+        const deleteCommentResponseData: IDeleteCommentResponse =
+          await deleteCommentResponse.json();
+
+        const params = new URLSearchParams();
+        params.set('lang', data.lang);
+
+        const getOnePostURL = `/api/post/${deleteCommentResponseData.postId}?${params}`;
+        const getOnePostResponse: Undefinable<Response> = await requestData(
+          getOnePostURL,
+          requestMethods.get,
+          undefined,
+          undefined
+        );
+        if (getOnePostResponse) {
+          const getOnePostResponseData: IGetOnePostResponse = await getOnePostResponse.json();
+          getOnePostResponseData.statusCode = deleteCommentResponse.status;
+          getOnePostResponseData.message = deleteCommentResponseData.message;
           return getOnePostResponseData;
         }
       }
@@ -1136,6 +1186,36 @@ export const mainSlice = createSlice({
         }
       })
       .addCase(createCommentAsync.rejected, (state, { error }) => {
+        state.userRequestStatus = 'failed';
+        console.error('\x1b[40m\x1b[31m\x1b[1m', error.message);
+      })
+
+      // delete the specified comment
+      .addCase(deleteCommentAsync.pending, (state) => {
+        state.userRequestStatus = 'loading';
+      })
+      .addCase(deleteCommentAsync.fulfilled, (state, { payload }) => {
+        state.userRequestStatus = 'idle';
+
+        if (payload) {
+          const successDeletionCommentData = payload as IGetOnePostResponse;
+          const failDeletionCommentData = payload as IDeleteCommentResponse;
+          if (payload.statusCode === 200 && state.currentPost) {
+            state.currentPost.comments = successDeletionCommentData.postData.comments;
+
+            state.alert = {
+              message: successDeletionCommentData.message,
+              severity: 'success',
+            };
+          } else {
+            state.alert = {
+              message: failDeletionCommentData.message,
+              severity: 'error',
+            };
+          }
+        }
+      })
+      .addCase(deleteCommentAsync.rejected, (state, { error }) => {
         state.userRequestStatus = 'failed';
         console.error('\x1b[40m\x1b[31m\x1b[1m', error.message);
       });

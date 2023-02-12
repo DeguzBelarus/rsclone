@@ -114,6 +114,7 @@ class CommentController {
 
           return response.json({
             commentOwnerId: foundCommentForDeleting.dataValues.userId,
+            postId: foundCommentForDeleting.dataValues.postId,
             message: lang === 'ru' ?
               "Комментарий удалён!" :
               "The comment has been deleted!",

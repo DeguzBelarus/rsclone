@@ -231,12 +231,14 @@ export interface IMessageModel {
 
 export interface IDeleteCommentRequest {
   lang: CurrentLanguageType;
-  commentId: number;
+  id: number;
   token: string;
 }
 
 export interface IDeleteCommentResponse {
   message: string;
+  postId: number;
+  commentOwnerId: number;
   statusCode?: number;
 }
 
