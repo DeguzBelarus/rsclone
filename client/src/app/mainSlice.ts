@@ -414,7 +414,7 @@ export const deletePostAsync = createAsyncThunk(
     const params = new URLSearchParams();
     params.set('lang', data.lang);
 
-    const deletePostURL = `api/post/${data.id}/delete?${params}`;
+    const deletePostURL = `/api/post/${data.id}/delete?${params}`;
     const deletePostResponse: Undefinable<Response> = await requestData(
       deletePostURL,
       requestMethods.delete,
@@ -457,7 +457,7 @@ export const getAllPostsAsync = createAsyncThunk(
     const params = new URLSearchParams();
     params.set('lang', data.lang);
 
-    const getAllPostsURL = `api/post/?${params}`;
+    const getAllPostsURL = `/api/post/?${params}`;
     const getAllPostsResponse: Undefinable<Response> = await requestData(
       getAllPostsURL,
       requestMethods.get,
@@ -479,7 +479,7 @@ export const getOnePostAsync = createAsyncThunk(
     const params = new URLSearchParams();
     params.set('lang', data.lang);
 
-    const getOnePostURL = `api/post/${data.id}?${params}`;
+    const getOnePostURL = `/api/post/${data.id}?${params}`;
     const getOnePostResponse: Undefinable<Response> = await requestData(
       getOnePostURL,
       requestMethods.get,
@@ -503,7 +503,7 @@ export const updatePostAsync = createAsyncThunk(
     const params = new URLSearchParams();
     params.set('lang', data.lang);
 
-    const updatePostURL = `api/post/${data.postId}/update?${params}`;
+    const updatePostURL = `/api/post/${data.postId}/update?${params}`;
     const updatePostResponse: Undefinable<Response> = await requestData(
       updatePostURL,
       requestMethods.put,
@@ -519,7 +519,7 @@ export const updatePostAsync = createAsyncThunk(
         const params = new URLSearchParams();
         params.set('lang', data.lang);
 
-        const getOnePostURL = `api/post/${data.postId}?${params}`;
+        const getOnePostURL = `/api/post/${data.postId}?${params}`;
         const getOnePostResponse: Undefinable<Response> = await requestData(
           getOnePostURL,
           requestMethods.get,
