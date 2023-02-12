@@ -31,14 +31,13 @@ import styles from './UserRoom.module.scss';
 import useLanguage from 'hooks/useLanguage';
 import { Chip } from '@mui/material';
 import FaceIcon from '@mui/icons-material/Face';
-import VerifiedIcon from '@mui/icons-material/Verified';
+import DotIcon from '@mui/icons-material/FiberManualRecord';
 import Avatar from 'components/Avatar';
 import { lng } from 'hooks/useLanguage/types';
 import { FabButton } from 'components/FabButton/FabButton';
 import { EditPostModal } from 'components/EditPostModal/EditPostModal';
 import { Posts } from 'components/Posts/Posts';
 import { Page404 } from 'pages/Page404/Page404';
-import { Post } from 'components/Post/Post';
 import joinStrings from 'lib/joinStrings';
 
 interface Props {
@@ -115,6 +114,7 @@ export const UserRoom: FC<Props> = ({ socket }) => {
     lastName?: Nullable<string>,
     avatar?: Nullable<string>,
     admin = false,
+    online = false,
     own = false
   ) => {
     return (
@@ -129,7 +129,7 @@ export const UserRoom: FC<Props> = ({ socket }) => {
           <Avatar size="min(40vw, 20rem)" user={id || undefined} avatarSrc={avatar || undefined} />
           <span className={styles.nickname}>
             <span className={styles.nick}>{nick}</span>
-            {own && <VerifiedIcon className={styles.verified} color="success" fontSize="large" />}
+            {online && <DotIcon color="success" />}
           </span>
           <div className={styles.additional}>
             {admin && <span>({language(lng.admin)})</span>}
@@ -159,6 +159,7 @@ export const UserRoom: FC<Props> = ({ socket }) => {
             userLastName,
             avatarSrc,
             role === 'ADMIN',
+            true,
             isOwnPage
           )}
           <Posts data={posts} />
@@ -177,7 +178,8 @@ export const UserRoom: FC<Props> = ({ socket }) => {
               guestUserData.firstName,
               guestUserData.lastName,
               guestUserData.avatar,
-              guestUserData.role === 'ADMIN'
+              guestUserData.role === 'ADMIN',
+              usersOnline.find((id) => Number(id) === guestUserData.id) !== undefined
             )}
             {guestUserData.posts && <Posts data={guestUserData.posts} />}
           </>
