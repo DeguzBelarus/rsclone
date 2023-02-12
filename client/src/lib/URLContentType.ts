@@ -1,16 +1,19 @@
-export type MediaContentType = 'img' | 'video' | 'audio';
+export type MediaContentType = 'any' | 'img' | 'video' | 'audio';
 
-const videoExtentions = ['mp4'];
-const audioExtentions = ['ogg', 'mp3'];
+const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp'];
+const videoExtensions = ['mp4', 'm4v', 'ogv', 'webm', 'flv', 'wmv', 'avi', 'mov'];
+const audioExtensions = ['mp3', 'ogg', 'wav', 'm4a', 'wma'];
 
 export default function getURLContentType(url: string): MediaContentType {
-  let contentType: MediaContentType = 'img';
-  let extention = url.split('.').pop();
-  if (extention) {
-    extention = extention.toLocaleLowerCase();
-    if (videoExtentions.includes(extention)) {
+  let contentType: MediaContentType = 'any';
+  let extension = url.split('.').pop();
+  if (extension) {
+    extension = extension.toLocaleLowerCase();
+    if (imageExtensions.includes(extension)) {
+      contentType = 'img';
+    } else if (videoExtensions.includes(extension)) {
       contentType = 'video';
-    } else if (audioExtentions.includes(extention)) {
+    } else if (audioExtensions.includes(extension)) {
       contentType = 'audio';
     }
   }
