@@ -101,7 +101,7 @@ class CommentController {
         });
         if (foundCommentForDeleting) {
           if (requesterId && role) {
-            if ((requesterId !== foundCommentForDeleting.dataValues.userId) || role !== 'ADMIN') {
+            if ((requesterId !== foundCommentForDeleting.dataValues.userId) && role !== 'ADMIN') {
               return next(
                 ApiError.forbidden(lang === 'ru' ? "Нет прав" : "No rights"));
             }

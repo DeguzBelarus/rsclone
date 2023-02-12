@@ -226,7 +226,7 @@ class PostController {
         });
         if (foundPostForDeleting) {
           if (requesterId && role) {
-            if ((requesterId !== foundPostForDeleting.dataValues.userId) || role !== 'ADMIN') {
+            if ((requesterId !== foundPostForDeleting.dataValues.userId) && role !== 'ADMIN') {
               return next(
                 ApiError.forbidden(lang === 'ru' ? "Нет прав" : "No rights"));
             }
