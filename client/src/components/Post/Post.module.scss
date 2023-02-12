@@ -1,0 +1,16 @@
+.post {
+  .media {
+    display: flex;
+    max-height: 600px;
+  }
+  .heading {
+    font-size: 1.5em;
+    font-weight: bold;
+    text-transform: uppercase;
+    opacity: 0.7;
+    padding: 1rem;
+  }
+  .body {
+    padding: 1rem;
+  }
+}
