@@ -226,7 +226,7 @@ class PostController {
         });
         if (foundPostForDeleting) {
           if (requesterId && role) {
-            if (requesterId !== foundPostForDeleting.dataValues.userId && role !== 'ADMIN') {
+            if ((requesterId !== foundPostForDeleting.dataValues.userId) || role !== 'ADMIN') {
               return next(
                 ApiError.forbidden(lang === 'ru' ? "Нет прав" : "No rights"));
             }
@@ -234,8 +234,6 @@ class PostController {
             return next(
               ApiError.forbidden(lang === 'ru' ? "Нет прав" : "No rights"));
           }
-
-          await Post.destroy({ where: { id } });
 
           const foundCommentsForDeleting = await Comment.findOne({
             where: {
@@ -249,6 +247,8 @@ class PostController {
               }
             });
           }
+
+          await Post.destroy({ where: { id } });
 
           if (fs.existsSync(path.join(__dirname, "..", "static",
             `${foundPostForDeleting.dataValues.userId}`, "posts",

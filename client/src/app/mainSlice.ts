@@ -39,6 +39,8 @@ import {
   IUpdatePostResponse,
   ICreateCommentRequest,
   ICreateCommentResponse,
+  IDeleteCommentRequest,
+  IDeleteCommentResponse,
 } from 'types/types';
 import { requestData, requestMethods } from './dataAPI';
 import { setLocalStorageData } from './storage';
@@ -424,13 +426,11 @@ export const deletePostAsync = createAsyncThunk(
       data.token
     );
     if (deletePostResponse) {
+      const deletePostResponseData: IDeletePostResponse = await deletePostResponse.json();
       if (!deletePostResponse.ok || deletePostResponse.status === 204) {
-        const deletePostResponseData: IDeletePostResponse = await deletePostResponse.json();
         deletePostResponseData.statusCode = deletePostResponse.status;
         return deletePostResponseData;
       } else {
-        const deletePostResponseData: IDeletePostResponse = await deletePostResponse.json();
-
         const params = new URLSearchParams();
         params.set('lang', data.lang);
 
@@ -444,6 +444,7 @@ export const deletePostAsync = createAsyncThunk(
         if (getOneUserResponse) {
           const getOneUserResponseData: IGetOneUserResponse = await getOneUserResponse.json();
           getOneUserResponseData.message = deletePostResponseData.message;
+          getOneUserResponseData.statusCode = deletePostResponse.status;
           return getOneUserResponseData;
         }
       }
@@ -532,7 +533,7 @@ export const updatePostAsync = createAsyncThunk(
           const updatePostResponseData: IDeletePostResponse = await updatePostResponse.json();
           const getOnePostResponseData: IGetOnePostResponse = await getOnePostResponse.json();
           getOnePostResponseData.message = updatePostResponseData.message;
-          getOnePostResponseData.statusCode = updatePostResponseData.statusCode;
+          getOnePostResponseData.statusCode = updatePostResponse.status;
           return getOnePostResponseData;
         }
       }
@@ -579,6 +580,54 @@ export const createCommentAsync = createAsyncThunk(
           const getOnePostResponseData: IGetOnePostResponse = await getOnePostResponse.json();
           getOnePostResponseData.statusCode = createCommentResponseData.statusCode;
           getOnePostResponseData.message = createCommentResponseData.message;
+          return getOnePostResponseData;
+        }
+      }
+    }
+    return null;
+  }
+);
+
+// delete the specified comment
+export const deleteCommentAsync = createAsyncThunk(
+  'comment/delete',
+  async (
+    data: IDeleteCommentRequest
+  ): Promise<Nullable<IDeleteCommentResponse | IGetOnePostResponse>> => {
+    const params = new URLSearchParams();
+    params.set('lang', data.lang);
+
+    const deleteCommentURL = `/api/comment/${data.id}/delete?${params}`;
+    const deleteCommentResponse: Undefinable<Response> = await requestData(
+      deleteCommentURL,
+      requestMethods.delete,
+      undefined,
+      data.token
+    );
+    if (deleteCommentResponse) {
+      if (!deleteCommentResponse.ok || deleteCommentResponse.status === 204) {
+        const deleteCommentResponseData: IDeleteCommentResponse =
+          await deleteCommentResponse.json();
+        deleteCommentResponseData.statusCode = deleteCommentResponse.status;
+        return deleteCommentResponseData;
+      } else {
+        const deleteCommentResponseData: IDeleteCommentResponse =
+          await deleteCommentResponse.json();
+
+        const params = new URLSearchParams();
+        params.set('lang', data.lang);
+
+        const getOnePostURL = `/api/post/${deleteCommentResponseData.postId}?${params}`;
+        const getOnePostResponse: Undefinable<Response> = await requestData(
+          getOnePostURL,
+          requestMethods.get,
+          undefined,
+          undefined
+        );
+        if (getOnePostResponse) {
+          const getOnePostResponseData: IGetOnePostResponse = await getOnePostResponse.json();
+          getOnePostResponseData.statusCode = deleteCommentResponse.status;
+          getOnePostResponseData.message = deleteCommentResponseData.message;
           return getOnePostResponseData;
         }
       }
@@ -1020,6 +1069,14 @@ export const mainSlice = createSlice({
             const successPostDeletionData = payload as IGetOneUserResponse;
             if (state.currentPost) {
               state.currentPost = null;
+
+              if (successPostDeletionData.userData?.posts) {
+                if (state.guestUserData) {
+                  state.guestUserData.posts = successPostDeletionData.userData.posts;
+                } else {
+                  state.posts = successPostDeletionData.userData.posts;
+                }
+              }
             } else {
               if (successPostDeletionData.userData?.posts) {
                 if (state.guestUserData) {
@@ -1031,7 +1088,7 @@ export const mainSlice = createSlice({
             }
 
             state.alert = {
-              message: payload.message,
+              message: successPostDeletionData.message,
               severity: 'success',
             };
           } else {
@@ -1096,7 +1153,27 @@ export const mainSlice = createSlice({
             };
           } else {
             const successUpdatePayload = payload as IGetOnePostResponse;
-            state.currentPost = successUpdatePayload.postData;
+
+            if (state.currentPost) {
+              state.currentPost = successUpdatePayload.postData;
+              const modifiedPosts = state.posts.map((post) => {
+                if (post.id === successUpdatePayload.postData.id) {
+                  post = successUpdatePayload.postData;
+                  return post;
+                }
+                return post;
+              });
+              state.posts = modifiedPosts;
+            } else {
+              const modifiedPosts = state.posts.map((post) => {
+                if (post.id === successUpdatePayload.postData.id) {
+                  post = successUpdatePayload.postData;
+                  return post;
+                }
+                return post;
+              });
+              state.posts = modifiedPosts;
+            }
 
             state.alert = {
               message: successUpdatePayload.message,
@@ -1136,6 +1213,36 @@ export const mainSlice = createSlice({
         }
       })
       .addCase(createCommentAsync.rejected, (state, { error }) => {
+        state.userRequestStatus = 'failed';
+        console.error('\x1b[40m\x1b[31m\x1b[1m', error.message);
+      })
+
+      // delete the specified comment
+      .addCase(deleteCommentAsync.pending, (state) => {
+        state.userRequestStatus = 'loading';
+      })
+      .addCase(deleteCommentAsync.fulfilled, (state, { payload }) => {
+        state.userRequestStatus = 'idle';
+
+        if (payload) {
+          const successDeletionCommentData = payload as IGetOnePostResponse;
+          const failDeletionCommentData = payload as IDeleteCommentResponse;
+          if (payload.statusCode === 200 && state.currentPost) {
+            state.currentPost.comments = successDeletionCommentData.postData.comments;
+
+            state.alert = {
+              message: successDeletionCommentData.message,
+              severity: 'success',
+            };
+          } else {
+            state.alert = {
+              message: failDeletionCommentData.message,
+              severity: 'error',
+            };
+          }
+        }
+      })
+      .addCase(deleteCommentAsync.rejected, (state, { error }) => {
         state.userRequestStatus = 'failed';
         console.error('\x1b[40m\x1b[31m\x1b[1m', error.message);
       });
@@ -1195,6 +1302,7 @@ export const getAlert = ({ main: { alert } }: RootState) => alert;
 export const getUserRequestStatus = ({ main: { userRequestStatus } }: RootState) =>
   userRequestStatus;
 export const getPosts = ({ main: { posts } }: RootState) => posts;
+export const getAllPosts = ({ main: { allPosts } }: RootState) => allPosts;
 export const getCurrentPost = ({ main: { currentPost } }: RootState) => currentPost;
 export const getMessages = ({ main: { messages } }: RootState) => messages;
 
