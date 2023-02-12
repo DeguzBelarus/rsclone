@@ -426,13 +426,11 @@ export const deletePostAsync = createAsyncThunk(
       data.token
     );
     if (deletePostResponse) {
+      const deletePostResponseData: IDeletePostResponse = await deletePostResponse.json();
       if (!deletePostResponse.ok || deletePostResponse.status === 204) {
-        const deletePostResponseData: IDeletePostResponse = await deletePostResponse.json();
         deletePostResponseData.statusCode = deletePostResponse.status;
         return deletePostResponseData;
       } else {
-        const deletePostResponseData: IDeletePostResponse = await deletePostResponse.json();
-
         const params = new URLSearchParams();
         params.set('lang', data.lang);
 
@@ -446,6 +444,7 @@ export const deletePostAsync = createAsyncThunk(
         if (getOneUserResponse) {
           const getOneUserResponseData: IGetOneUserResponse = await getOneUserResponse.json();
           getOneUserResponseData.message = deletePostResponseData.message;
+          getOneUserResponseData.statusCode = deletePostResponse.status;
           return getOneUserResponseData;
         }
       }
@@ -1070,6 +1069,14 @@ export const mainSlice = createSlice({
             const successPostDeletionData = payload as IGetOneUserResponse;
             if (state.currentPost) {
               state.currentPost = null;
+
+              if (successPostDeletionData.userData?.posts) {
+                if (state.guestUserData) {
+                  state.guestUserData.posts = successPostDeletionData.userData.posts;
+                } else {
+                  state.posts = successPostDeletionData.userData.posts;
+                }
+              }
             } else {
               if (successPostDeletionData.userData?.posts) {
                 if (state.guestUserData) {
@@ -1081,7 +1088,7 @@ export const mainSlice = createSlice({
             }
 
             state.alert = {
-              message: payload.message,
+              message: successPostDeletionData.message,
               severity: 'success',
             };
           } else {
@@ -1146,7 +1153,27 @@ export const mainSlice = createSlice({
             };
           } else {
             const successUpdatePayload = payload as IGetOnePostResponse;
-            state.currentPost = successUpdatePayload.postData;
+
+            if (state.currentPost) {
+              state.currentPost = successUpdatePayload.postData;
+              const modifiedPosts = state.posts.map((post) => {
+                if (post.id === successUpdatePayload.postData.id) {
+                  post = successUpdatePayload.postData;
+                  return post;
+                }
+                return post;
+              });
+              state.posts = modifiedPosts;
+            } else {
+              const modifiedPosts = state.posts.map((post) => {
+                if (post.id === successUpdatePayload.postData.id) {
+                  post = successUpdatePayload.postData;
+                  return post;
+                }
+                return post;
+              });
+              state.posts = modifiedPosts;
+            }
 
             state.alert = {
               message: successUpdatePayload.message,
