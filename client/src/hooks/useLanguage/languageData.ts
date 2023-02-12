@@ -81,6 +81,7 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.postCopyLink]: 'Copy post link',
     [lng.postCopyLinkSuccess]: 'The link was copied to clipboard (%)',
     [lng.postOpen]: 'Open post page',
+    [lng.postNotFound]: 'The post with the id of % was not found. ',
   },
 
   ru: {
@@ -106,7 +107,7 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.languageSelect]: 'Язык приложения',
     [lng.userMessages]: 'Сообщения',
     [lng.userPosts]: 'Все посты',
-    [lng.userAddPost]: 'Написать пост',
+    [lng.userAddPost]: 'Добавить пост',
 
     [lng.settings]: 'Настройки',
     [lng.logout]: 'Выйти',
@@ -164,6 +165,7 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.postCopyLink]: 'Скопировать ссылку',
     [lng.postCopyLinkSuccess]: 'Ссылка на пост была скопирована (%)',
     [lng.postOpen]: 'Открыть пост',
+    [lng.postNotFound]: 'Пост с id % не найден на сервере.',
   },
 };
 

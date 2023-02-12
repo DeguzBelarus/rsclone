@@ -36,7 +36,7 @@ export const Post = ({ data, single }: PostProps) => {
 
   const [heading, setHeading] = useState(data.postHeading);
   const [text, setText] = useState(data.postText);
-  const { userId, id, media, postHeading, postText } = data;
+  const { userId, id, media } = data;
   const mediaURL = media && media !== '' ? `/${userId}/posts/${id}/${media}` : undefined;
 
   const handleDelete = () => {
