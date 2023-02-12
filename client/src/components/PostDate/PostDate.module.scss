@@ -1,0 +1,12 @@
+.date {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0 2em;
+  .item {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 0.3em;
+  }
+}

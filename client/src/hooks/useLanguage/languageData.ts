@@ -25,6 +25,7 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.userMessages]: 'Messages',
     [lng.userPosts]: 'All Posts',
     [lng.userAddPost]: 'Create new post',
+    [lng.userNotFound]: 'The user with the id of % was not found. ',
 
     [lng.settings]: 'Settings',
     [lng.logout]: 'Log out',
@@ -65,6 +66,8 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.searchNotFound]: 'Users were not found for this input (%)',
 
     [lng.admin]: 'admin',
+    [lng.online]: 'Online',
+    [lng.offline]: 'Offline',
 
     [lng.newPostTitle]: 'New post',
     [lng.editPostTitle]: 'Edit post',
@@ -81,7 +84,14 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.postCopyLink]: 'Copy post link',
     [lng.postCopyLinkSuccess]: 'The link was copied to clipboard (%)',
     [lng.postOpen]: 'Open post page',
-    [lng.postNotFound]: 'The post with the id of % was not found. ',
+    [lng.postNotFound]: 'The post with the id of % was not found.',
+    [lng.postCreated]: 'Created',
+    [lng.postEdited]: 'edited',
+
+    [lng.secondsAgo]: 'seconds ago',
+    [lng.minutesAgo]: 'minutes ago',
+    [lng.hoursAgo]: 'hours ago',
+    [lng.yesterday]: 'yesterday',
   },
 
   ru: {
@@ -108,6 +118,7 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.userMessages]: 'Сообщения',
     [lng.userPosts]: 'Все посты',
     [lng.userAddPost]: 'Добавить пост',
+    [lng.userNotFound]: 'Пользователь с id % не найден на сервере. ',
 
     [lng.settings]: 'Настройки',
     [lng.logout]: 'Выйти',
@@ -148,6 +159,8 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.searchNotFound]: `Пользователи по запросу '%' не были найдены`,
 
     [lng.admin]: 'администратор',
+    [lng.online]: 'Онлайн',
+    [lng.offline]: 'Оффлайн',
 
     [lng.newPostTitle]: 'Новый пост',
     [lng.editPostTitle]: 'Редактировать пост',
@@ -166,6 +179,13 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.postCopyLinkSuccess]: 'Ссылка на пост была скопирована (%)',
     [lng.postOpen]: 'Открыть пост',
     [lng.postNotFound]: 'Пост с id % не найден на сервере.',
+    [lng.postCreated]: 'Создан',
+    [lng.postEdited]: 'отредактирован',
+
+    [lng.secondsAgo]: 'секунд назад',
+    [lng.minutesAgo]: 'минут назад',
+    [lng.hoursAgo]: 'часов назад',
+    [lng.yesterday]: 'вчера',
   },
 };
 

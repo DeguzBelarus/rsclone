@@ -20,18 +20,26 @@ import {
   setIsLoginNotificationSent,
   getUsersOnline,
   getPosts,
+  getUserAge,
+  getUserCity,
+  getUserCountry,
+  getUserFirstName,
+  getUserLastName,
 } from 'app/mainSlice';
 import { IGetOneUserRequestData, Nullable, RoleType } from 'types/types';
 import styles from './UserRoom.module.scss';
 import useLanguage from 'hooks/useLanguage';
-import { Chip } from '@mui/material';
+import { Chip, Tooltip } from '@mui/material';
 import FaceIcon from '@mui/icons-material/Face';
-import VerifiedIcon from '@mui/icons-material/Verified';
+import DotIcon from '@mui/icons-material/FiberManualRecord';
 import Avatar from 'components/Avatar';
 import { lng } from 'hooks/useLanguage/types';
 import { FabButton } from 'components/FabButton/FabButton';
 import { EditPostModal } from 'components/EditPostModal/EditPostModal';
 import { Posts } from 'components/Posts/Posts';
+import { Page404 } from 'pages/Page404/Page404';
+import joinStrings from 'lib/joinStrings';
+import LocationIcon from '@mui/icons-material/LocationOn';
 
 interface Props {
   socket: Socket<DefaultEventsMap, DefaultEventsMap>;
@@ -45,18 +53,25 @@ export const UserRoom: FC<Props> = ({ socket }) => {
 
   const [isOwnPage, setIsOwnPage] = useState<boolean>(true);
   const [newPostModalOpen, setNewPostModalOpen] = useState(false);
+  const isAuthorized = useAppSelector(getIsAuthorized);
   const userId = useAppSelector<Nullable<number>>(getUserId);
   const token = useAppSelector<Nullable<string>>(getToken);
   const role = useAppSelector<Nullable<RoleType>>(getUserRole);
   const avatarSrc = useAppSelector<Nullable<string>>(getAvatarSrc);
-  const guestUserData = useAppSelector(getGuestUserData);
-  const currentLanguage = useAppSelector(getCurrentLanguage);
-  const isAuthorized = useAppSelector(getIsAuthorized);
   const userEmail = useAppSelector(getUserEmail);
   const userNickname = useAppSelector(getUserNickname);
+  const userAge = useAppSelector(getUserAge);
+  const userCity = useAppSelector(getUserCity);
+  const userCountry = useAppSelector(getUserCountry);
+  const userFirstName = useAppSelector(getUserFirstName);
+  const userLastName = useAppSelector(getUserLastName);
+  const guestUserData = useAppSelector(getGuestUserData);
+  const lang = useAppSelector(getCurrentLanguage);
   const isLoginNotificationSent = useAppSelector(getIsLoginNotificationSent);
   const usersOnline = useAppSelector(getUsersOnline);
   const posts = useAppSelector(getPosts);
+
+  const isUserFound = isAuthorized && (isOwnPage || (id && guestUserData));
 
   useEffect(() => {
     if (!id || (id && Number(id) === userId)) {
@@ -69,7 +84,7 @@ export const UserRoom: FC<Props> = ({ socket }) => {
       if (token) {
         const getOneUserRequestData: IGetOneUserRequestData = {
           token,
-          requestData: { id: Number(id), lang: currentLanguage },
+          requestData: { id: Number(id), lang },
         };
         dispatch(getOneUserInfoAsync(getOneUserRequestData));
       }
@@ -93,59 +108,105 @@ export const UserRoom: FC<Props> = ({ socket }) => {
     id?: Nullable<number>,
     nick?: Nullable<string>,
     email?: Nullable<string>,
+    age?: Nullable<string>,
+    city?: Nullable<string>,
+    country?: Nullable<string>,
+    firstName?: Nullable<string>,
+    lastName?: Nullable<string>,
     avatar?: Nullable<string>,
-    own = false,
-    admin = false
+    admin = false,
+    online = false,
+    own = false
   ) => {
     return (
-      <div className={styles.info}>
-        <Avatar size="min(40vw, 20rem)" user={id || undefined} avatarSrc={avatar || undefined} />
-        <span className={styles.nickname}>
-          <span className={styles.nick}>{nick}</span>
-          {own && <VerifiedIcon className={styles.verified} color="success" fontSize="large" />}
-        </span>
-        <div className={styles.additional}>
-          {admin && <span>({language(lng.admin)})</span>}
-          <span>{email}</span>
+      <div className={styles.user}>
+        <Tooltip
+          arrow
+          title={
+            <ul>
+              {usersOnline.map((nickname) => (
+                <li key={nickname}>{nickname}</li>
+              ))}
+            </ul>
+          }
+        >
+          <Chip
+            className={styles.online}
+            color="success"
+            icon={<FaceIcon />}
+            label={`online: ${usersOnline.length}`}
+          />
+        </Tooltip>
+        <div className={styles.info}>
+          <Avatar size="min(40vw, 20rem)" user={id || undefined} avatarSrc={avatar || undefined} />
+          <span className={styles.nickname}>
+            <span className={styles.nick}>{nick}</span>
+            <Tooltip arrow title={language(online ? lng.online : lng.offline)}>
+              <DotIcon color={online ? 'success' : 'disabled'} />
+            </Tooltip>
+          </span>
+          <div className={styles.additional}>
+            {admin && <span>({language(lng.admin)})</span>}
+            {(firstName || lastName || age) && (
+              <span>{joinStrings(', ', joinStrings(' ', firstName, lastName), age)}</span>
+            )}
+            {(city || country) && (
+              <span className={styles.location}>
+                <LocationIcon />
+                {joinStrings(', ', city, country)}
+              </span>
+            )}
+            <span>{email}</span>
+          </div>
         </div>
       </div>
     );
   };
 
-  return (
+  return isUserFound ? (
     <div className={styles.wrapper}>
-      <div className={styles.user}>
-        <Chip
-          className={styles.online}
-          color="success"
-          icon={<FaceIcon />}
-          label={`online: ${usersOnline.length}`}
-        />
-        {isOwnPage ? (
+      {isOwnPage ? (
+        <>
+          {renderUser(
+            userId,
+            userNickname,
+            userEmail,
+            String(userAge || ''),
+            userCity,
+            userCountry,
+            userFirstName,
+            userLastName,
+            avatarSrc,
+            role === 'ADMIN',
+            true,
+            isOwnPage
+          )}
+          <Posts data={posts} />
+          <FabButton value={language(lng.userAddPost)} onClick={() => setNewPostModalOpen(true)} />
+        </>
+      ) : (
+        guestUserData && (
           <>
-            {isAuthorized &&
-              renderUser(userId, userNickname, userEmail, avatarSrc, isOwnPage, role === 'ADMIN')}
-          </>
-        ) : (
-          <>
-            {isAuthorized && id && guestUserData ? (
-              renderUser(
-                Number(id),
-                guestUserData.nickname,
-                role === 'ADMIN' ? guestUserData.email : null,
-                guestUserData.avatar
-              )
-            ) : (
-              <span>user not found</span>
+            {renderUser(
+              Number(id),
+              guestUserData.nickname,
+              role === 'ADMIN' ? guestUserData.email : null,
+              String(guestUserData.age || ''),
+              guestUserData.city,
+              guestUserData.country,
+              guestUserData.firstName,
+              guestUserData.lastName,
+              guestUserData.avatar,
+              guestUserData.role === 'ADMIN',
+              usersOnline.find((nickname) => nickname === guestUserData.nickname) !== undefined
             )}
+            {guestUserData.posts && <Posts data={guestUserData.posts} />}
           </>
-        )}
-      </div>
-      <Posts data={posts} />
-      {isOwnPage && (
-        <FabButton value={language(lng.userAddPost)} onClick={() => setNewPostModalOpen(true)} />
+        )
       )}
       <EditPostModal open={newPostModalOpen} onClose={() => setNewPostModalOpen(false)} />
     </div>
+  ) : (
+    <Page404 message={language(lng.postNotFound).replace('%', id || '')} />
   );
 };

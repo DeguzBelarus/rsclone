@@ -24,6 +24,7 @@ export enum lng {
   userMessages,
   userPosts,
   userAddPost,
+  userNotFound,
 
   settings,
   logout,
@@ -64,6 +65,8 @@ export enum lng {
   searchNotFound,
 
   admin,
+  online,
+  offline,
 
   newPostTitle,
   editPostTitle,
@@ -81,6 +84,13 @@ export enum lng {
   postCopyLinkSuccess,
   postOpen,
   postNotFound,
+  postCreated,
+  postEdited,
+
+  secondsAgo,
+  minutesAgo,
+  hoursAgo,
+  yesterday,
 }
 
 export type LangaugeData = {
