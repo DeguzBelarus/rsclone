@@ -72,6 +72,10 @@ export enum lng {
   postBodyHint,
   postUploadMedia,
   postUploadMediaDelete,
+
+  postDelete,
+  postEdit,
+  postShare,
 }
 
 export type LangaugeData = {

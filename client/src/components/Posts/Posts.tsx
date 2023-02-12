@@ -1,3 +1,4 @@
+import { Post } from 'components/Post/Post';
 import React from 'react';
 import { IPostModel } from 'types/types';
 
@@ -11,7 +12,7 @@ export const Posts = ({ data }: PostsProps) => {
   return (
     <div className={styles.posts}>
       {data.map((post) => (
-        <div key={post.id}>{post.postText}</div>
+        <Post key={post.id} data={post} />
       ))}
     </div>
   );

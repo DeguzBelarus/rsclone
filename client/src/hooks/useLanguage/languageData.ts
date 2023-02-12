@@ -73,6 +73,10 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.postBodyHint]: 'Please add post body',
     [lng.postUploadMedia]: 'Upload media',
     [lng.postUploadMediaDelete]: 'Delete media',
+
+    [lng.postDelete]: 'Delete post',
+    [lng.postEdit]: 'Edit post',
+    [lng.postShare]: 'Share post',
   },
 
   ru: {
@@ -147,6 +151,10 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.postBodyHint]: 'Добавьте тело поста',
     [lng.postUploadMedia]: 'Загрузить медиа',
     [lng.postUploadMediaDelete]: 'Удалить медиа',
+
+    [lng.postDelete]: 'Удалить пост',
+    [lng.postEdit]: 'Редактировать пост',
+    [lng.postShare]: 'Поделиться постом',
   },
 };
 
