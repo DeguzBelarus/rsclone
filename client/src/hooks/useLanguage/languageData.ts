@@ -25,6 +25,7 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.userMessages]: 'Messages',
     [lng.userPosts]: 'All Posts',
     [lng.userAddPost]: 'Create new post',
+    [lng.userNotFound]: 'The user with the id of % was not found. ',
 
     [lng.settings]: 'Settings',
     [lng.logout]: 'Log out',
@@ -108,6 +109,7 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.userMessages]: 'Сообщения',
     [lng.userPosts]: 'Все посты',
     [lng.userAddPost]: 'Добавить пост',
+    [lng.userNotFound]: 'Пользователь с id % не найден на сервере. ',
 
     [lng.settings]: 'Настройки',
     [lng.logout]: 'Выйти',

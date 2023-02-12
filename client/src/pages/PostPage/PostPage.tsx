@@ -27,6 +27,6 @@ export const PostPage: FC = (): JSX.Element => {
       <Post data={post} single />
     </div>
   ) : (
-    <Page404 message={language(lng.postNotFound).replace('%', id || '')} />
+    <Page404 message={language(lng.userNotFound).replace('%', id || '')} />
   );
 };

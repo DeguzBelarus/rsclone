@@ -32,6 +32,8 @@ import { lng } from 'hooks/useLanguage/types';
 import { FabButton } from 'components/FabButton/FabButton';
 import { EditPostModal } from 'components/EditPostModal/EditPostModal';
 import { Posts } from 'components/Posts/Posts';
+import { Page404 } from 'pages/Page404/Page404';
+import { Post } from 'components/Post/Post';
 
 interface Props {
   socket: Socket<DefaultEventsMap, DefaultEventsMap>;
@@ -57,6 +59,8 @@ export const UserRoom: FC<Props> = ({ socket }) => {
   const isLoginNotificationSent = useAppSelector(getIsLoginNotificationSent);
   const usersOnline = useAppSelector(getUsersOnline);
   const posts = useAppSelector(getPosts);
+
+  const isUserFound = isAuthorized && (isOwnPage || (id && guestUserData));
 
   useEffect(() => {
     if (!id || (id && Number(id) === userId)) {
@@ -98,22 +102,6 @@ export const UserRoom: FC<Props> = ({ socket }) => {
     admin = false
   ) => {
     return (
-      <div className={styles.info}>
-        <Avatar size="min(40vw, 20rem)" user={id || undefined} avatarSrc={avatar || undefined} />
-        <span className={styles.nickname}>
-          <span className={styles.nick}>{nick}</span>
-          {own && <VerifiedIcon className={styles.verified} color="success" fontSize="large" />}
-        </span>
-        <div className={styles.additional}>
-          {admin && <span>({language(lng.admin)})</span>}
-          <span>{email}</span>
-        </div>
-      </div>
-    );
-  };
-
-  return (
-    <div className={styles.wrapper}>
       <div className={styles.user}>
         <Chip
           className={styles.online}
@@ -121,31 +109,45 @@ export const UserRoom: FC<Props> = ({ socket }) => {
           icon={<FaceIcon />}
           label={`online: ${usersOnline.length}`}
         />
-        {isOwnPage ? (
-          <>
-            {isAuthorized &&
-              renderUser(userId, userNickname, userEmail, avatarSrc, isOwnPage, role === 'ADMIN')}
-          </>
-        ) : (
-          <>
-            {isAuthorized && id && guestUserData ? (
-              renderUser(
-                Number(id),
-                guestUserData.nickname,
-                role === 'ADMIN' ? guestUserData.email : null,
-                guestUserData.avatar
-              )
-            ) : (
-              <span>user not found</span>
-            )}
-          </>
-        )}
+        <div className={styles.info}>
+          <Avatar size="min(40vw, 20rem)" user={id || undefined} avatarSrc={avatar || undefined} />
+          <span className={styles.nickname}>
+            <span className={styles.nick}>{nick}</span>
+            {own && <VerifiedIcon className={styles.verified} color="success" fontSize="large" />}
+          </span>
+          <div className={styles.additional}>
+            {admin && <span>({language(lng.admin)})</span>}
+            <span>{email}</span>
+          </div>
+        </div>
       </div>
-      <Posts data={posts} />
-      {isOwnPage && (
-        <FabButton value={language(lng.userAddPost)} onClick={() => setNewPostModalOpen(true)} />
+    );
+  };
+
+  return isUserFound ? (
+    <div className={styles.wrapper}>
+      {isOwnPage ? (
+        <>
+          {renderUser(userId, userNickname, userEmail, avatarSrc, isOwnPage, role === 'ADMIN')}
+          <Posts data={posts} />
+          <FabButton value={language(lng.userAddPost)} onClick={() => setNewPostModalOpen(true)} />
+        </>
+      ) : (
+        guestUserData && (
+          <>
+            {renderUser(
+              Number(id),
+              guestUserData.nickname,
+              role === 'ADMIN' ? guestUserData.email : null,
+              guestUserData.avatar
+            )}
+            {guestUserData.posts && <Posts data={guestUserData.posts} />}
+          </>
+        )
       )}
       <EditPostModal open={newPostModalOpen} onClose={() => setNewPostModalOpen(false)} />
     </div>
+  ) : (
+    <Page404 message={language(lng.postNotFound).replace('%', id || '')} />
   );
 };

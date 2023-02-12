@@ -24,6 +24,7 @@ export enum lng {
   userMessages,
   userPosts,
   userAddPost,
+  userNotFound,
 
   settings,
   logout,
