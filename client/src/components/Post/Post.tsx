@@ -1,12 +1,19 @@
 import {
-  DeleteForever,
+  DeleteForever as DeleteIcon,
   Edit as EditIcon,
   Link as CopyLinkIcon,
   Launch as OpenIcon,
 } from '@mui/icons-material';
 import { Card, CardActions, CardContent, IconButton, Tooltip } from '@mui/material';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
-import { deletePostAsync, getCurrentLanguage, getToken, getUserId, setAlert } from 'app/mainSlice';
+import {
+  deletePostAsync,
+  getCurrentLanguage,
+  getToken,
+  getUserId,
+  getUserRole,
+  setAlert,
+} from 'app/mainSlice';
 import { ConfirmModal } from 'components/ConfirmModal/ConfirmModal';
 import { EditPostModal } from 'components/EditPostModal/EditPostModal';
 import { MediaContainer } from 'components/MediaContainer/MediaContainer';
@@ -29,6 +36,7 @@ export const Post = ({ data, single }: PostProps) => {
   const token = useAppSelector(getToken);
   const lang = useAppSelector(getCurrentLanguage);
   const ownId = useAppSelector(getUserId);
+  const role = useAppSelector(getUserRole);
   const navigate = useNavigate();
 
   const [editPostModalOpen, setEditPostModalOpen] = useState(false);
@@ -37,7 +45,9 @@ export const Post = ({ data, single }: PostProps) => {
   const [heading, setHeading] = useState(data.postHeading);
   const [text, setText] = useState(data.postText);
   const { userId, id, media } = data;
+
   const mediaURL = media && media !== '' ? `/${userId}/posts/${id}/${media}` : undefined;
+  const isEditable = role === 'ADMIN' || userId === ownId;
 
   const handleDelete = () => {
     if (!id || !token || !ownId) return;
@@ -73,25 +83,29 @@ export const Post = ({ data, single }: PostProps) => {
         </div>
       </CardContent>
       <CardActions disableSpacing>
-        <Tooltip title={language(lng.postEdit)}>
-          <IconButton component="label" onClick={() => setEditPostModalOpen(true)}>
-            <EditIcon />
-          </IconButton>
-        </Tooltip>
+        {isEditable && (
+          <Tooltip title={language(lng.postEdit)}>
+            <IconButton component="label" onClick={() => setEditPostModalOpen(true)}>
+              <EditIcon />
+            </IconButton>
+          </Tooltip>
+        )}
         <Tooltip title={language(lng.postCopyLink)}>
           <IconButton component="label" onClick={handleCopyLink}>
             <CopyLinkIcon />
           </IconButton>
         </Tooltip>
-        <Tooltip title={language(lng.postDelete)}>
-          <IconButton
-            component="label"
-            color="warning"
-            onClick={() => setDeletePostModalOpen(true)}
-          >
-            <DeleteForever />
-          </IconButton>
-        </Tooltip>
+        {isEditable && (
+          <Tooltip title={language(lng.postDelete)}>
+            <IconButton
+              component="label"
+              color="warning"
+              onClick={() => setDeletePostModalOpen(true)}
+            >
+              <DeleteIcon />
+            </IconButton>
+          </Tooltip>
+        )}
 
         {!single && (
           <Tooltip title={language(lng.postOpen)}>
