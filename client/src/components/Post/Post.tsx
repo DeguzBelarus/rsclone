@@ -19,6 +19,7 @@ import { EditPostModal } from 'components/EditPostModal/EditPostModal';
 import { MediaContainer } from 'components/MediaContainer/MediaContainer';
 import useLanguage from 'hooks/useLanguage';
 import { lng } from 'hooks/useLanguage/types';
+import { PostDate } from 'components/PostDate/PostDate';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IPostModel } from 'types/types';
@@ -44,7 +45,7 @@ export const Post = ({ data, single }: PostProps) => {
 
   const [heading, setHeading] = useState(data.postHeading);
   const [text, setText] = useState(data.postText);
-  const { userId, id, media } = data;
+  const { userId, id, media, date, editDate } = data;
 
   const mediaURL = media && media !== '' ? `/${userId}/posts/${id}/${media}` : undefined;
   const isEditable = role === 'ADMIN' || userId === ownId;
@@ -78,6 +79,9 @@ export const Post = ({ data, single }: PostProps) => {
           <MediaContainer src={mediaURL} />
         </div>
         <div className={styles.heading}>{heading}</div>
+        <div className={styles.date}>
+          <PostDate date={date} editDate={editDate} />
+        </div>
         <div className={styles.body}>
           <pre>{text}</pre>
         </div>

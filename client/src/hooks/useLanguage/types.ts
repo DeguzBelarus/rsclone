@@ -84,6 +84,13 @@ export enum lng {
   postCopyLinkSuccess,
   postOpen,
   postNotFound,
+  postCreated,
+  postEdited,
+
+  secondsAgo,
+  minutesAgo,
+  hoursAgo,
+  yesterday,
 }
 
 export type LangaugeData = {
