@@ -13,6 +13,10 @@ a {
   text-decoration: none;
 }
 
+html, body {
+  overflow: hidden;
+}
+
 main {
   width: 100%;
   height: calc(100vh - var(--header-height) - var(--footer-height));

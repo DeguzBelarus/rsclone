@@ -17,23 +17,40 @@ import styles from './EditPostModal.module.scss';
 import useValidateInput from 'hooks/useValidateInput';
 import { POST_BODY_PATTERN, POST_TITLE_PATTERN } from 'consts';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
-import { createPostAsync, getCurrentLanguage, getToken, getUserId } from 'app/mainSlice';
-import { ICreatePostRequestData } from '../../types/types';
+import {
+  createPostAsync,
+  getCurrentLanguage,
+  getToken,
+  getUserId,
+  updatePostAsync,
+} from 'app/mainSlice';
+import { ICreatePostRequestData, IUpdatePostRequest } from '../../types/types';
 import { AddAPhoto, DeleteForever } from '@mui/icons-material';
+import { MediaContainer } from 'components/MediaContainer/MediaContainer';
 
 export interface EditPostModalProps {
   open: boolean;
   id?: number;
+  postText?: string;
+  postHeading?: string;
   onClose?: () => void;
-  onSuccess?: () => void;
+  onSuccess?: (heading: string, text: string) => void;
 }
 
-export const EditPostModal = ({ id, open, onClose, onSuccess }: EditPostModalProps) => {
-  const [titleValue, setTitleValue] = useState('');
-  const [bodyValue, setBodyValue] = useState('');
+export const EditPostModal = ({
+  id,
+  open,
+  postText,
+  postHeading,
+  onClose,
+  onSuccess,
+}: EditPostModalProps) => {
+  const [titleValue, setTitleValue] = useState(postHeading || '');
+  const [bodyValue, setBodyValue] = useState(postText || '');
   const [titleError, setTitleError] = useState(false);
   const [bodyError, setBodyError] = useState(false);
   const [mediaValue, setMediaValue] = useState<File>();
+  const [mediaFileName, setMediaFileName] = useState<string>();
   const [touched, setTouched] = useState(false);
 
   const language = useLanguage();
@@ -52,8 +69,8 @@ export const EditPostModal = ({ id, open, onClose, onSuccess }: EditPostModalPro
   const validateBody = useValidateInput(POST_BODY_PATTERN, setBodyValue, setBodyError, setTouched);
 
   const resetInputs = () => {
-    setTitleValue('');
-    setBodyValue('');
+    setTitleValue(postHeading || '');
+    setBodyValue(postText || '');
     setTitleError(false);
     setBodyError(false);
     setMediaValue(undefined);
@@ -66,33 +83,45 @@ export const EditPostModal = ({ id, open, onClose, onSuccess }: EditPostModalPro
 
   const handleMediaChange = (event: ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
+    setMediaFileName(files && files[0] ? files[0].name : undefined);
     setMediaValue(files ? files[0] : undefined);
     setTouched(true);
+  };
+
+  const createPost = async (ownId: number, token: string): Promise<boolean> => {
+    const requestData = new FormData();
+    requestData.append('lang', currentLanguage);
+    requestData.append('postHeading', titleValue);
+    requestData.append('postText', bodyValue);
+    if (mediaValue) requestData.append('media', mediaValue);
+
+    const result = await dispatch(createPostAsync({ ownId, token, requestData }));
+    return result && result.meta.requestStatus === 'fulfilled';
+  };
+
+  const editPost = async (id: number, token: string): Promise<boolean> => {
+    const postData: IUpdatePostRequest = {
+      lang: currentLanguage,
+      postId: id,
+      token,
+      requestData: {
+        postHeading: titleValue,
+        postText: bodyValue,
+      },
+    };
+    const result = await dispatch(updatePostAsync(postData));
+    return result && result.meta.requestStatus === 'fulfilled';
   };
 
   const handleSave = async () => {
     const isValid = touched && validateTitle(titleValue) && validateBody(bodyValue);
     if (!isValid || !token || userId === null) return;
 
-    const requestData = new FormData();
-    requestData.append('lang', currentLanguage);
-    requestData.append('postHeading', titleValue);
-    requestData.append('postText', bodyValue);
-    if (id === undefined) {
-      if (mediaValue) requestData.append('media', mediaValue);
-    } else {
-      requestData.append('id', String(id));
-    }
-    const postData: ICreatePostRequestData = {
-      ownId: userId,
-      token,
-      requestData,
-    };
+    const result = id === undefined ? await createPost(userId, token) : await editPost(id, token);
 
-    const result = await dispatch(createPostAsync(postData));
-    if (result && result.meta.requestStatus === 'fulfilled') {
+    if (result) {
       handleClose();
-      if (onSuccess) onSuccess();
+      if (onSuccess) onSuccess(titleValue, bodyValue);
     }
   };
 
@@ -157,7 +186,14 @@ export const EditPostModal = ({ id, open, onClose, onSuccess }: EditPostModalPro
             <span className={styles.file}>{mediaValue && mediaValue.name}</span>
           </div>
         )}
-        {mediaValue && <img className={styles.preview} src={URL.createObjectURL(mediaValue)} />}
+        {mediaValue && (
+          <MediaContainer
+            fileName={mediaFileName}
+            src={URL.createObjectURL(mediaValue)}
+            contain
+            maxHeight="min(250px, 30vh)"
+          />
+        )}
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>{language(lng.cancel)}</Button>

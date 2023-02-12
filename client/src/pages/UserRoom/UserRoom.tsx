@@ -19,6 +19,7 @@ import {
   getIsLoginNotificationSent,
   setIsLoginNotificationSent,
   getUsersOnline,
+  getPosts,
 } from 'app/mainSlice';
 import { IGetOneUserRequestData, Nullable, RoleType } from 'types/types';
 import styles from './UserRoom.module.scss';
@@ -30,6 +31,7 @@ import Avatar from 'components/Avatar';
 import { lng } from 'hooks/useLanguage/types';
 import { FabButton } from 'components/FabButton/FabButton';
 import { EditPostModal } from 'components/EditPostModal/EditPostModal';
+import { Posts } from 'components/Posts/Posts';
 
 interface Props {
   socket: Socket<DefaultEventsMap, DefaultEventsMap>;
@@ -54,6 +56,7 @@ export const UserRoom: FC<Props> = ({ socket }) => {
   const userNickname = useAppSelector(getUserNickname);
   const isLoginNotificationSent = useAppSelector(getIsLoginNotificationSent);
   const usersOnline = useAppSelector(getUsersOnline);
+  const posts = useAppSelector(getPosts);
 
   useEffect(() => {
     if (!id || (id && Number(id) === userId)) {
@@ -138,16 +141,7 @@ export const UserRoom: FC<Props> = ({ socket }) => {
           </>
         )}
       </div>
-      <div className={styles.posts}>
-        {[
-          'Lorem ipsum dolor sit amet consectetur adipisicing elit. Omnis suscipit, possimus animi quis hic odit maxime culpa nemo ab atque?',
-          ,
-          'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Unde, reiciendis consequatur! Amet praesentium asperiores quo, molestias veniam sequi inventore aliquid quam ad nihil est, impedit doloribus dolorum ratione temporibus vitae, ab fugiat. Reiciendis dolores quos ut excepturi odit velit porro. Dolorum aliquam reprehenderit repellendus ducimus cumque quas obcaecati incidunt minus quos earum eligendi debitis harum qui neque praesentium quisquam ullam odit temporibus necessitatibus soluta, consectetur architecto? Perferendis, voluptatem aperiam! Quod unde aliquid temporibus totam nesciunt dolorum obcaecati quidem quasi esse.',
-          'Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, minus quia eius error provident incidunt reiciendis sed cupiditate consequatur eaque repellat aut officia vel officiis laudantium in deserunt modi ducimus sapiente ipsam praesentium ipsum dicta quibusdam! Vel aliquid velit voluptatibus et numquam sed at explicabo eveniet! Quis veritatis, nisi rerum, maxime exercitationem accusamus aliquam nesciunt id, suscipit maiores alias deserunt natus unde quasi illum accusantium incidunt dolore. Quia ducimus sequi laborum ex odio, ipsam veritatis, consequatur quisquam qui cupiditate excepturi laboriosam placeat perferendis, aspernatur labore adipisci illo inventore aut unde impedit odit iure! Sit esse praesentium aliquam ab, ea provident.',
-        ].map((item, index) => (
-          <div key={index}>{item}</div>
-        ))}
-      </div>
+      <Posts data={posts} />
       {isOwnPage && (
         <FabButton value={language(lng.userAddPost)} onClick={() => setNewPostModalOpen(true)} />
       )}

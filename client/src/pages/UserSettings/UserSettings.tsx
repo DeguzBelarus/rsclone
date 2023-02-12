@@ -37,7 +37,8 @@ import {
 import { IDeleteUserRequestData, IUpdateUserRequestData } from 'types/types';
 import { Socket } from 'socket.io-client';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
-import { Modal } from 'components/Modal/Modal';
+import { ConfirmModal } from 'components/ConfirmModal/ConfirmModal';
+
 interface Props {
   socket: Socket<DefaultEventsMap, DefaultEventsMap>;
 }
@@ -284,28 +285,28 @@ export const UserSettings: FC<Props> = ({ socket }) => {
             <Button onClick={() => setRoleModalOpen(true)} variant="contained">
               {language(lng.giveUpAdmin)}
             </Button>
-            <Modal
+            <ConfirmModal
               open={roleModalOpen}
               title={language(lng.giveUpAdmin)}
               onClose={() => setRoleModalOpen(false)}
               onSuccess={roleDowngrade}
             >
               {language(lng.giveUpAdminMsg)}
-            </Modal>
+            </ConfirmModal>
           </>
         )}
 
         <Button onClick={() => setDeleteModalOpen(true)} variant="contained" color="error">
           {language(lng.deleteAccount)}
         </Button>
-        <Modal
+        <ConfirmModal
           open={deleteModalOpen}
           title={language(lng.deleteAccount)}
           onClose={() => setDeleteModalOpen(false)}
           onSuccess={userDelete}
         >
           {language(lng.deleteAccountMsg)}
-        </Modal>
+        </ConfirmModal>
       </div>
 
       <form className={styles.inputs} onSubmit={infoUpdate} noValidate>

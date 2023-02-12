@@ -1,6 +1,5 @@
-@import '../../css_variables/variables';
+@import 'styles/variables';
 
 .wrapper {
-  @include flex-all-center;
-  @include user-select-none;
+  --max-page-width: 800px;
 }

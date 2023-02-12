@@ -24,9 +24,5 @@
         text-overflow: ellipsis;
       }
     }
-    .preview {
-      max-height: calc(max(30vh, 300px));
-      object-fit: contain;
-    }
   }
 }
