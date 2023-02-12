@@ -39,6 +39,7 @@ import { EditPostModal } from 'components/EditPostModal/EditPostModal';
 import { Posts } from 'components/Posts/Posts';
 import { Page404 } from 'pages/Page404/Page404';
 import joinStrings from 'lib/joinStrings';
+import LocationIcon from '@mui/icons-material/LocationOn';
 
 interface Props {
   socket: Socket<DefaultEventsMap, DefaultEventsMap>;
@@ -149,7 +150,12 @@ export const UserRoom: FC<Props> = ({ socket }) => {
             {(firstName || lastName || age) && (
               <span>{joinStrings(', ', joinStrings(' ', firstName, lastName), age)}</span>
             )}
-            {(city || country) && <span>{joinStrings(', ', city, country)}</span>}
+            {(city || country) && (
+              <span className={styles.location}>
+                <LocationIcon />
+                {joinStrings(', ', city, country)}
+              </span>
+            )}
             <span>{email}</span>
           </div>
         </div>
