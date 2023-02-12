@@ -2,10 +2,11 @@ import { DeleteForever, Edit as EditIcon, Share as ShareIcon } from '@mui/icons-
 import { Card, CardActions, CardContent, CardHeader, IconButton, Tooltip } from '@mui/material';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { deletePostAsync, getCurrentLanguage, getToken, getUserId } from 'app/mainSlice';
+import { EditPostModal } from 'components/EditPostModal/EditPostModal';
 import { MediaContainer } from 'components/MediaContainer/MediaContainer';
 import useLanguage from 'hooks/useLanguage';
 import { lng } from 'hooks/useLanguage/types';
-import React from 'react';
+import React, { useState } from 'react';
 import { IPostModel } from 'types/types';
 
 import styles from './Post.module.scss';
@@ -21,10 +22,9 @@ export const Post = ({ data }: PostProps) => {
   const currentLanguage = useAppSelector(getCurrentLanguage);
   const ownId = useAppSelector(getUserId);
 
-  const { userId, id, media } = data;
+  const [editPostModalOpen, setEditPostModalOpen] = useState(false);
+  const { userId, id, media, postHeading, postText } = data;
   const mediaURL = media && media !== '' ? `/${userId}/posts/${id}/${media}` : undefined;
-
-  const handleEdit = () => {};
 
   const handleDelete = () => {
     if (!id || !token || !ownId) return;
@@ -47,12 +47,12 @@ export const Post = ({ data }: PostProps) => {
         <div className={styles.media}>
           <MediaContainer src={mediaURL} />
         </div>
-        <div className={styles.heading}>{data.postHeading}</div>
-        <div className={styles.body}>{data.postText}</div>
+        <div className={styles.heading}>{postHeading}</div>
+        <div className={styles.body}>{postText}</div>
       </CardContent>
       <CardActions disableSpacing>
         <Tooltip title={language(lng.postEdit)}>
-          <IconButton component="label" onClick={handleEdit}>
+          <IconButton component="label" onClick={() => setEditPostModalOpen(true)}>
             <EditIcon />
           </IconButton>
         </Tooltip>
@@ -67,6 +67,13 @@ export const Post = ({ data }: PostProps) => {
           </IconButton>
         </Tooltip>
       </CardActions>
+      <EditPostModal
+        open={editPostModalOpen}
+        id={id}
+        postHeading={postHeading}
+        postText={postText}
+        onClose={() => setEditPostModalOpen(false)}
+      />
     </Card>
   );
 };
