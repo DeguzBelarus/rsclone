@@ -119,7 +119,7 @@ export const Comments = ({ postId, data, onChange }: CommentsProps) => {
                   <>
                     <ListItemText className={styles.commentText}>
                       <span>{commentText}</span>
-                      <span className={styles.date}>
+                      <span className={styles.additional}>
                         <PostDate date={date} editDate={editDate} />
                         <span style={{ textTransform: 'uppercase' }}>{authorNickname}</span>
                       </span>
