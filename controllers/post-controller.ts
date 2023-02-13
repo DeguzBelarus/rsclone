@@ -280,6 +280,13 @@ class PostController {
               return next(
                 ApiError.forbidden(lang === 'ru' ? "Нет прав" : "No rights"));
             }
+            if ((requesterId !== foundPostForDeleting.dataValues.userId)
+              && role === 'ADMIN' && foundPostForDeleting.dataValues.ownerRole === 'ADMIN') {
+              return next(
+                ApiError.forbidden(lang === 'ru'
+                  ? "Админам не разрешено удалять посты других админов"
+                  : "Admins are not allowed to delete posts of other admins"));
+            }
           } else {
             return next(
               ApiError.forbidden(lang === 'ru' ? "Нет прав" : "No rights"));
