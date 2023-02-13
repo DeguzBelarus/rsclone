@@ -60,6 +60,7 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.cancel]: 'Cancel',
     [lng.save]: 'Save',
     [lng.close]: 'Close',
+    [lng.clear]: 'Clear',
 
     [lng.searchPlaceholder]: 'Search users...',
     [lng.searchWelcome]: 'Start typing to look for users...',
@@ -85,6 +86,11 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.postCopyLinkSuccess]: 'The link was copied to clipboard (%)',
     [lng.postOpen]: 'Open post page',
     [lng.postNotFound]: 'The post with the id of % was not found.',
+
+    [lng.commentWrite]: 'Write your comment here...',
+    [lng.commentPublish]: 'Publish comment',
+    [lng.commentEdit]: 'Edit comment',
+    [lng.commentDelete]: 'Delete comment',
 
     [lng.justNow]: 'just now',
     [lng.minutesAgo]: 'minutes ago',
@@ -151,6 +157,7 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.cancel]: 'Отменить',
     [lng.close]: 'Закрыть',
     [lng.save]: 'Сохранить',
+    [lng.clear]: 'Очистить',
 
     [lng.searchPlaceholder]: 'Поиск',
     [lng.searchWelcome]: 'Начните ввод, чтобы начать поиск пользователей',
@@ -177,6 +184,11 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.postCopyLinkSuccess]: 'Ссылка на пост была скопирована (%)',
     [lng.postOpen]: 'Открыть пост',
     [lng.postNotFound]: 'Пост с id % не найден на сервере.',
+
+    [lng.commentWrite]: 'Напишите Ваш комментарий...',
+    [lng.commentPublish]: 'Отправить',
+    [lng.commentEdit]: 'Изменить комментарий',
+    [lng.commentDelete]: 'Удалить комментарий',
 
     [lng.justNow]: 'сейчас',
     [lng.minutesAgo]: 'минут назад',

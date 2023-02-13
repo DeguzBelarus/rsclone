@@ -1,0 +1,25 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  .add {
+
+  }
+
+  .comment {
+    cursor: pointer;
+
+    .commentText {
+      .date {
+        font-size: 0.8em;
+        opacity: 0.7;
+      }
+    }
+    
+    &:not(:hover) {
+      .commentActions {
+        visibility: hidden; 
+      }
+    }
+  }
+}

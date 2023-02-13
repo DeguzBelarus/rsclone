@@ -208,6 +208,8 @@ export interface ICommentModel {
   authorNickname: string;
   authorAvatar?: string;
   authorRole: RoleType;
+  postId: number;
+  userId: number;
 }
 
 export interface IPostModel {

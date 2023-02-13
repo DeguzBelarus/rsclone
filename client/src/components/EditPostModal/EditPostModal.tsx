@@ -24,7 +24,7 @@ import {
   getUserId,
   updatePostAsync,
 } from 'app/mainSlice';
-import { ICreatePostRequestData, IUpdatePostRequest } from '../../types/types';
+import { IUpdatePostRequest } from '../../types/types';
 import { AddAPhoto, DeleteForever } from '@mui/icons-material';
 import { MediaContainer } from 'components/MediaContainer/MediaContainer';
 
@@ -67,15 +67,6 @@ export const EditPostModal = ({
   );
 
   const validateBody = useValidateInput(POST_BODY_PATTERN, setBodyValue, setBodyError, setTouched);
-
-  const resetInputs = () => {
-    setTitleValue(postHeading || '');
-    setBodyValue(postText || '');
-    setTitleError(false);
-    setBodyError(false);
-    setMediaValue(undefined);
-    setTouched(false);
-  };
 
   const handleClose = () => {
     if (onClose) onClose();
@@ -126,8 +117,15 @@ export const EditPostModal = ({
   };
 
   useEffect(() => {
-    if (open) resetInputs();
-  }, [open]);
+    if (open) {
+      setTitleValue(postHeading || '');
+      setBodyValue(postText || '');
+      setTitleError(false);
+      setBodyError(false);
+      setMediaValue(undefined);
+      setTouched(false);
+    }
+  }, [open, postHeading, postText]);
 
   return (
     <Dialog

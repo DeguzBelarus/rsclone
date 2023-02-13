@@ -59,6 +59,7 @@ export enum lng {
   cancel,
   close,
   save,
+  clear,
 
   searchPlaceholder,
   searchWelcome,
@@ -84,6 +85,11 @@ export enum lng {
   postCopyLinkSuccess,
   postOpen,
   postNotFound,
+
+  commentWrite,
+  commentPublish,
+  commentEdit,
+  commentDelete,
 
   justNow,
   minutesAgo,
