@@ -8,7 +8,7 @@
 
   .comment {
     cursor: pointer;
-    
+
     .commentText {
       .date {
         font-size: 0.8em;
@@ -18,7 +18,7 @@
     
     &:not(:hover) {
       .commentActions {
-        display: none; 
+        visibility: hidden; 
       }
     }
   }

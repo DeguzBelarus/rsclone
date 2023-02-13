@@ -1,10 +1,16 @@
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import React, { useState } from 'react';
-import { createCommentAsync, getCurrentLanguage, getToken, getUserId } from 'app/mainSlice';
+import {
+  createCommentAsync,
+  deleteCommentAsync,
+  getCurrentLanguage,
+  getToken,
+  getUserId,
+} from 'app/mainSlice';
 import useLanguage from 'hooks/useLanguage';
 import { lng } from 'hooks/useLanguage/types';
 import styles from './Comments.module.scss';
-import { ICommentModel } from 'types/types';
+import { ICommentModel, ICreateCommentRequest, IDeleteCommentRequest } from 'types/types';
 import {
   IconButton,
   List,
@@ -59,7 +65,7 @@ export const Comments = ({ postId, data, onChange }: CommentsProps) => {
     // console.log(isValid, token, userId, postId);
     if (!isValid || !token || !userId || !postId) return;
 
-    const requestData = {
+    const requestData: ICreateCommentRequest = {
       lang,
       token,
       postId,
@@ -76,6 +82,20 @@ export const Comments = ({ postId, data, onChange }: CommentsProps) => {
     }
   };
 
+  const handleDeleteComment = async (id?: number) => {
+    if (!token || !id) return;
+
+    const requestData: IDeleteCommentRequest = {
+      lang,
+      token,
+      id,
+    };
+    const result = await dispatch(deleteCommentAsync(requestData));
+    if (result.meta.requestStatus === 'fulfilled') {
+      if (onChange) onChange();
+    }
+  };
+
   return (
     <div className={styles.wrapper}>
       <h2>Comments</h2>
@@ -83,7 +103,7 @@ export const Comments = ({ postId, data, onChange }: CommentsProps) => {
         <TextField
           sx={{ width: '100%' }}
           variant="standard"
-          placeholder="Write your comment here..."
+          placeholder={language(lng.commentWrite)}
           value={commentValue}
           // label={language(lng.postTitle)}
           // error={commentError}
@@ -97,7 +117,7 @@ export const Comments = ({ postId, data, onChange }: CommentsProps) => {
           InputProps={{
             endAdornment: (
               <>
-                <Tooltip title={language(lng.userAddPost)}>
+                <Tooltip title={language(lng.commentPublish)}>
                   <span>
                     <IconButton disabled={commentError} color="inherit" onClick={handleAddComment}>
                       <SendIcon />
@@ -130,16 +150,20 @@ export const Comments = ({ postId, data, onChange }: CommentsProps) => {
                 </span>
               </ListItemText>
               <div className={styles.commentActions}>
-                <Tooltip title={language(lng.userAddPost)}>
+                <Tooltip title={language(lng.commentEdit)}>
                   <span>
                     <IconButton disabled={commentError} color="inherit" onClick={handleAddComment}>
                       <EditIcon />
                     </IconButton>
                   </span>
                 </Tooltip>
-                <Tooltip title={language(lng.userAddPost)}>
+                <Tooltip title={language(lng.commentDelete)}>
                   <span>
-                    <IconButton disabled={commentError} color="warning" onClick={handleAddComment}>
+                    <IconButton
+                      disabled={commentError}
+                      color="warning"
+                      onClick={() => handleDeleteComment(id)}
+                    >
                       <DeleteIcon />
                     </IconButton>
                   </span>
