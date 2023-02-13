@@ -1,4 +1,5 @@
 import React, { ChangeEvent, FormEvent, useState, FC, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import {
   getCurrentLanguage,
@@ -16,6 +17,7 @@ import {
   updateUserAsync,
   deleteUserAsync,
   getAvatarSrc,
+  setIsAuthorized,
 } from 'app/mainSlice';
 import Avatar from 'components/Avatar';
 import styles from './UserSettings.module.scss';
@@ -44,6 +46,7 @@ interface Props {
 }
 
 export const UserSettings: FC<Props> = ({ socket }) => {
+  const navigate = useNavigate();
   const isAuthorized = useAppSelector(getIsAuthorized);
   const nickname = useAppSelector(getUserNickname);
   const email = useAppSelector(getUserEmail);
@@ -237,6 +240,10 @@ export const UserSettings: FC<Props> = ({ socket }) => {
       },
     };
     dispatch(deleteUserAsync(deleteUserRequestData));
+    if (isAuthorized) {
+      dispatch(setIsAuthorized(false));
+      navigate('/login');
+    }
     socket.emit('userOffline', nickname);
   };
 
