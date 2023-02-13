@@ -17,6 +17,7 @@ import {
 import { Send as SendIcon, Clear as ClearIcon } from '@mui/icons-material';
 import useValidateInput from 'hooks/useValidateInput';
 import Avatar from 'components/Avatar';
+import { PostDate } from 'components/PostDate/PostDate';
 
 interface CommentsProps {
   postId?: number;
@@ -110,12 +111,17 @@ export const Comments = ({ postId, data, onChange }: CommentsProps) => {
       </div>
       {data && data?.length > 0 ? (
         <List className={styles.comments}>
-          {data.map(({ id, commentText }) => (
+          {data.map(({ id, commentText, date, editDate }) => (
             <ListItem key={id}>
               <ListItemAvatar>
                 <Avatar />
               </ListItemAvatar>
-              <ListItemText>{commentText}</ListItemText>
+              <ListItemText className={styles.commentText}>
+                <span>{commentText}</span>
+                <span className={styles.date}>
+                  <PostDate date={date} editDate={editDate} />
+                </span>
+              </ListItemText>
             </ListItem>
           ))}
         </List>
