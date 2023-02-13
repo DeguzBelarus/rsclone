@@ -1,12 +1,8 @@
-import { Response, NextFunction, Request } from 'express';
-import fs from 'fs';
-import path from 'path';
-import formidable from 'formidable';
+import { Response, NextFunction } from 'express';
 
 import { Post, Comment, User } from '../db-models/db-models';
-import { CurrentLanguageType, IPostModel, FormidableFile, IRequestModified } from '../types/types';
+import { IRequestModified } from '../types/types';
 import { ApiError } from '../error-handler/error-handler';
-import { Undefinable } from '../client/src/types/types';
 
 class CommentController {
   async create(request: IRequestModified, response: Response, next: NextFunction): Promise<void | Response> {
@@ -72,8 +68,10 @@ class CommentController {
           date: String(Date.now()),
           commentText,
           authorNickname: foundCommentator.dataValues.nickname,
+          authorAvatar: foundCommentator.dataValues.avatar,
           userId: Number(foundCommentator.dataValues.id),
           postId: Number(foundPostForCommenting.dataValues.id),
+          authorRole: foundCommentator.dataValues.role,
         });
 
         return response.status(201).json({

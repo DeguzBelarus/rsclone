@@ -206,6 +206,8 @@ export interface ICommentModel {
   editDate?: string;
   commentText: string;
   authorNickname: string;
+  authorAvatar?: string;
+  authorRole: RoleType;
 }
 
 export interface IPostModel {
@@ -216,6 +218,9 @@ export interface IPostModel {
   postText: string;
   media: string | File;
   userId: number;
+  ownerNickname: string;
+  ownerAvatar?: string;
+  ownerRole: RoleType;
   comments?: Array<ICommentModel>;
 }
 

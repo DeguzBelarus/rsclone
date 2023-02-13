@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import formidable from 'formidable';
 
-import { Post, Comment } from '../db-models/db-models';
+import { Post, Comment, User } from '../db-models/db-models';
 import { CurrentLanguageType, IPostModel, FormidableFile, IRequestModified } from '../types/types';
 import { ApiError } from '../error-handler/error-handler';
 import { Undefinable } from '../client/src/types/types';
@@ -49,7 +49,7 @@ class PostController {
             ApiError.forbidden(lang === 'ru' ? "Нет прав" : "No rights"));
         }
 
-        if (Post) {
+        if (Post && User) {
           if (!lang || !postText || !postHeading) {
             return next(
               ApiError.badRequest(
@@ -78,59 +78,76 @@ class PostController {
             );
           }
 
-          const mediaFile = files.media as FormidableFile;
-          if (mediaFile) {
-            let mediaNewFullName: Undefinable<string>;
-            mediaNewFullName = `${mediaFile.newFilename}.${mediaFile.mimetype?.split('/')[1]}`;
+          const foundPostAuthor = await User.findOne({ where: { id: Number(id) } })
+          if (foundPostAuthor) {
+            const mediaFile = files.media as FormidableFile;
+            if (mediaFile) {
+              let mediaNewFullName: Undefinable<string>;
+              mediaNewFullName = `${mediaFile.newFilename}.${mediaFile.mimetype?.split('/')[1]}`;
 
-            if (mediaFile.newFilename) {
-              const newPost = await Post.create({
-                date: String(Date.now()),
-                postHeading,
-                postText,
-                media: mediaNewFullName,
-                userId: Number(id),
-              });
+              if (mediaFile.newFilename) {
+                const newPost = await Post.create({
+                  date: String(Date.now()),
+                  postHeading,
+                  postText,
+                  media: mediaNewFullName,
+                  userId: Number(id),
+                  ownerNickname: foundPostAuthor.dataValues.nickname,
+                  ownerAvatar: foundPostAuthor.dataValues.avatar,
+                  ownerRole: foundPostAuthor.dataValues.role,
+                });
 
-              if (!fs.existsSync(path.join(__dirname, "..", "static", `${id}`, "posts"))) {
-                fs.mkdirSync(path.join(__dirname, "..", "static", `${id}`, "posts"),
-                  { recursive: true }
-                );
+                if (!fs.existsSync(path.join(__dirname, "..", "static", `${id}`, "posts"))) {
+                  fs.mkdirSync(path.join(__dirname, "..", "static", `${id}`, "posts"),
+                    { recursive: true }
+                  );
+                }
+                if (fs.existsSync(path.join(__dirname, "..", "static", `${id}`, "posts"))) {
+                  fs.mkdirSync(path.join(__dirname, "..", "static", `${id}`, "posts", String(newPost.dataValues.id)),
+                    { recursive: true }
+                  );
+                }
+                fs.rename(path.join(tempFolderPath, mediaFile.newFilename), path.join(__dirname,
+                  "..", "static", `${id}`, "posts", String(newPost.dataValues.id), mediaNewFullName),
+                  (error) => {
+                    if (error) {
+                      console.log(error);
+                    }
+                  })
+
+                return response.status(201).json({
+                  message: lang === 'ru' ?
+                    "Пост успешно опубликован" :
+                    "The post was successfully published",
+                });
               }
-              if (fs.existsSync(path.join(__dirname, "..", "static", `${id}`, "posts"))) {
-                fs.mkdirSync(path.join(__dirname, "..", "static", `${id}`, "posts", String(newPost.dataValues.id)),
-                  { recursive: true }
-                );
-              }
-              fs.rename(path.join(tempFolderPath, mediaFile.newFilename), path.join(__dirname,
-                "..", "static", `${id}`, "posts", String(newPost.dataValues.id), mediaNewFullName),
-                (error) => {
-                  if (error) {
-                    console.log(error);
-                  }
-                })
-
-              return response.status(201).json({
-                message: lang === 'ru' ?
-                  "Пост успешно опубликован" :
-                  "The post was successfully published",
-              });
             }
+
+            await Post.create({
+              date: String(Date.now()),
+              postHeading,
+              postText,
+              media: '',
+              userId: Number(id),
+              ownerNickname: foundPostAuthor.dataValues.nickname,
+              ownerAvatar: foundPostAuthor.dataValues.avatar,
+              ownerRole: foundPostAuthor.dataValues.role,
+            });
+
+            return response.status(201).json({
+              message: lang === 'ru' ?
+                "Пост успешно опубликован" :
+                "The post was successfully published",
+            });
+          } else {
+            return next(
+              ApiError.badRequest(
+                lang === "ru" ?
+                  "Автор поста не найден" :
+                  "The author of the post was not found"
+              )
+            );
           }
-
-          await Post.create({
-            date: String(Date.now()),
-            postHeading,
-            postText,
-            media: '',
-            userId: Number(id),
-          });
-
-          return response.status(201).json({
-            message: lang === 'ru' ?
-              "Пост успешно опубликован" :
-              "The post was successfully published",
-          });
         }
       })
     } catch (exception: unknown) {
@@ -148,17 +165,33 @@ class PostController {
         const foundPosts = await Post.findAll();
         if (foundPosts) {
           return response.json({
-            postsData: foundPosts.map((post) => {
-              return {
-                id: post.dataValues.id,
-                date: post.dataValues.date,
-                editDate: post.dataValues.editDate,
-                postHeading: post.dataValues.postHeading,
-                postText: post.dataValues.postText,
-                media: post.dataValues.media,
-                userId: post.dataValues.userId,
-              }
-            }),
+            postsData: foundPosts
+              .map((post) => {
+                return {
+                  id: post.dataValues.id,
+                  date: post.dataValues.date,
+                  editDate: post.dataValues.editDate,
+                  postHeading: post.dataValues.postHeading,
+                  postText: post.dataValues.postText,
+                  media: post.dataValues.media,
+                  userId: post.dataValues.userId,
+                  ownerNickname: post.dataValues.ownerNickname,
+                  ownerAvatar: post.dataValues.ownerAvatar,
+                  ownerRole: post.dataValues.ownerRole,
+                }
+              })
+              .sort((prevPost, nextPost) => {
+                if (prevPost.id && nextPost.id) {
+                  if (prevPost.id > nextPost.id) {
+                    return 1;
+                  }
+                  if (prevPost.id < nextPost.id) {
+                    return 1;
+                  }
+                }
+                return 0;
+              })
+              .reverse(),
             message: lang === 'ru' ?
               "Данные о всех постах успешно получены" :
               "Data on all posts has been successfully received",
@@ -190,9 +223,26 @@ class PostController {
           where: { id }, include: [{ model: Comment, as: "comments" }],
         });
         if (foundPost) {
-          const { id, date, media, postHeading, postText, userId, editDate, comments } = foundPost.dataValues;
+          const { id, date, media, postHeading, postText, userId, editDate,
+            ownerNickname, ownerAvatar, ownerRole } = foundPost.dataValues;
+          let { comments } = foundPost.dataValues;
+
+          comments = comments?.sort((prevComment, nextComment) => {
+            if (prevComment.id && nextComment.id) {
+              if (prevComment.id > nextComment.id) {
+                return 1;
+              }
+              if (prevComment.id < nextComment.id) {
+                return 1;
+              }
+            }
+            return 0;
+          }).reverse();
           return response.json({
-            postData: { id, date, media, postHeading, postText, userId, editDate, comments },
+            postData: {
+              id, date, media, postHeading, postText, userId, editDate, comments,
+              ownerNickname, ownerAvatar, ownerRole
+            },
             message: lang === 'ru' ?
               "Данные поста успешно получены" :
               "The post data has been successfully received",

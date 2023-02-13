@@ -75,6 +75,15 @@ export const Post: Nullable<ModelDefined<IPostModel, IPostModel>> = sequelizeCon
       type: DataTypes.STRING,
       allowNull: true,
     },
+    ownerNickname: {
+      type: DataTypes.STRING,
+    },
+    ownerAvatar: {
+      type: DataTypes.STRING,
+    },
+    ownerRole: {
+      type: DataTypes.STRING,
+    },
   }) : null;
 
 export const Comment: Nullable<ModelDefined<ICommentModel, ICommentModel>> = sequelizeConfig
@@ -95,6 +104,12 @@ export const Comment: Nullable<ModelDefined<ICommentModel, ICommentModel>> = seq
       type: DataTypes.STRING,
     },
     authorNickname: {
+      type: DataTypes.STRING,
+    },
+    authorAvatar: {
+      type: DataTypes.STRING,
+    },
+    authorRole: {
       type: DataTypes.STRING,
     },
   }) : null;

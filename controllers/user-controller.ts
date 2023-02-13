@@ -316,8 +316,24 @@ class UserController {
         });
 
         if (foundUser) {
-          const { id, age, city, country, email, firstName, lastName, nickname, role: userRole, avatar, posts
+          const { id, age, city, country, email, firstName, lastName, nickname, role: userRole, avatar
           } = foundUser.dataValues;
+          let { posts } = foundUser.dataValues
+
+          if (posts) {
+            posts = posts.sort((prevPost, nextPost) => {
+              if (prevPost.id && nextPost.id) {
+                if (prevPost.id > nextPost.id) {
+                  return 1;
+                }
+                if (prevPost.id < nextPost.id) {
+                  return 1;
+                }
+              }
+              return 0;
+            }).reverse()
+          };
+
           if (Number(userId) === requesterId) {
             response.json({
               userData: { id, age, city, country, email, firstName, lastName, nickname, role: userRole, avatar, posts },
