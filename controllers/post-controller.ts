@@ -165,20 +165,33 @@ class PostController {
         const foundPosts = await Post.findAll();
         if (foundPosts) {
           return response.json({
-            postsData: foundPosts.map((post) => {
-              return {
-                id: post.dataValues.id,
-                date: post.dataValues.date,
-                editDate: post.dataValues.editDate,
-                postHeading: post.dataValues.postHeading,
-                postText: post.dataValues.postText,
-                media: post.dataValues.media,
-                userId: post.dataValues.userId,
-                ownerNickname: post.dataValues.ownerNickname,
-                ownerAvatar: post.dataValues.ownerAvatar,
-                ownerRole: post.dataValues.ownerRole,
-              }
-            }),
+            postsData: foundPosts
+              .map((post) => {
+                return {
+                  id: post.dataValues.id,
+                  date: post.dataValues.date,
+                  editDate: post.dataValues.editDate,
+                  postHeading: post.dataValues.postHeading,
+                  postText: post.dataValues.postText,
+                  media: post.dataValues.media,
+                  userId: post.dataValues.userId,
+                  ownerNickname: post.dataValues.ownerNickname,
+                  ownerAvatar: post.dataValues.ownerAvatar,
+                  ownerRole: post.dataValues.ownerRole,
+                }
+              })
+              .sort((prevPost, nextPost) => {
+                if (prevPost.id && nextPost.id) {
+                  if (prevPost.id > nextPost.id) {
+                    return 1;
+                  }
+                  if (prevPost.id < nextPost.id) {
+                    return 1;
+                  }
+                }
+                return 0;
+              })
+              .reverse(),
             message: lang === 'ru' ?
               "Данные о всех постах успешно получены" :
               "Data on all posts has been successfully received",
@@ -210,8 +223,21 @@ class PostController {
           where: { id }, include: [{ model: Comment, as: "comments" }],
         });
         if (foundPost) {
-          const { id, date, media, postHeading, postText, userId, editDate, comments,
+          const { id, date, media, postHeading, postText, userId, editDate,
             ownerNickname, ownerAvatar, ownerRole } = foundPost.dataValues;
+          let { comments } = foundPost.dataValues;
+
+          comments = comments?.sort((prevComment, nextComment) => {
+            if (prevComment.id && nextComment.id) {
+              if (prevComment.id > nextComment.id) {
+                return 1;
+              }
+              if (prevComment.id < nextComment.id) {
+                return 1;
+              }
+            }
+            return 0;
+          }).reverse();
           return response.json({
             postData: {
               id, date, media, postHeading, postText, userId, editDate, comments,
