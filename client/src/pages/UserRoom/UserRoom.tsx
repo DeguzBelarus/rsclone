@@ -205,6 +205,6 @@ export const UserRoom: FC<Props> = ({ socket }) => {
       <EditPostModal open={newPostModalOpen} onClose={() => setNewPostModalOpen(false)} />
     </div>
   ) : (
-    <Page404 message={language(lng.postNotFound).replace('%', id || '')} />
+    <Page404 message={language(lng.userNotFound).replace('%', id || '')} />
   );
 };
