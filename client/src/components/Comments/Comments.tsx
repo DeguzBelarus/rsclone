@@ -14,7 +14,12 @@ import {
   TextField,
   Tooltip,
 } from '@mui/material';
-import { Send as SendIcon, Clear as ClearIcon } from '@mui/icons-material';
+import {
+  Send as SendIcon,
+  Clear as ClearIcon,
+  DeleteForever as DeleteIcon,
+  Edit as EditIcon,
+} from '@mui/icons-material';
 import useValidateInput from 'hooks/useValidateInput';
 import Avatar from 'components/Avatar';
 import { PostDate } from 'components/PostDate/PostDate';
@@ -112,7 +117,7 @@ export const Comments = ({ postId, data, onChange }: CommentsProps) => {
       {data && data?.length > 0 ? (
         <List className={styles.comments}>
           {data.map(({ id, commentText, date, editDate }) => (
-            <ListItem key={id}>
+            <ListItem key={id} className={styles.comment}>
               <ListItemAvatar>
                 <Avatar />
               </ListItemAvatar>
@@ -122,6 +127,22 @@ export const Comments = ({ postId, data, onChange }: CommentsProps) => {
                   <PostDate date={date} editDate={editDate} />
                 </span>
               </ListItemText>
+              <div className={styles.commentActions}>
+                <Tooltip title={language(lng.userAddPost)}>
+                  <span>
+                    <IconButton disabled={commentError} color="inherit" onClick={handleAddComment}>
+                      <EditIcon />
+                    </IconButton>
+                  </span>
+                </Tooltip>
+                <Tooltip title={language(lng.userAddPost)}>
+                  <span>
+                    <IconButton disabled={commentError} color="warning" onClick={handleAddComment}>
+                      <DeleteIcon />
+                    </IconButton>
+                  </span>
+                </Tooltip>
+              </div>
             </ListItem>
           ))}
         </List>
