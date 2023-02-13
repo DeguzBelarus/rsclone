@@ -32,6 +32,8 @@ export interface ICommentModel {
   editDate?: string;
   commentText: string;
   authorNickname: string;
+  authorAvatar?: string | FormidableFile;
+  authorRole: RoleType;
   postId: number;
   userId: number;
 }
@@ -44,6 +46,9 @@ export interface IPostModel {
   postText: string;
   media: string | FormidableFile;
   userId: number;
+  ownerNickname: string;
+  ownerAvatar?: string | FormidableFile;
+  ownerRole: RoleType;
   comments?: Array<ICommentModel>;
 }
 
