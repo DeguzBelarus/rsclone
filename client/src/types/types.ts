@@ -249,6 +249,22 @@ export interface IDeleteCommentResponse {
   statusCode?: number;
 }
 
+export interface IUpdateCommentRequest {
+  lang: CurrentLanguageType;
+  id: number;
+  token: string;
+  requestData: {
+    commentText: string;
+  };
+}
+
+export interface IUpdateCommentResponse {
+  message: string;
+  postId: number;
+  commentOwnerId: number;
+  statusCode?: number;
+}
+
 export interface IFullUserData extends ITokenDecodeData {
   age?: Nullable<number>;
   country?: Nullable<string>;
