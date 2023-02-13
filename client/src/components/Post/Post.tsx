@@ -78,10 +78,10 @@ export const Post = ({ data, single, onDelete }: PostProps) => {
     <Card className={styles.post}>
       <CardContent sx={{ padding: '0' }}>
         <div className={styles.media}>
-          <MediaContainer src={mediaURL} />
+          <MediaContainer src={mediaURL} audioMargin />
         </div>
         <div className={styles.heading}>{heading}</div>
-        <div className={styles.date}>
+        <div className={styles.subHeading}>
           <PostDate date={date} editDate={editDate} />
         </div>
         <div className={styles.body}>
