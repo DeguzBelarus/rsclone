@@ -50,7 +50,8 @@ export const Post = ({ data, single, onDelete, onEdit }: PostProps) => {
   const { userId, id, media, date, editDate } = data;
 
   const mediaURL = media && media !== '' ? `/${userId}/posts/${id}/${media}` : undefined;
-  const isEditable = role === 'ADMIN' || userId === ownId;
+  const isDeletable = role === 'ADMIN' || userId === ownId;
+  const isEditable = userId === ownId;
 
   const handleDelete = async () => {
     if (!id || !token || !ownId) return;
@@ -102,7 +103,7 @@ export const Post = ({ data, single, onDelete, onEdit }: PostProps) => {
             <CopyLinkIcon />
           </IconButton>
         </Tooltip>
-        {isEditable && (
+        {isDeletable && (
           <Tooltip title={language(lng.postDelete)}>
             <IconButton
               component="label"
