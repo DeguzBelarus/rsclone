@@ -6,6 +6,7 @@ import {
   getCurrentLanguage,
   getToken,
   getUserId,
+  getUserRole,
 } from 'app/mainSlice';
 import useLanguage from 'hooks/useLanguage';
 import { lng } from 'hooks/useLanguage/types';
@@ -41,13 +42,13 @@ export const Comments = ({ postId, data, onChange }: CommentsProps) => {
   const lang = useAppSelector(getCurrentLanguage);
   const token = useAppSelector(getToken);
   const userId = useAppSelector(getUserId);
+  const role = useAppSelector(getUserRole);
   const language = useLanguage();
 
   const [commentValue, setCommentValue] = useState('');
   const [commentError, setCommentError] = useState(false);
   const [touched, setTouched] = useState(false);
 
-  console.log(data);
   const validateComment = useValidateInput(
     (value) => value.length < 3,
     setCommentValue,
@@ -136,40 +137,55 @@ export const Comments = ({ postId, data, onChange }: CommentsProps) => {
       </div>
       {data && data?.length > 0 ? (
         <List className={styles.comments}>
-          {data.map(({ id, userId, commentText, authorNickname, authorAvatar, date, editDate }) => (
-            <ListItem key={id} className={styles.comment}>
-              <ListItemAvatar>
-                <Avatar size="2.5rem" user={userId} avatarSrc={authorAvatar} />
-              </ListItemAvatar>
-              <ListItemText className={styles.commentText}>
-                <span>{commentText}</span>
-                <span className={styles.date}>
-                  <PostDate date={date} editDate={editDate} />
-                  <span>{authorNickname}</span>
-                </span>
-              </ListItemText>
-              <div className={styles.commentActions}>
-                <Tooltip title={language(lng.commentEdit)}>
-                  <span>
-                    <IconButton disabled={commentError} color="inherit" onClick={handleAddComment}>
-                      <EditIcon />
-                    </IconButton>
+          {data.map(
+            ({
+              id,
+              userId: authorId,
+              commentText,
+              authorNickname,
+              authorAvatar,
+              date,
+              authorRole,
+              editDate,
+            }) => (
+              <ListItem key={id} className={styles.comment}>
+                <ListItemAvatar>
+                  <Avatar size="2.5rem" user={authorId} avatarSrc={authorAvatar} />
+                </ListItemAvatar>
+                <ListItemText className={styles.commentText}>
+                  <span>{commentText}</span>
+                  <span className={styles.date}>
+                    <PostDate date={date} editDate={editDate} />
+                    <span style={{ textTransform: 'uppercase' }}>{authorNickname}</span>
                   </span>
-                </Tooltip>
-                <Tooltip title={language(lng.commentDelete)}>
-                  <span>
-                    <IconButton
-                      disabled={commentError}
-                      color="warning"
-                      onClick={() => handleDeleteComment(id)}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </span>
-                </Tooltip>
-              </div>
-            </ListItem>
-          ))}
+                </ListItemText>
+                <div className={styles.commentActions}>
+                  {authorId === userId && (
+                    <Tooltip title={language(lng.commentEdit)}>
+                      <IconButton
+                        disabled={commentError}
+                        color="inherit"
+                        onClick={handleAddComment}
+                      >
+                        <EditIcon />
+                      </IconButton>
+                    </Tooltip>
+                  )}
+                  {(authorId === userId || (role === 'ADMIN' && authorRole !== 'ADMIN')) && (
+                    <Tooltip title={language(lng.commentDelete)}>
+                      <IconButton
+                        disabled={commentError}
+                        color="warning"
+                        onClick={() => handleDeleteComment(id)}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </Tooltip>
+                  )}
+                </div>
+              </ListItem>
+            )
+          )}
         </List>
       ) : (
         <div>NO Comments added</div>
