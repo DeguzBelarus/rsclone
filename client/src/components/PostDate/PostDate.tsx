@@ -20,7 +20,7 @@ export const PostDate = ({ date, editDate }: PostDateProps) => {
     const numericDate = Number(date);
     if (Number.isNaN(numericDate)) return '';
     const elapsed = (now - numericDate) / 1000;
-    if (elapsed < 60) return `${Math.round(elapsed)} ${language(lng.secondsAgo)}`;
+    if (elapsed < 60) return language(lng.justNow);
     if (elapsed < 3600) return `${Math.round(elapsed / 60)} ${language(lng.minutesAgo)}`;
     if (elapsed < 86400) return `${Math.round(elapsed / 3600)} ${language(lng.hoursAgo)}`;
     if (elapsed < 86400 * 2) return language(lng.yesterday);

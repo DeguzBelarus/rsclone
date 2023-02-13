@@ -85,10 +85,8 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.postCopyLinkSuccess]: 'The link was copied to clipboard (%)',
     [lng.postOpen]: 'Open post page',
     [lng.postNotFound]: 'The post with the id of % was not found.',
-    [lng.postCreated]: 'Created',
-    [lng.postEdited]: 'edited',
 
-    [lng.secondsAgo]: 'seconds ago',
+    [lng.justNow]: 'just now',
     [lng.minutesAgo]: 'minutes ago',
     [lng.hoursAgo]: 'hours ago',
     [lng.yesterday]: 'yesterday',
@@ -179,10 +177,8 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.postCopyLinkSuccess]: 'Ссылка на пост была скопирована (%)',
     [lng.postOpen]: 'Открыть пост',
     [lng.postNotFound]: 'Пост с id % не найден на сервере.',
-    [lng.postCreated]: 'Создан',
-    [lng.postEdited]: 'отредактирован',
 
-    [lng.secondsAgo]: 'секунд назад',
+    [lng.justNow]: 'сейчас',
     [lng.minutesAgo]: 'минут назад',
     [lng.hoursAgo]: 'часов назад',
     [lng.yesterday]: 'вчера',
