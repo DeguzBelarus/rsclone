@@ -25,6 +25,7 @@ import {
   getUserCountry,
   getUserFirstName,
   getUserLastName,
+  getUserRequestStatus,
 } from 'app/mainSlice';
 import { IGetOneUserRequestData, Nullable, RoleType } from 'types/types';
 import styles from './UserRoom.module.scss';
@@ -38,6 +39,7 @@ import { FabButton } from 'components/FabButton/FabButton';
 import { EditPostModal } from 'components/EditPostModal/EditPostModal';
 import { Posts } from 'components/Posts/Posts';
 import { Page404 } from 'pages/Page404/Page404';
+import { ProcessingPage } from 'pages/ProcessingPage/ProcessingPage';
 import joinStrings from 'lib/joinStrings';
 import LocationIcon from '@mui/icons-material/LocationOn';
 
@@ -70,6 +72,7 @@ export const UserRoom: FC<Props> = ({ socket }) => {
   const isLoginNotificationSent = useAppSelector(getIsLoginNotificationSent);
   const usersOnline = useAppSelector(getUsersOnline);
   const posts = useAppSelector(getPosts);
+  const userRequestStatus = useAppSelector(getUserRequestStatus);
 
   const isUserFound = isAuthorized && (isOwnPage || (id && guestUserData));
 
@@ -204,6 +207,8 @@ export const UserRoom: FC<Props> = ({ socket }) => {
       )}
       <EditPostModal open={newPostModalOpen} onClose={() => setNewPostModalOpen(false)} />
     </div>
+  ) : userRequestStatus === 'loading' ? (
+    <ProcessingPage />
   ) : (
     <Page404 message={language(lng.userNotFound).replace('%', id || '')} />
   );
