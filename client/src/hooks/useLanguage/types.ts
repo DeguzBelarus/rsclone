@@ -90,6 +90,8 @@ export enum lng {
   commentPublish,
   commentEdit,
   commentDelete,
+  commentsHeading,
+  commentsNoneMsg,
 
   justNow,
   minutesAgo,

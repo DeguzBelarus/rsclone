@@ -91,6 +91,8 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.commentPublish]: 'Publish comment',
     [lng.commentEdit]: 'Edit comment',
     [lng.commentDelete]: 'Delete comment',
+    [lng.commentsHeading]: 'Comments',
+    [lng.commentsNoneMsg]: 'No comments were added for this post. Write the first one!',
 
     [lng.justNow]: 'just now',
     [lng.minutesAgo]: 'minutes ago',
@@ -189,6 +191,8 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.commentPublish]: 'Отправить',
     [lng.commentEdit]: 'Изменить комментарий',
     [lng.commentDelete]: 'Удалить комментарий',
+    [lng.commentsHeading]: 'Комментарии',
+    [lng.commentsNoneMsg]: 'Комментарии для этого поста еще не существуют. Добавьте первый!',
 
     [lng.justNow]: 'сейчас',
     [lng.minutesAgo]: 'минут назад',
