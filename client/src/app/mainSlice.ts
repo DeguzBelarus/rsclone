@@ -578,7 +578,7 @@ export const createCommentAsync = createAsyncThunk(
         if (getOnePostResponse) {
           const createCommentResponseData: ICreatePostResponse = await createCommentResponse.json();
           const getOnePostResponseData: IGetOnePostResponse = await getOnePostResponse.json();
-          getOnePostResponseData.statusCode = createCommentResponseData.statusCode;
+          getOnePostResponseData.statusCode = createCommentResponse.status;
           getOnePostResponseData.message = createCommentResponseData.message;
           return getOnePostResponseData;
         }
