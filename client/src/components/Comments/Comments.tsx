@@ -47,6 +47,7 @@ export const Comments = ({ postId, data, onChange }: CommentsProps) => {
   const [commentError, setCommentError] = useState(false);
   const [touched, setTouched] = useState(false);
 
+  console.log(data);
   const validateComment = useValidateInput(
     (value) => value.length < 3,
     setCommentValue,
@@ -62,7 +63,6 @@ export const Comments = ({ postId, data, onChange }: CommentsProps) => {
 
   const handleAddComment = async () => {
     const isValid = touched && validateComment(commentValue);
-    // console.log(isValid, token, userId, postId);
     if (!isValid || !token || !userId || !postId) return;
 
     const requestData: ICreateCommentRequest = {
@@ -105,8 +105,6 @@ export const Comments = ({ postId, data, onChange }: CommentsProps) => {
           variant="standard"
           placeholder={language(lng.commentWrite)}
           value={commentValue}
-          // label={language(lng.postTitle)}
-          // error={commentError}
           onChange={validateComment}
           onKeyDownCapture={(event) => {
             if (event.key === 'Enter') {
@@ -138,15 +136,16 @@ export const Comments = ({ postId, data, onChange }: CommentsProps) => {
       </div>
       {data && data?.length > 0 ? (
         <List className={styles.comments}>
-          {data.map(({ id, commentText, date, editDate }) => (
+          {data.map(({ id, userId, commentText, authorNickname, authorAvatar, date, editDate }) => (
             <ListItem key={id} className={styles.comment}>
               <ListItemAvatar>
-                <Avatar />
+                <Avatar size="2.5rem" user={userId} avatarSrc={authorAvatar} />
               </ListItemAvatar>
               <ListItemText className={styles.commentText}>
                 <span>{commentText}</span>
                 <span className={styles.date}>
                   <PostDate date={date} editDate={editDate} />
+                  <span>{authorNickname}</span>
                 </span>
               </ListItemText>
               <div className={styles.commentActions}>
