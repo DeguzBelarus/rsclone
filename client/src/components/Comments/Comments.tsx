@@ -48,6 +48,12 @@ export const Comments = ({ postId, data, onChange }: CommentsProps) => {
     setTouched
   );
 
+  const resetInputs = () => {
+    setCommentValue('');
+    setCommentError(false);
+    setTouched(false);
+  };
+
   const handleAddComment = async () => {
     const isValid = touched && validateComment(commentValue);
     // console.log(isValid, token, userId, postId);
@@ -64,12 +70,8 @@ export const Comments = ({ postId, data, onChange }: CommentsProps) => {
     };
 
     const result = await dispatch(createCommentAsync(requestData));
-    // console.log(result);
     if (result.meta.requestStatus === 'fulfilled') {
-      console.log('added');
-      setCommentValue('');
-      setCommentError(false);
-      setTouched(false);
+      resetInputs();
       if (onChange) onChange();
     }
   };
@@ -103,8 +105,8 @@ export const Comments = ({ postId, data, onChange }: CommentsProps) => {
                   </span>
                 </Tooltip>
                 {commentValue.length > 0 && (
-                  <Tooltip title={language(lng.userAddPost)}>
-                    <IconButton color="inherit" onClick={handleAddComment}>
+                  <Tooltip title={language(lng.clear)}>
+                    <IconButton color="inherit" onClick={resetInputs}>
                       <ClearIcon />
                     </IconButton>
                   </Tooltip>
