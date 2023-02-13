@@ -396,7 +396,7 @@ class PostController {
           postText,
         });
 
-        return response.status(200).json({
+        return response.json({
           message: lang === 'ru' ?
             "Пост успешно обновлен" :
             "The post was successfully updated",
