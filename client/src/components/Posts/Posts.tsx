@@ -6,13 +6,20 @@ import styles from './Posts.module.scss';
 
 interface PostsProps {
   data: IPostModel[];
+  onDelete?: () => void;
+  onEdit?: () => void;
 }
 
-export const Posts = ({ data }: PostsProps) => {
+export const Posts = ({ data, onDelete, onEdit }: PostsProps) => {
   return (
     <div className={styles.posts}>
       {data.map((post) => (
-        <Post key={post.id} data={post} />
+        <Post
+          key={post.id}
+          data={post}
+          onDelete={() => onDelete && onDelete()}
+          onEdit={() => onEdit && onEdit()}
+        />
       ))}
     </div>
   );

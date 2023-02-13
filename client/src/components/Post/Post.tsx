@@ -30,9 +30,10 @@ interface PostProps {
   data: IPostModel;
   single?: boolean;
   onDelete?: () => void;
+  onEdit?: () => void;
 }
 
-export const Post = ({ data, single, onDelete }: PostProps) => {
+export const Post = ({ data, single, onDelete, onEdit }: PostProps) => {
   const language = useLanguage();
   const dispatch = useAppDispatch();
   const token = useAppSelector(getToken);
@@ -134,6 +135,7 @@ export const Post = ({ data, single, onDelete }: PostProps) => {
         onSuccess={(heading, text) => {
           setHeading(heading);
           setText(text);
+          if (onEdit) onEdit();
         }}
       />
       <ConfirmModal
