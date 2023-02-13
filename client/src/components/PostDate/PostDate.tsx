@@ -7,10 +7,11 @@ import styles from './PostDate.module.scss';
 
 interface PostDateProps {
   date?: string;
+  style?: React.CSSProperties;
   editDate?: string;
 }
 
-export const PostDate = ({ date, editDate }: PostDateProps) => {
+export const PostDate = ({ date, editDate, style }: PostDateProps) => {
   const language = useLanguage();
   const [created, setCreated] = useState('');
   const [edited, setEdited] = useState('');
@@ -37,19 +38,19 @@ export const PostDate = ({ date, editDate }: PostDateProps) => {
   }, [now, language, date, editDate]);
 
   return (
-    <span className={styles.date}>
+    <>
       {date && (
-        <span className={styles.item}>
+        <span className={styles.item} style={style}>
           <TimeIcon fontSize="small" />
           {created}
         </span>
       )}
       {editDate && (
-        <span className={styles.item}>
+        <span className={styles.item} style={style}>
           <EditIcon fontSize="small" />
           {edited}
         </span>
       )}
-    </span>
+    </>
   );
 };

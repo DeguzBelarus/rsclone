@@ -6,29 +6,18 @@ import {
   getCurrentLanguage,
   getToken,
   getUserId,
+  getUserRole,
+  updateCommentAsync,
 } from 'app/mainSlice';
 import useLanguage from 'hooks/useLanguage';
 import { lng } from 'hooks/useLanguage/types';
 import styles from './Comments.module.scss';
-import { ICommentModel, ICreateCommentRequest, IDeleteCommentRequest } from 'types/types';
-import {
-  IconButton,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  TextField,
-  Tooltip,
-} from '@mui/material';
-import {
-  Send as SendIcon,
-  Clear as ClearIcon,
-  DeleteForever as DeleteIcon,
-  Edit as EditIcon,
-} from '@mui/icons-material';
-import useValidateInput from 'hooks/useValidateInput';
+import { ICommentModel, ICreateCommentRequest, IUpdateCommentRequest } from 'types/types';
+import { IconButton, List, ListItem, ListItemAvatar, ListItemText, Tooltip } from '@mui/material';
+import { DeleteForever as DeleteIcon, Edit as EditIcon } from '@mui/icons-material';
 import Avatar from 'components/Avatar';
 import { PostDate } from 'components/PostDate/PostDate';
+import { CommentInput } from 'components/CommentInput/CommentInput';
 
 interface CommentsProps {
   postId?: number;
@@ -41,29 +30,13 @@ export const Comments = ({ postId, data, onChange }: CommentsProps) => {
   const lang = useAppSelector(getCurrentLanguage);
   const token = useAppSelector(getToken);
   const userId = useAppSelector(getUserId);
+  const role = useAppSelector(getUserRole);
   const language = useLanguage();
+  const [editingId, setEditingId] = useState<number>();
 
-  const [commentValue, setCommentValue] = useState('');
-  const [commentError, setCommentError] = useState(false);
-  const [touched, setTouched] = useState(false);
-
-  console.log(data);
-  const validateComment = useValidateInput(
-    (value) => value.length < 3,
-    setCommentValue,
-    setCommentError,
-    setTouched
-  );
-
-  const resetInputs = () => {
-    setCommentValue('');
-    setCommentError(false);
-    setTouched(false);
-  };
-
-  const handleAddComment = async () => {
-    const isValid = touched && validateComment(commentValue);
-    if (!isValid || !token || !userId || !postId) return;
+  const handleAddComment = async (value: string) => {
+    if (!token || !userId || !postId) return;
+    setEditingId(undefined);
 
     const requestData: ICreateCommentRequest = {
       lang,
@@ -71,108 +44,114 @@ export const Comments = ({ postId, data, onChange }: CommentsProps) => {
       postId,
       userId,
       requestData: {
-        commentText: commentValue,
+        commentText: value,
       },
     };
 
     const result = await dispatch(createCommentAsync(requestData));
-    if (result.meta.requestStatus === 'fulfilled') {
-      resetInputs();
-      if (onChange) onChange();
+    if (onChange && result.meta.requestStatus === 'fulfilled') {
+      onChange();
+    }
+  };
+
+  const handleUpdateComment = async (commentText: string, id?: number) => {
+    if (!token || !id) return;
+    setEditingId(undefined);
+
+    const requestData: IUpdateCommentRequest = {
+      id,
+      lang,
+      token,
+      requestData: {
+        commentText,
+      },
+    };
+
+    const result = await dispatch(updateCommentAsync(requestData));
+    if (onChange && result.meta.requestStatus === 'fulfilled') {
+      onChange();
     }
   };
 
   const handleDeleteComment = async (id?: number) => {
     if (!token || !id) return;
+    setEditingId(undefined);
 
-    const requestData: IDeleteCommentRequest = {
-      lang,
-      token,
-      id,
-    };
-    const result = await dispatch(deleteCommentAsync(requestData));
-    if (result.meta.requestStatus === 'fulfilled') {
-      if (onChange) onChange();
+    const result = await dispatch(deleteCommentAsync({ lang, token, id }));
+    if (onChange && result.meta.requestStatus === 'fulfilled') {
+      onChange();
     }
   };
 
   return (
     <div className={styles.wrapper}>
-      <h2>Comments</h2>
+      <h2>{language(lng.commentsHeading)}</h2>
       <div className={styles.add}>
-        <TextField
-          sx={{ width: '100%' }}
-          variant="standard"
-          placeholder={language(lng.commentWrite)}
-          value={commentValue}
-          onChange={validateComment}
-          onKeyDownCapture={(event) => {
-            if (event.key === 'Enter') {
-              event.preventDefault();
-              handleAddComment();
-            }
-          }}
-          InputProps={{
-            endAdornment: (
-              <>
-                <Tooltip title={language(lng.commentPublish)}>
-                  <span>
-                    <IconButton disabled={commentError} color="inherit" onClick={handleAddComment}>
-                      <SendIcon />
-                    </IconButton>
-                  </span>
-                </Tooltip>
-                {commentValue.length > 0 && (
-                  <Tooltip title={language(lng.clear)}>
-                    <IconButton color="inherit" onClick={resetInputs}>
-                      <ClearIcon />
-                    </IconButton>
-                  </Tooltip>
-                )}
-              </>
-            ),
-          }}
+        <CommentInput
+          value=""
+          onSubmit={handleAddComment}
+          onReset={() => setEditingId(undefined)}
         />
       </div>
       {data && data?.length > 0 ? (
         <List className={styles.comments}>
-          {data.map(({ id, userId, commentText, authorNickname, authorAvatar, date, editDate }) => (
-            <ListItem key={id} className={styles.comment}>
-              <ListItemAvatar>
-                <Avatar size="2.5rem" user={userId} avatarSrc={authorAvatar} />
-              </ListItemAvatar>
-              <ListItemText className={styles.commentText}>
-                <span>{commentText}</span>
-                <span className={styles.date}>
-                  <PostDate date={date} editDate={editDate} />
-                  <span>{authorNickname}</span>
-                </span>
-              </ListItemText>
-              <div className={styles.commentActions}>
-                <Tooltip title={language(lng.commentEdit)}>
-                  <span>
-                    <IconButton disabled={commentError} color="inherit" onClick={handleAddComment}>
-                      <EditIcon />
-                    </IconButton>
-                  </span>
-                </Tooltip>
-                <Tooltip title={language(lng.commentDelete)}>
-                  <span>
-                    <IconButton
-                      disabled={commentError}
-                      color="warning"
-                      onClick={() => handleDeleteComment(id)}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </span>
-                </Tooltip>
-              </div>
-            </ListItem>
-          ))}
+          {data.map(
+            ({
+              id,
+              userId: authorId,
+              commentText,
+              authorNickname,
+              authorAvatar,
+              date,
+              authorRole,
+              editDate,
+            }) => (
+              <ListItem key={id} className={styles.comment}>
+                <ListItemAvatar>
+                  <Avatar size="2.5rem" user={authorId} avatarSrc={authorAvatar} />
+                </ListItemAvatar>
+                {id === editingId ? (
+                  <>
+                    <CommentInput
+                      value={commentText}
+                      autoFocus
+                      onSubmit={(value) => handleUpdateComment(value, id)}
+                      onReset={() => setEditingId(undefined)}
+                    />
+                  </>
+                ) : (
+                  <>
+                    <ListItemText className={styles.commentText}>
+                      <span>{commentText}</span>
+                      <span className={styles.additional}>
+                        <PostDate date={date} editDate={editDate} />
+                        <span style={{ textTransform: 'uppercase' }}>{authorNickname}</span>
+                      </span>
+                    </ListItemText>
+                    <div className={styles.commentActions}>
+                      {authorId === userId && (
+                        <Tooltip title={language(lng.commentEdit)}>
+                          <IconButton color="inherit" onClick={() => setEditingId(id)}>
+                            <EditIcon />
+                          </IconButton>
+                        </Tooltip>
+                      )}
+                      {(authorId === userId || (role === 'ADMIN' && authorRole !== 'ADMIN')) && (
+                        <Tooltip title={language(lng.commentDelete)}>
+                          <IconButton color="warning" onClick={() => handleDeleteComment(id)}>
+                            <DeleteIcon />
+                          </IconButton>
+                        </Tooltip>
+                      )}
+                    </div>
+                  </>
+                )}
+              </ListItem>
+            )
+          )}
         </List>
       ) : (
-        <div>NO Comments added</div>
+        <div className={styles.noComments}>{language(lng.commentsNoneMsg)}</div>
       )}
     </div>
   );
