@@ -7,11 +7,12 @@ import {
   getToken,
   getUserId,
   getUserRole,
+  updateCommentAsync,
 } from 'app/mainSlice';
 import useLanguage from 'hooks/useLanguage';
 import { lng } from 'hooks/useLanguage/types';
 import styles from './Comments.module.scss';
-import { ICommentModel, ICreateCommentRequest } from 'types/types';
+import { ICommentModel, ICreateCommentRequest, IUpdateCommentRequest } from 'types/types';
 import { IconButton, List, ListItem, ListItemAvatar, ListItemText, Tooltip } from '@mui/material';
 import { DeleteForever as DeleteIcon, Edit as EditIcon } from '@mui/icons-material';
 import Avatar from 'components/Avatar';
@@ -31,8 +32,9 @@ export const Comments = ({ postId, data, onChange }: CommentsProps) => {
   const userId = useAppSelector(getUserId);
   const role = useAppSelector(getUserRole);
   const language = useLanguage();
-
   const [editingId, setEditingId] = useState<number>();
+
+  console.log(data);
 
   const handleAddComment = async (value: string) => {
     if (!token || !userId || !postId) return;
@@ -48,6 +50,25 @@ export const Comments = ({ postId, data, onChange }: CommentsProps) => {
     };
 
     const result = await dispatch(createCommentAsync(requestData));
+    if (onChange && result.meta.requestStatus === 'fulfilled') {
+      onChange();
+    }
+  };
+
+  const handleUpdateComment = async (commentText: string, id?: number) => {
+    if (!token || !id) return;
+    setEditingId(undefined);
+
+    const requestData: IUpdateCommentRequest = {
+      id,
+      lang,
+      token,
+      requestData: {
+        commentText,
+      },
+    };
+
+    const result = await dispatch(updateCommentAsync(requestData));
     if (onChange && result.meta.requestStatus === 'fulfilled') {
       onChange();
     }
@@ -86,7 +107,14 @@ export const Comments = ({ postId, data, onChange }: CommentsProps) => {
                   <Avatar size="2.5rem" user={authorId} avatarSrc={authorAvatar} />
                 </ListItemAvatar>
                 {id === editingId ? (
-                  <div>Editing</div>
+                  <div>
+                    <CommentInput
+                      value={commentText}
+                      autoFocus
+                      onSubmit={(value) => handleUpdateComment(value, id)}
+                      onReset={() => setEditingId(undefined)}
+                    />
+                  </div>
                 ) : (
                   <>
                     <ListItemText className={styles.commentText}>
