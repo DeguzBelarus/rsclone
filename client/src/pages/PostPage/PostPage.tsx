@@ -52,6 +52,6 @@ export const PostPage = () => {
   ) : userRequestStatus === 'loading' ? (
     <ProcessingPage />
   ) : (
-    <Page404 message={language(lng.userNotFound).replace('%', id || '')} />
+    <Page404 message={language(lng.postNotFound).replace('%', id || '')} />
   );
 };
