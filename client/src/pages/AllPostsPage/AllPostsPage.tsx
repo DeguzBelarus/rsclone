@@ -12,12 +12,12 @@ export const AllPostsPage: FC = (): JSX.Element => {
   const updatePosts = () => dispatch(getAllPostsAsync({ lang }));
 
   useEffect(() => {
-    updatePosts();
-  }, []);
+    dispatch(getAllPostsAsync({ lang }));
+  }, [lang, dispatch]);
 
   return (
     <div className={styles.wrapper}>
-      <Posts data={posts} onDelete={updatePosts} onEdit={updatePosts} />
+      <Posts data={posts} ownHighlight onDelete={updatePosts} onEdit={updatePosts} />
     </div>
   );
 };
