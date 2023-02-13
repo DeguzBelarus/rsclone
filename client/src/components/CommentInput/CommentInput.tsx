@@ -59,7 +59,7 @@ export const CommentInput = ({
       input.focus();
       input.select();
     }
-  }, [inputRef]);
+  }, [inputRef, autoFocus]);
 
   return (
     <TextField

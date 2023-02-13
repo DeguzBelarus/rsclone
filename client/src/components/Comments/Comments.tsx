@@ -34,10 +34,9 @@ export const Comments = ({ postId, data, onChange }: CommentsProps) => {
   const language = useLanguage();
   const [editingId, setEditingId] = useState<number>();
 
-  console.log(data);
-
   const handleAddComment = async (value: string) => {
     if (!token || !userId || !postId) return;
+    setEditingId(undefined);
 
     const requestData: ICreateCommentRequest = {
       lang,
@@ -76,6 +75,7 @@ export const Comments = ({ postId, data, onChange }: CommentsProps) => {
 
   const handleDeleteComment = async (id?: number) => {
     if (!token || !id) return;
+    setEditingId(undefined);
 
     const result = await dispatch(deleteCommentAsync({ lang, token, id }));
     if (onChange && result.meta.requestStatus === 'fulfilled') {
@@ -87,7 +87,11 @@ export const Comments = ({ postId, data, onChange }: CommentsProps) => {
     <div className={styles.wrapper}>
       <h2>{language(lng.commentsHeading)}</h2>
       <div className={styles.add}>
-        <CommentInput value="" onSubmit={handleAddComment} />
+        <CommentInput
+          value=""
+          onSubmit={handleAddComment}
+          onReset={() => setEditingId(undefined)}
+        />
       </div>
       {data && data?.length > 0 ? (
         <List className={styles.comments}>
@@ -107,14 +111,14 @@ export const Comments = ({ postId, data, onChange }: CommentsProps) => {
                   <Avatar size="2.5rem" user={authorId} avatarSrc={authorAvatar} />
                 </ListItemAvatar>
                 {id === editingId ? (
-                  <div>
+                  <>
                     <CommentInput
                       value={commentText}
                       autoFocus
                       onSubmit={(value) => handleUpdateComment(value, id)}
                       onReset={() => setEditingId(undefined)}
                     />
-                  </div>
+                  </>
                 ) : (
                   <>
                     <ListItemText className={styles.commentText}>
