@@ -18,9 +18,23 @@ import {
   getUserId,
   getUserNickname,
   getUserRole,
+  setAllPosts,
+  setAvatarSrc,
+  setGuestUserData,
   setIsAuthorized,
   setIsLoginNotificationSent,
+  setMessages,
+  setPosts,
   setToken,
+  setUserAge,
+  setUserCity,
+  setUserCountry,
+  setUserEmail,
+  setUserFirstName,
+  setUserId,
+  setUserLastName,
+  setUserNickname,
+  setUserRole,
 } from 'app/mainSlice';
 import { LanguageSwitch } from 'components/LanguageSwitch';
 import React, { useState, FC } from 'react';
@@ -70,6 +84,21 @@ export const Header: FC<Props> = ({ socket }) => {
     dispatch(setIsAuthorized(false));
     dispatch(setToken(null));
     dispatch(setIsLoginNotificationSent(false));
+    dispatch(setPosts([]));
+    dispatch(setAllPosts([]));
+    dispatch(setMessages([]));
+    dispatch(setUserId(null));
+    dispatch(setUserEmail(null));
+    dispatch(setUserNickname(null));
+    dispatch(setUserRole(null));
+    dispatch(setUserAge(null));
+    dispatch(setUserCountry(null));
+    dispatch(setUserCity(null));
+    dispatch(setUserFirstName(null));
+    dispatch(setUserLastName(null));
+    dispatch(setAvatarSrc(null));
+    dispatch(setGuestUserData(null));
+
     socket.emit('userOffline', userName);
     navigate('/login');
   };
