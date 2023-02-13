@@ -1,10 +1,17 @@
 import React, { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
-import { getCurrentLanguage, getCurrentPost, getOnePostAsync, setCurrentPost } from 'app/mainSlice';
+import {
+  getCurrentLanguage,
+  getCurrentPost,
+  getOnePostAsync,
+  getUserRequestStatus,
+  setCurrentPost,
+} from 'app/mainSlice';
 import { Post } from 'components/Post/Post';
 import useLanguage from 'hooks/useLanguage';
 import { lng } from 'hooks/useLanguage/types';
 import { Page404 } from 'pages/Page404/Page404';
+import { ProcessingPage } from 'pages/ProcessingPage/ProcessingPage';
 import { useNavigate, useParams } from 'react-router-dom';
 import styles from './PostPage.module.scss';
 import { Comments } from 'components/Comments/Comments';
@@ -12,6 +19,7 @@ import { Comments } from 'components/Comments/Comments';
 export const PostPage = () => {
   const dispatch = useAppDispatch();
   const post = useAppSelector(getCurrentPost);
+  const userRequestStatus = useAppSelector(getUserRequestStatus);
   const lang = useAppSelector(getCurrentLanguage);
   const language = useLanguage();
   const navigate = useNavigate();
@@ -41,6 +49,8 @@ export const PostPage = () => {
         }}
       />
     </div>
+  ) : userRequestStatus === 'loading' ? (
+    <ProcessingPage />
   ) : (
     <Page404 message={language(lng.userNotFound).replace('%', id || '')} />
   );

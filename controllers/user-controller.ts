@@ -6,7 +6,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import formidable from 'formidable';
 
-import { User, Post } from '../db-models/db-models';
+import { User, Post, Comment } from '../db-models/db-models';
 import { CurrentLanguageType, IUserModel, IRequestModified, FormidableFile, IFoundUserData, ISearchUsersResponse } from '../types/types';
 import { ApiError } from '../error-handler/error-handler';
 import { Undefinable } from '../client/src/types/types';
@@ -375,7 +375,7 @@ class UserController {
 
   async delete(request: IRequestModified, response: Response, next: NextFunction): Promise<void | Response> {
     try {
-      if (User) {
+      if (User && Post && Comment) {
         const { id } = request.params;
         const { lang } = request.query;
         const { requesterId, role } = request;
@@ -393,6 +393,32 @@ class UserController {
                   ? "Админу не разрешено удаление другого админа"
                   : "Admin is not allowed to delete another admin"));
             }
+          }
+
+          const foundCommentsForDeleting = await Comment.findOne({
+            where: {
+              userId: deletedUser.dataValues.id,
+            }
+          })
+          if (foundCommentsForDeleting) {
+            await Comment.destroy({
+              where: {
+                userId: deletedUser.dataValues.id,
+              }
+            });
+          }
+
+          const foundPostsForDeleting = await Post.findOne({
+            where: {
+              userId: deletedUser.dataValues.id,
+            }
+          })
+          if (foundPostsForDeleting) {
+            await Post.destroy({
+              where: {
+                userId: deletedUser.dataValues.id,
+              }
+            });
           }
 
           await User.destroy({ where: { id } });

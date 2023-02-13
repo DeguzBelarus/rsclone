@@ -103,6 +103,13 @@ class CommentController {
               return next(
                 ApiError.forbidden(lang === 'ru' ? "Нет прав" : "No rights"));
             }
+            if ((requesterId !== foundCommentForDeleting.dataValues.userId)
+              && role === 'ADMIN' && foundCommentForDeleting.dataValues.authorRole === 'ADMIN') {
+              return next(
+                ApiError.forbidden(lang === 'ru'
+                  ? "Админам не разрешено удалять комментарии других админов"
+                  : "Admins are not allowed to delete comments of other admins"));
+            }
           } else {
             return next(
               ApiError.forbidden(lang === 'ru' ? "Нет прав" : "No rights"));
@@ -116,6 +123,53 @@ class CommentController {
             message: lang === 'ru' ?
               "Комментарий удалён!" :
               "The comment has been deleted!",
+          });
+        } else {
+          return response.status(204).json({
+            message:
+              lang === "ru"
+                ? "Указанный комментарий не найден"
+                : "The specified comment was not found",
+          });
+        }
+      }
+    } catch (exception: unknown) {
+      if (exception instanceof Error) {
+        next(ApiError.badRequest(exception.message));
+      }
+    }
+  }
+
+  async update(request: IRequestModified, response: Response, next: NextFunction): Promise<void | Response> {
+    try {
+      const { requesterId, role } = request;
+      const { id } = request.params;
+      const { lang } = request.query;
+      const { commentText } = request.body;
+
+      if (Comment) {
+        const foundCommentForUpdating = await Comment.findOne({
+          where: { id: Number(id) },
+        });
+        if (foundCommentForUpdating) {
+          if (requesterId && role) {
+            if ((requesterId !== foundCommentForUpdating.dataValues.userId)) {
+              return next(
+                ApiError.forbidden(lang === 'ru' ? "Нет прав" : "No rights"));
+            }
+          } else {
+            return next(
+              ApiError.forbidden(lang === 'ru' ? "Нет прав" : "No rights"));
+          }
+
+          await foundCommentForUpdating.update({ commentText });
+
+          return response.json({
+            commentOwnerId: foundCommentForUpdating.dataValues.userId,
+            postId: foundCommentForUpdating.dataValues.postId,
+            message: lang === 'ru' ?
+              "Комментарий успешно обновлен" :
+              "The comment was successfully updated",
           });
         } else {
           return response.status(204).json({
