@@ -8,9 +8,16 @@ interface MediaContainerProps {
   fileName?: string;
   maxHeight?: string;
   contain?: boolean;
+  audioMargin?: boolean;
 }
 
-export const MediaContainer = ({ src, fileName, maxHeight, contain }: MediaContainerProps) => {
+export const MediaContainer = ({
+  src,
+  fileName,
+  maxHeight,
+  contain,
+  audioMargin,
+}: MediaContainerProps) => {
   const contentType = getURLContentType(fileName || src || '');
   return (
     <>
@@ -35,7 +42,11 @@ export const MediaContainer = ({ src, fileName, maxHeight, contain }: MediaConta
         </video>
       )}
       {contentType === 'audio' && (
-        <audio controls className={styles.audio} style={{ width: '100%', margin: '1rem' }}>
+        <audio
+          controls
+          className={styles.audio}
+          style={{ width: '100%', margin: audioMargin ? '1rem' : undefined }}
+        >
           <source src={src} />
         </audio>
       )}

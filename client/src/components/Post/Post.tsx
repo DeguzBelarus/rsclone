@@ -4,7 +4,7 @@ import {
   Link as CopyLinkIcon,
   Launch as OpenIcon,
 } from '@mui/icons-material';
-import { Card, CardActions, CardContent, IconButton, Tooltip } from '@mui/material';
+import { Card, CardActions, CardContent, IconButton, Tooltip, useTheme } from '@mui/material';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import {
   deletePostAsync,
@@ -29,10 +29,12 @@ import styles from './Post.module.scss';
 interface PostProps {
   data: IPostModel;
   single?: boolean;
+  ownHighlight?: boolean;
   onDelete?: () => void;
+  onEdit?: () => void;
 }
 
-export const Post = ({ data, single, onDelete }: PostProps) => {
+export const Post = ({ data, single, ownHighlight, onDelete, onEdit }: PostProps) => {
   const language = useLanguage();
   const dispatch = useAppDispatch();
   const token = useAppSelector(getToken);
@@ -40,6 +42,7 @@ export const Post = ({ data, single, onDelete }: PostProps) => {
   const ownId = useAppSelector(getUserId);
   const role = useAppSelector(getUserRole);
   const navigate = useNavigate();
+  const theme = useTheme();
 
   const [editPostModalOpen, setEditPostModalOpen] = useState(false);
   const [deletePostModalOpen, setDeletePostModalOpen] = useState(false);
@@ -49,7 +52,8 @@ export const Post = ({ data, single, onDelete }: PostProps) => {
   const { userId, id, media, date, editDate } = data;
 
   const mediaURL = media && media !== '' ? `/${userId}/posts/${id}/${media}` : undefined;
-  const isEditable = role === 'ADMIN' || userId === ownId;
+  const isOwnPost = userId === ownId;
+  const isDeletable = isOwnPost || role === 'ADMIN';
 
   const handleDelete = async () => {
     if (!id || !token || !ownId) return;
@@ -75,13 +79,18 @@ export const Post = ({ data, single, onDelete }: PostProps) => {
   };
 
   return (
-    <Card className={styles.post}>
+    <Card
+      className={styles.post}
+      style={{
+        backgroundColor: ownHighlight && isOwnPost ? theme.palette.grey[100] : undefined,
+      }}
+    >
       <CardContent sx={{ padding: '0' }}>
         <div className={styles.media}>
-          <MediaContainer src={mediaURL} />
+          <MediaContainer src={mediaURL} audioMargin />
         </div>
         <div className={styles.heading}>{heading}</div>
-        <div className={styles.date}>
+        <div className={styles.subHeading}>
           <PostDate date={date} editDate={editDate} />
         </div>
         <div className={styles.body}>
@@ -89,7 +98,7 @@ export const Post = ({ data, single, onDelete }: PostProps) => {
         </div>
       </CardContent>
       <CardActions disableSpacing>
-        {isEditable && (
+        {isOwnPost && (
           <Tooltip title={language(lng.postEdit)}>
             <IconButton component="label" onClick={() => setEditPostModalOpen(true)}>
               <EditIcon />
@@ -101,7 +110,7 @@ export const Post = ({ data, single, onDelete }: PostProps) => {
             <CopyLinkIcon />
           </IconButton>
         </Tooltip>
-        {isEditable && (
+        {isDeletable && (
           <Tooltip title={language(lng.postDelete)}>
             <IconButton
               component="label"
@@ -134,6 +143,7 @@ export const Post = ({ data, single, onDelete }: PostProps) => {
         onSuccess={(heading, text) => {
           setHeading(heading);
           setText(text);
+          if (onEdit) onEdit();
         }}
       />
       <ConfirmModal

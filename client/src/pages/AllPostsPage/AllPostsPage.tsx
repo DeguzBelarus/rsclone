@@ -9,12 +9,15 @@ export const AllPostsPage: FC = (): JSX.Element => {
   const lang = useAppSelector(getCurrentLanguage);
   const posts = useAppSelector(getAllPosts);
 
+  const updatePosts = () => dispatch(getAllPostsAsync({ lang }));
+
   useEffect(() => {
     dispatch(getAllPostsAsync({ lang }));
-  }, []);
+  }, [lang, dispatch]);
+
   return (
     <div className={styles.wrapper}>
-      <Posts data={posts} />
+      <Posts data={posts} ownHighlight onDelete={updatePosts} onEdit={updatePosts} />
     </div>
   );
 };

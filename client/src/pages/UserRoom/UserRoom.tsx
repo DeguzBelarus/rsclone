@@ -115,8 +115,7 @@ export const UserRoom: FC<Props> = ({ socket }) => {
     lastName?: Nullable<string>,
     avatar?: Nullable<string>,
     admin = false,
-    online = false,
-    own = false
+    online = false
   ) => {
     return (
       <div className={styles.user}>
@@ -178,8 +177,7 @@ export const UserRoom: FC<Props> = ({ socket }) => {
             userLastName,
             avatarSrc,
             role === 'ADMIN',
-            true,
-            isOwnPage
+            true
           )}
           <Posts data={posts} />
           <FabButton value={language(lng.userAddPost)} onClick={() => setNewPostModalOpen(true)} />
@@ -207,6 +205,6 @@ export const UserRoom: FC<Props> = ({ socket }) => {
       <EditPostModal open={newPostModalOpen} onClose={() => setNewPostModalOpen(false)} />
     </div>
   ) : (
-    <Page404 message={language(lng.postNotFound).replace('%', id || '')} />
+    <Page404 message={language(lng.userNotFound).replace('%', id || '')} />
   );
 };

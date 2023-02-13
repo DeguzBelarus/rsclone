@@ -84,10 +84,8 @@ export enum lng {
   postCopyLinkSuccess,
   postOpen,
   postNotFound,
-  postCreated,
-  postEdited,
 
-  secondsAgo,
+  justNow,
   minutesAgo,
   hoursAgo,
   yesterday,

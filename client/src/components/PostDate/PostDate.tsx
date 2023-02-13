@@ -16,28 +16,25 @@ export const PostDate = ({ date, editDate }: PostDateProps) => {
   const [edited, setEdited] = useState('');
   const [now, setNow] = useState(Date.now());
 
-  const parseDate = (date?: string): string => {
-    const numericDate = Number(date);
-    if (Number.isNaN(numericDate)) return '';
-    const elapsed = (now - numericDate) / 1000;
-    if (elapsed < 60) return `${Math.round(elapsed)} ${language(lng.secondsAgo)}`;
-    if (elapsed < 3600) return `${Math.round(elapsed / 60)} ${language(lng.minutesAgo)}`;
-    if (elapsed < 86400) return `${Math.round(elapsed / 3600)} ${language(lng.hoursAgo)}`;
-    if (elapsed < 86400 * 2) return language(lng.yesterday);
-    return new Date(numericDate).toLocaleString();
-  };
-
-  const updateDates = () => {
-    setCreated(date ? parseDate(date) : '');
-    setEdited(editDate ? parseDate(editDate) : '');
-  };
-
   useEffect(() => {
     const interval = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(interval);
   }, [date, editDate]);
 
-  useEffect(() => updateDates(), [now]);
+  useEffect(() => {
+    const parseDate = (date?: string): string => {
+      const numericDate = Number(date);
+      if (Number.isNaN(numericDate)) return '';
+      const elapsed = (now - numericDate) / 1000;
+      if (elapsed < 60) return language(lng.justNow);
+      if (elapsed < 3600) return `${Math.round(elapsed / 60)} ${language(lng.minutesAgo)}`;
+      if (elapsed < 86400) return `${Math.round(elapsed / 3600)} ${language(lng.hoursAgo)}`;
+      if (elapsed < 86400 * 2) return language(lng.yesterday);
+      return new Date(numericDate).toLocaleString();
+    };
+    setCreated(date ? parseDate(date) : '');
+    setEdited(editDate ? parseDate(editDate) : '');
+  }, [now, language, date, editDate]);
 
   return (
     <span className={styles.date}>
