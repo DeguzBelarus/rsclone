@@ -56,8 +56,6 @@ export const Post = ({ data, single, ownHighlight, onDelete, onEdit }: PostProps
   const isOwnPost = userId === ownId;
   const isDeletable = isOwnPost || (role === 'ADMIN' && ownerRole !== 'ADMIN');
 
-  console.log(userId, ownId);
-
   const handleDelete = async () => {
     if (!id || !token || !ownId) return;
     const deleteRequest = {

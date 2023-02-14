@@ -19,6 +19,7 @@ import { POST_BODY_PATTERN, POST_TITLE_PATTERN } from 'consts';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import {
   createPostAsync,
+  getAllPostsAsync,
   getCurrentLanguage,
   getToken,
   getUserId,
@@ -27,6 +28,7 @@ import {
 import { IUpdatePostRequest } from '../../types/types';
 import { AddAPhoto, DeleteForever } from '@mui/icons-material';
 import { MediaContainer } from 'components/MediaContainer/MediaContainer';
+import { useNavigate } from 'react-router-dom';
 
 export interface EditPostModalProps {
   open: boolean;
@@ -55,7 +57,8 @@ export const EditPostModal = ({
 
   const language = useLanguage();
   const dispatch = useAppDispatch();
-  const currentLanguage = useAppSelector(getCurrentLanguage);
+  const navigate = useNavigate();
+  const lang = useAppSelector(getCurrentLanguage);
   const token = useAppSelector(getToken);
   const userId = useAppSelector(getUserId);
 
@@ -81,7 +84,7 @@ export const EditPostModal = ({
 
   const createPost = async (ownId: number, token: string): Promise<boolean> => {
     const requestData = new FormData();
-    requestData.append('lang', currentLanguage);
+    requestData.append('lang', lang);
     requestData.append('postHeading', titleValue);
     requestData.append('postText', bodyValue);
     if (mediaValue) requestData.append('media', mediaValue);
@@ -92,7 +95,7 @@ export const EditPostModal = ({
 
   const editPost = async (id: number, token: string): Promise<boolean> => {
     const postData: IUpdatePostRequest = {
-      lang: currentLanguage,
+      lang,
       postId: id,
       token,
       requestData: {
@@ -113,6 +116,12 @@ export const EditPostModal = ({
     if (result) {
       handleClose();
       if (onSuccess) onSuccess(titleValue, bodyValue);
+      const path = window.location.pathname;
+      if (path === '/posts') {
+        dispatch(getAllPostsAsync({ lang }));
+      }
+      if (['/posts', '/user'].some((item) => path.startsWith(item))) return;
+      navigate(`/posts/`);
     }
   };
 
