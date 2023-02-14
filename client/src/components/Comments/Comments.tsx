@@ -18,6 +18,7 @@ import { DeleteForever as DeleteIcon, Edit as EditIcon } from '@mui/icons-materi
 import Avatar from 'components/Avatar';
 import { PostDate } from 'components/PostDate/PostDate';
 import { CommentInput } from 'components/CommentInput/CommentInput';
+import { Link } from 'react-router-dom';
 
 interface CommentsProps {
   postId?: number;
@@ -108,7 +109,9 @@ export const Comments = ({ postId, data, onChange }: CommentsProps) => {
             }) => (
               <ListItem key={id} className={styles.comment}>
                 <ListItemAvatar>
-                  <Avatar size="2.5rem" user={authorId} avatarSrc={authorAvatar} />
+                  <Link to={`/user/${authorId}`}>
+                    <Avatar size="2.5rem" user={authorId} avatarSrc={authorAvatar} />
+                  </Link>
                 </ListItemAvatar>
                 {id === editingId ? (
                   <>
@@ -127,7 +130,9 @@ export const Comments = ({ postId, data, onChange }: CommentsProps) => {
                         <span className={styles.date}>
                           <PostDate date={date} editDate={editDate} />
                         </span>
-                        <span className={styles.nickname}>{authorNickname}</span>
+                        <span className={styles.nickname}>
+                          <Link to={`/user/${authorId}`}>{authorNickname}</Link>
+                        </span>
                       </div>
                     </ListItemText>
                     <div className={styles.commentActions}>
