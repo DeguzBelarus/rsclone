@@ -29,6 +29,7 @@ import { IUpdatePostRequest } from '../../types/types';
 import { AddAPhoto, DeleteForever } from '@mui/icons-material';
 import { MediaContainer } from 'components/MediaContainer/MediaContainer';
 import { useNavigate } from 'react-router-dom';
+import { RecorderButton } from 'components/RecorderButton/RecorderButton';
 
 export interface EditPostModalProps {
   open: boolean;
@@ -179,6 +180,8 @@ export const EditPostModal = ({
                 <AddAPhoto />
               </IconButton>
             </Tooltip>
+            <RecorderButton video />
+            <RecorderButton />
             {mediaValue && (
               <Tooltip title={language(lng.postUploadMediaDelete)}>
                 <IconButton

@@ -97,6 +97,9 @@ export enum lng {
   minutesAgo,
   hoursAgo,
   yesterday,
+
+  recordingStart,
+  recordingStop,
 }
 
 export type LangaugeData = {

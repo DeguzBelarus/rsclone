@@ -98,6 +98,9 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.minutesAgo]: 'minutes ago',
     [lng.hoursAgo]: 'hours ago',
     [lng.yesterday]: 'yesterday',
+
+    [lng.recordingStart]: 'Start recording',
+    [lng.recordingStop]: 'Stop recording',
   },
 
   ru: {
@@ -198,6 +201,9 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.minutesAgo]: 'минут назад',
     [lng.hoursAgo]: 'часов назад',
     [lng.yesterday]: 'вчера',
+
+    [lng.recordingStart]: 'Начать запись',
+    [lng.recordingStop]: 'Остановить запись',
   },
 };
 
