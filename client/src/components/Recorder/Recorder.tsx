@@ -8,6 +8,7 @@ import {
   HourglassFull as LoadingIcon,
 } from '@mui/icons-material';
 import joinStrings from 'lib/joinStrings';
+import { Spinner } from 'components/Spinner/Spinner';
 
 interface RecorderProps {
   video?: boolean;
@@ -135,7 +136,12 @@ export const Recorder = ({
   return error ? (
     <div>{error}</div>
   ) : (
-    <div style={{ display: !recording ? 'none' : undefined }}>
+    <div style={{ display: !recording ? 'none' : undefined, position: 'relative' }}>
+      {isLoading && (
+        <div style={{ position: 'absolute', right: 0 }}>
+          <Spinner size={32} />
+        </div>
+      )}
       <div
         style={{
           display: 'flex',
