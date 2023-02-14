@@ -121,12 +121,14 @@ export const Comments = ({ postId, data, onChange }: CommentsProps) => {
                   </>
                 ) : (
                   <>
-                    <ListItemText className={styles.commentText}>
-                      <span>{commentText}</span>
-                      <span className={styles.additional}>
-                        <PostDate date={date} editDate={editDate} />
-                        <span style={{ textTransform: 'uppercase' }}>{authorNickname}</span>
-                      </span>
+                    <ListItemText>
+                      <div className={styles.text}>{commentText}</div>
+                      <div className={styles.additional}>
+                        <span className={styles.date}>
+                          <PostDate date={date} editDate={editDate} />
+                        </span>
+                        <span className={styles.nickname}>{authorNickname}</span>
+                      </div>
                     </ListItemText>
                     <div className={styles.commentActions}>
                       {authorId === userId && (
