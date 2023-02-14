@@ -45,22 +45,22 @@ export const Recorder = ({
       setElapsed(undefined);
       recorder.stop();
     } else {
+      setElapsed(0);
       setStop(false);
       recorder.start();
-      setElapsed(0);
     }
     setIsRecording(recorder.state === 'recording');
   };
 
   useEffect(() => {
-    const id = setInterval(
+    const id = setTimeout(
       () => setElapsed((current) => (current === undefined ? 0 : current + 1)),
       1000
     );
 
-    if (elapsed === undefined) clearInterval(id);
+    if (elapsed === undefined) clearTimeout(id);
 
-    return () => clearInterval(id);
+    return () => clearTimeout(id);
   }, [elapsed]);
 
   useEffect(() => {
@@ -160,7 +160,7 @@ export const Recorder = ({
               : lng.recordingStart
           )}
         </Button>
-        {isRecording && <span>{formatElapsedTime(elapsed)}</span>}
+        <span>{formatElapsedTime(elapsed)}</span>
       </div>
       <video
         muted
@@ -176,7 +176,7 @@ export const Recorder = ({
 function formatElapsedTime(time?: number): string | undefined {
   if (!time) return;
   const seconds = String(time % 60).padStart(2, '0');
-  const minutes = String(Math.round(time / 60) % 60).padStart(2, '0');
-  const hours = String(Math.round(time / 3600) % 24).padStart(2, '0');
+  const minutes = String(Math.floor(time / 60) % 60).padStart(2, '0');
+  const hours = String(Math.floor(time / 3600) % 24).padStart(2, '0');
   return joinStrings(':', hours, minutes, seconds);
 }

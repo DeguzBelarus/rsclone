@@ -16,7 +16,7 @@ export const RecorderButton = ({ recording, video, disabled, onClick }: Recorder
   const theme = useTheme();
 
   return (
-    <Tooltip title={language(recording ? lng.recordingStop : lng.recordingStart)}>
+    <Tooltip title={language(video ? lng.recordingVideo : lng.recordingAudio)}>
       <span>
         <IconButton component="label" color="primary" disabled={disabled} onClick={onClick}>
           <Badge
