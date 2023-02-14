@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import React, { ChangeEvent, useCallback, useEffect, useState } from 'react';
 
 import {
   Dialog,
@@ -30,6 +30,7 @@ import { AddAPhoto, DeleteForever } from '@mui/icons-material';
 import { MediaContainer } from 'components/MediaContainer/MediaContainer';
 import { useNavigate } from 'react-router-dom';
 import { RecorderButton } from 'components/RecorderButton/RecorderButton';
+import { Recorder } from 'components/Recorder/Recorder';
 
 export interface EditPostModalProps {
   open: boolean;
@@ -52,9 +53,11 @@ export const EditPostModal = ({
   const [bodyValue, setBodyValue] = useState(postText || '');
   const [titleError, setTitleError] = useState(false);
   const [bodyError, setBodyError] = useState(false);
-  const [mediaValue, setMediaValue] = useState<File>();
+  const [mediaValue, setMediaValue] = useState<Blob>();
   const [mediaFileName, setMediaFileName] = useState<string>();
   const [touched, setTouched] = useState(false);
+  const [recording, setRecording] = useState<'video' | 'audio'>();
+  const [mediaLoading, setMediaLoading] = useState(false);
 
   const language = useLanguage();
   const dispatch = useAppDispatch();
@@ -126,15 +129,31 @@ export const EditPostModal = ({
     }
   };
 
+  const handleStartRecording = (type: 'audio' | 'video' | undefined) => {
+    setMediaValue(undefined);
+    setMediaFileName(undefined);
+    setRecording(type);
+  };
+
+  const handleEndRecording = useCallback((blob: Blob, fn: string) => {
+    setRecording(undefined);
+    setMediaFileName(fn);
+    setMediaValue(blob);
+  }, []);
+
+  const handleRecorderLoadingStart = useCallback(() => setMediaLoading(true), []);
+  const handleRecorderLoadingEnd = useCallback(() => setMediaLoading(false), []);
+
   useEffect(() => {
     if (open) {
       setTitleValue(postHeading || '');
       setBodyValue(postText || '');
-      setTitleError(false);
-      setBodyError(false);
-      setMediaValue(undefined);
-      setTouched(false);
     }
+    setTitleError(false);
+    setBodyError(false);
+    setMediaValue(undefined);
+    setTouched(false);
+    setRecording(undefined);
   }, [open, postHeading, postText]);
 
   return (
@@ -143,6 +162,7 @@ export const EditPostModal = ({
       open={open}
       scroll="paper"
       onClose={(_, reason) => {
+        if (mediaLoading) return;
         if (reason === 'escapeKeyDown') handleClose();
       }}
       PaperProps={{ sx: { minWidth: { xs: '90vw', sm: 'min(80vw, 600px)' } } }}
@@ -169,19 +189,35 @@ export const EditPostModal = ({
         {id === undefined && (
           <div className={styles.media}>
             <Tooltip title={language(lng.postUploadMedia)}>
-              <IconButton component="label" color="primary">
-                <input
-                  id="avatar-image"
-                  accept="image/*"
-                  hidden
-                  type="file"
-                  onChange={handleMediaChange}
-                />
-                <AddAPhoto />
-              </IconButton>
+              <span>
+                <IconButton
+                  component="label"
+                  color="primary"
+                  disabled={mediaLoading}
+                  onClick={() => setRecording(undefined)}
+                >
+                  <input
+                    id="avatar-image"
+                    accept="image/*"
+                    hidden
+                    type="file"
+                    onChange={handleMediaChange}
+                  />
+                  <AddAPhoto />
+                </IconButton>
+              </span>
             </Tooltip>
-            <RecorderButton video />
-            <RecorderButton />
+            <RecorderButton
+              video
+              recording={recording === 'video'}
+              disabled={mediaLoading}
+              onClick={() => handleStartRecording('video')}
+            />
+            <RecorderButton
+              recording={recording === 'audio'}
+              disabled={mediaLoading}
+              onClick={() => handleStartRecording('audio')}
+            />
             {mediaValue && (
               <Tooltip title={language(lng.postUploadMediaDelete)}>
                 <IconButton
@@ -193,7 +229,7 @@ export const EditPostModal = ({
                 </IconButton>
               </Tooltip>
             )}
-            <span className={styles.file}>{mediaValue && mediaValue.name}</span>
+            <span className={styles.file}>{mediaValue && mediaFileName}</span>
           </div>
         )}
         {mediaValue && (
@@ -204,6 +240,13 @@ export const EditPostModal = ({
             maxHeight="min(250px, 30vh)"
           />
         )}
+        <Recorder
+          recording={recording !== undefined}
+          video={recording === 'video'}
+          onLoadingStart={handleRecorderLoadingStart}
+          onLoadingEnd={handleRecorderLoadingEnd}
+          onRecordingEnd={handleEndRecording}
+        />
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>{language(lng.cancel)}</Button>
