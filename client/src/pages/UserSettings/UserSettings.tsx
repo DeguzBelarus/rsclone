@@ -1,4 +1,5 @@
 import React, { ChangeEvent, FormEvent, useState, FC, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import {
   getCurrentLanguage,
@@ -16,6 +17,23 @@ import {
   updateUserAsync,
   deleteUserAsync,
   getAvatarSrc,
+  setIsAuthorized,
+  setToken,
+  setIsLoginNotificationSent,
+  setPosts,
+  setAllPosts,
+  setMessages,
+  setUserId,
+  setUserEmail,
+  setGuestUserData,
+  setUserNickname,
+  setUserRole,
+  setUserAge,
+  setUserCountry,
+  setUserCity,
+  setUserFirstName,
+  setUserLastName,
+  setAvatarSrc,
 } from 'app/mainSlice';
 import Avatar from 'components/Avatar';
 import styles from './UserSettings.module.scss';
@@ -44,6 +62,7 @@ interface Props {
 }
 
 export const UserSettings: FC<Props> = ({ socket }) => {
+  const navigate = useNavigate();
   const isAuthorized = useAppSelector(getIsAuthorized);
   const nickname = useAppSelector(getUserNickname);
   const email = useAppSelector(getUserEmail);
@@ -236,7 +255,27 @@ export const UserSettings: FC<Props> = ({ socket }) => {
         ownId: ownId,
       },
     };
+
+    dispatch(setIsAuthorized(false));
+    dispatch(setToken(null));
+    dispatch(setIsLoginNotificationSent(false));
+    dispatch(setPosts([]));
+    dispatch(setAllPosts([]));
+    dispatch(setMessages([]));
+    dispatch(setUserId(null));
+    dispatch(setUserEmail(null));
+    dispatch(setUserNickname(null));
+    dispatch(setUserRole(null));
+    dispatch(setUserAge(null));
+    dispatch(setUserCountry(null));
+    dispatch(setUserCity(null));
+    dispatch(setUserFirstName(null));
+    dispatch(setUserLastName(null));
+    dispatch(setAvatarSrc(null));
+    dispatch(setGuestUserData(null));
+
     dispatch(deleteUserAsync(deleteUserRequestData));
+    navigate('/login');
     socket.emit('userOffline', nickname);
   };
 

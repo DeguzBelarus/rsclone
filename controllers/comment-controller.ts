@@ -162,7 +162,7 @@ class CommentController {
               ApiError.forbidden(lang === 'ru' ? "Нет прав" : "No rights"));
           }
 
-          await foundCommentForUpdating.update({ commentText });
+          await foundCommentForUpdating.update({ commentText, editDate: String(Date.now()) });
 
           return response.json({
             commentOwnerId: foundCommentForUpdating.dataValues.userId,
