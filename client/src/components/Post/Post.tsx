@@ -21,7 +21,7 @@ import useLanguage from 'hooks/useLanguage';
 import { lng } from 'hooks/useLanguage/types';
 import { PostDate } from 'components/PostDate/PostDate';
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { IPostModel } from 'types/types';
 
 import styles from './Post.module.scss';
@@ -50,11 +50,13 @@ export const Post = ({ data, single, ownHighlight, onDelete, onEdit }: PostProps
 
   const [heading, setHeading] = useState(data.postHeading);
   const [text, setText] = useState(data.postText);
-  const { userId, id, media, date, editDate, ownerAvatar, ownerNickname } = data;
+  const { userId, id, media, date, editDate, ownerAvatar, ownerNickname, ownerRole } = data;
 
   const mediaURL = media && media !== '' ? `/${userId}/posts/${id}/${media}` : undefined;
   const isOwnPost = userId === ownId;
-  const isDeletable = isOwnPost || role === 'ADMIN';
+  const isDeletable = isOwnPost || (role === 'ADMIN' && ownerRole !== 'ADMIN');
+
+  console.log(userId, ownId);
 
   const handleDelete = async () => {
     if (!id || !token || !ownId) return;
@@ -92,10 +94,10 @@ export const Post = ({ data, single, ownHighlight, onDelete, onEdit }: PostProps
         </div>
         <div className={styles.heading}>{heading}</div>
         <div className={styles.subHeading}>
-          <div className={styles.author}>
+          <Link to={`/user/${userId}`} className={styles.author}>
             <Avatar user={userId} avatarSrc={ownerAvatar} size="1.8rem" />
             <span className={styles.nickname}>{ownerNickname}</span>
-          </div>
+          </Link>
           <PostDate style={{ opacity: 0.7 }} date={date} editDate={editDate} />
         </div>
         <div className={styles.body}>
