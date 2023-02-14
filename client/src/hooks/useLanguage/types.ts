@@ -100,6 +100,7 @@ export enum lng {
 
   recordingStart,
   recordingStop,
+  recordingAccessing,
 }
 
 export type LangaugeData = {

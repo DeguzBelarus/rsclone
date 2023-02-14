@@ -101,6 +101,7 @@ const LANGUAGE_DATA: LangaugeData = {
 
     [lng.recordingStart]: 'Start recording',
     [lng.recordingStop]: 'Stop recording',
+    [lng.recordingAccessing]: 'Accessing devices...',
   },
 
   ru: {
@@ -204,6 +205,7 @@ const LANGUAGE_DATA: LangaugeData = {
 
     [lng.recordingStart]: 'Начать запись',
     [lng.recordingStop]: 'Остановить запись',
+    [lng.recordingAccessing]: 'Идет доступ к устройствам...',
   },
 };
 

@@ -7,6 +7,7 @@ import {
   StopCircle as StopIcon,
   HourglassFull as LoadingIcon,
 } from '@mui/icons-material';
+import joinStrings from 'lib/joinStrings';
 
 interface RecorderProps {
   video?: boolean;
@@ -32,6 +33,7 @@ export const Recorder = ({
   const [, setMediaStream] = useState<MediaStream>();
   const [blob, setBlob] = useState<Blob>();
   const [fileName, setFileName] = useState('');
+  const [elapsed, setElapsed] = useState<number>();
   const [stop, setStop] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
@@ -40,13 +42,26 @@ export const Recorder = ({
     if (!recorder) return;
     if (recorder.state === 'recording') {
       setStop(true);
+      setElapsed(undefined);
       recorder.stop();
     } else {
       setStop(false);
       recorder.start();
+      setElapsed(0);
     }
     setIsRecording(recorder.state === 'recording');
   };
+
+  useEffect(() => {
+    const id = setInterval(
+      () => setElapsed((current) => (current === undefined ? 0 : current + 1)),
+      1000
+    );
+
+    if (elapsed === undefined) clearInterval(id);
+
+    return () => clearInterval(id);
+  }, [elapsed]);
 
   useEffect(() => {
     const startStream = async () => {
@@ -63,8 +78,10 @@ export const Recorder = ({
 
         const mediaRecorder = new MediaRecorder(stream);
         let chunks: Blob[] = [];
-        mediaRecorder.ondataavailable = (event) => chunks.push(event.data);
-        mediaRecorder.onstop = (event) => {
+        mediaRecorder.ondataavailable = (event) => {
+          chunks.push(event.data);
+        };
+        mediaRecorder.onstop = () => {
           setFileName(fn);
           setBlob(new Blob(chunks, { type: video ? 'video/mp4' : 'audio/ogg' }));
           chunks = [];
@@ -85,6 +102,8 @@ export const Recorder = ({
       if (audioRef.current) audioRef.current.src = '';
       setBlob(undefined);
       setFileName('');
+      setElapsed(undefined);
+      setIsRecording(false);
       setRecorder((current) => {
         if (current && current.state === 'recording') current.stop();
         return undefined;
@@ -96,8 +115,6 @@ export const Recorder = ({
         return undefined;
       });
     };
-
-    console.log('effets');
 
     stopStream();
 
@@ -119,22 +136,47 @@ export const Recorder = ({
     <div>{error}</div>
   ) : (
     <div style={{ display: !recording ? 'none' : undefined }}>
-      <Button
-        style={{ marginBottom: '1rem' }}
-        color={isRecording ? 'warning' : 'success'}
-        disabled={isLoading}
-        startIcon={isLoading ? <LoadingIcon /> : isRecording ? <StopIcon /> : <StartIcon />}
-        onClick={handleStartButtonClick}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.5rem 1rem',
+          flexWrap: 'wrap',
+          marginBottom: '1rem',
+          justifyContent: 'space-between',
+        }}
       >
-        {isLoading ? 'Accessing devices' : isRecording ? 'Stop and save' : 'Start recording'}
-      </Button>
+        <Button
+          color={isRecording ? 'warning' : 'success'}
+          disabled={isLoading}
+          startIcon={isLoading ? <LoadingIcon /> : isRecording ? <StopIcon /> : <StartIcon />}
+          onClick={handleStartButtonClick}
+        >
+          {language(
+            isLoading
+              ? lng.recordingAccessing
+              : isRecording
+              ? lng.recordingStop
+              : lng.recordingStart
+          )}
+        </Button>
+        {isRecording && <span>{formatElapsedTime(elapsed)}</span>}
+      </div>
       <video
         muted
         width="100%"
         ref={videoRef}
-        style={{ display: !video ? 'none' : undefined, maxHeight: '250px' }}
+        style={{ display: !video ? 'none' : undefined, maxHeight: 'max(35vh, 200px)' }}
       />
       <audio muted style={{ width: '100%', display: video ? 'none' : undefined }} ref={audioRef} />
     </div>
   );
 };
+
+function formatElapsedTime(time?: number): string | undefined {
+  if (!time) return;
+  const seconds = String(time % 60).padStart(2, '0');
+  const minutes = String(Math.round(time / 60) % 60).padStart(2, '0');
+  const hours = String(Math.round(time / 3600) % 24).padStart(2, '0');
+  return joinStrings(':', hours, minutes, seconds);
+}
