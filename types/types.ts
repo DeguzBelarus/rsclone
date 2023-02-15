@@ -57,8 +57,10 @@ export interface IMessageModel {
   date: string;
   messageText: string;
   authorNickname: string;
+  authorAvatarSrc?: string | FormidableFile;
   recipientId: number;
   recipientNickname: string;
+  recipientAvatarSrc?: string | FormidableFile;
   isRead?: boolean;
   userId: number;
 }

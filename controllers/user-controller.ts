@@ -373,6 +373,8 @@ class UserController {
                   lastMessageId: message.id,
                   lastMessageAuthorNickname: array.find((message) => (message.userId === authorId
                     || message.recipientId === recipientId))?.authorNickname,
+                  authorAvatarSrc: message.authorAvatarSrc,
+                  recipientAvatarSrc: message.recipientAvatarSrc,
                 }
               }) as Array<IUserDialog>;
 

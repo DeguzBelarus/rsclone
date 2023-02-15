@@ -89,7 +89,9 @@ class MessageController {
           userId: authorId,
           authorNickname,
           recipientId,
-          recipientNickname
+          recipientNickname,
+          authorAvatarSrc: foundSender.dataValues.avatar,
+          recipientAvatarSrc: foundReceiver.dataValues.avatar,
         });
 
         return response.status(201).json({

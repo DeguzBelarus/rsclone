@@ -140,6 +140,14 @@ export const Message: Nullable<ModelDefined<IMessageModel, IMessageModel>> = seq
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
+    authorAvatarSrc: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    recipientAvatarSrc: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
   }) : null;
 
 if (User && Post && Comment && Message) {
