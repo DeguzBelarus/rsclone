@@ -60,6 +60,7 @@ import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import { HeaderSearch } from 'components/HeaderSearch/HeaderSearch';
 import combineClasses from 'lib/combineClasses';
 import { EditPostModal } from 'components/EditPostModal/EditPostModal';
+import { Logo } from 'components/Logo/Logo';
 
 interface Props {
   socket: Socket<DefaultEventsMap, DefaultEventsMap>;
@@ -185,9 +186,11 @@ export const Header: FC<Props> = ({ socket }) => {
       }}
     >
       <Toolbar className={styles.toolbar}>
-        <h1 className={styles.logo}>
-          <Link to={userId === null ? '/' : `user/${userId}`}>RS Social</Link>
-        </h1>
+        <Link to={userId === null ? '/' : `user/${userId}`}>
+          <Logo />
+        </Link>
+        {/* <h1 className={styles.logo}>
+        </h1> */}
         {isAuthorized && <HeaderSearch onFocusChange={(focused) => setSearchFocused(focused)} />}
         <LanguageSwitch className={styles.language} />
 
