@@ -6,8 +6,8 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import formidable from 'formidable';
 
-import { User, Post, Comment } from '../db-models/db-models';
-import { CurrentLanguageType, IUserModel, IRequestModified, FormidableFile, IFoundUserData, ISearchUsersResponse } from '../types/types';
+import { User, Post, Comment, Message } from '../db-models/db-models';
+import { CurrentLanguageType, IUserModel, IRequestModified, FormidableFile, IFoundUserData, ISearchUsersResponse, IMessageModel, IUserDialog } from '../types/types';
 import { ApiError } from '../error-handler/error-handler';
 import { Undefinable } from '../client/src/types/types';
 
@@ -303,7 +303,7 @@ class UserController {
 
   async getOneUser(request: IRequestModified, response: Response, next: NextFunction) {
     try {
-      if (User && Post) {
+      if (User && Post && Message) {
         const { userId } = request.params;
         const { lang } = request.query;
         const { requesterId, role } = request;
@@ -312,13 +312,14 @@ class UserController {
           where: { id: Number(userId) },
           include: [
             { model: Post, as: "posts" },
+            { model: Message, as: "dialogs" },
           ],
         });
 
         if (foundUser) {
           const { id, age, city, country, email, firstName, lastName, nickname, role: userRole, avatar
           } = foundUser.dataValues;
-          let { posts } = foundUser.dataValues
+          let { posts, dialogs } = foundUser.dataValues
 
           if (posts) {
             posts = posts.sort((prevPost, nextPost) => {
@@ -335,8 +336,58 @@ class UserController {
           };
 
           if (Number(userId) === requesterId) {
+            const incomingMessages = await Message.findAll({ where: { recipientId: userId } }) as unknown as Array<IMessageModel>;
+            const outgoingMessages = dialogs as unknown as Array<IMessageModel>;
+            const allMessages = [...incomingMessages, ...outgoingMessages];
+            allMessages.sort((prevMessage, nextMessage) => {
+              if (prevMessage.id && nextMessage.id) {
+                if (prevMessage.id > nextMessage.id) {
+                  return 1;
+                }
+                if (prevMessage.id < nextMessage.id) {
+                  return 1;
+                }
+              }
+              return 0;
+            }).reverse();
+            const modifiedDialogs = allMessages
+              .map((message, i, array) => {
+                const authorId = message.userId;
+                const recipientId = message.recipientId;
+
+                return {
+                  authorId: message.userId,
+                  authorNickname: message.authorNickname,
+                  recipientId: message.recipientId,
+                  recipientNickname: message.recipientNickname,
+                  unreadMessages: array.reduce((sum: number, message) => {
+                    if ((message.userId === authorId || message.recipientId === recipientId)
+                      && !message.isRead) {
+                      return sum += 1;
+                    } else return sum;
+                  }, 0),
+                  lastMessageDate: array.find((message) => (message.userId === authorId
+                    || message.recipientId === recipientId))?.date,
+                  lastMessageText: array.find((message) => (message.userId === authorId
+                    || message.recipientId === recipientId))?.messageText,
+                  lastMessageId: message.id,
+                  lastMessageAuthorNickname: array.find((message) => (message.userId === authorId
+                    || message.recipientId === recipientId))?.authorNickname,
+                }
+              }) as Array<IUserDialog>;
+
+            const userDialogs: Array<IUserDialog> = [];
+            modifiedDialogs.forEach((modifiedDialog) => {
+              if (!userDialogs.find((uniqueDialog: IUserDialog) => uniqueDialog.authorId === modifiedDialog.authorId
+                && uniqueDialog.recipientId === modifiedDialog.recipientId)) {
+                userDialogs.push(modifiedDialog);
+              }
+            });
             response.json({
-              userData: { id, age, city, country, email, firstName, lastName, nickname, role: userRole, avatar, posts },
+              userData: {
+                id, age, city, country, email, firstName, lastName, nickname, role: userRole,
+                avatar, posts, userDialogs
+              },
               message: lang === 'ru' ?
                 "Получены собственные данные пользователя" :
                 "The user's own data was obtained",

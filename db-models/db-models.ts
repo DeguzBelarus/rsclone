@@ -150,7 +150,7 @@ if (User && Post && Comment && Message) {
   Post.belongsTo(User);
 
   User.hasMany(Message, {
-    as: "messages",
+    as: "dialogs",
     foreignKey: "userId",
   });
   Message.belongsTo(User);

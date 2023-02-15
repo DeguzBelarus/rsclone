@@ -113,6 +113,18 @@ export interface ISearchUsersResponse {
   message: string;
 }
 
+export interface IUserDialog {
+  lastMessageId: number;
+  lastMessageDate: string;
+  lastMessageText: string;
+  lastMessageAuthorNickname: string;
+  authorId: number;
+  authorNickname: string;
+  recipientId: number;
+  recipientNickname: string;
+  unreadMessages: number;
+}
+
 export interface IUserModel {
   id?: number;
   email: string;
@@ -126,4 +138,6 @@ export interface IUserModel {
   firstName: Nullable<string>;
   lastName: Nullable<string>;
   posts?: Array<IPostModel>;
+  dialogs?: Array<IUserDialog>;
+  modifiedDialogs?: Array<IUserDialog>;
 }
