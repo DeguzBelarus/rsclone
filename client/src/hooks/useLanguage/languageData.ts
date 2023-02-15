@@ -69,6 +69,7 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.admin]: 'admin',
     [lng.online]: 'Online',
     [lng.offline]: 'Offline',
+    [lng.onlineAndMore]: 'and % more',
 
     [lng.newPostTitle]: 'New post',
     [lng.editPostTitle]: 'Edit post',
@@ -95,9 +96,14 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.commentsNoneMsg]: 'No comments were added for this post. Write the first one!',
 
     [lng.justNow]: 'just now',
-    [lng.minutesAgo]: 'minutes ago',
-    [lng.hoursAgo]: 'hours ago',
     [lng.yesterday]: 'yesterday',
+    [lng.ago]: 'ago',
+    [lng.minutes1]: 'minute',
+    [lng.minutes2]: 'minutes',
+    [lng.minutes3]: 'minutes',
+    [lng.hours1]: 'hour',
+    [lng.hours2]: 'hours',
+    [lng.hours3]: 'hours',
 
     [lng.recording]: 'Recording',
     [lng.recordingStart]: 'Start recording',
@@ -175,6 +181,7 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.admin]: 'администратор',
     [lng.online]: 'Онлайн',
     [lng.offline]: 'Оффлайн',
+    [lng.onlineAndMore]: 'и % других',
 
     [lng.newPostTitle]: 'Новый пост',
     [lng.editPostTitle]: 'Редактировать пост',
@@ -202,8 +209,13 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.commentsNoneMsg]: 'Комментарии для этого поста еще не существуют. Добавьте первый!',
 
     [lng.justNow]: 'сейчас',
-    [lng.minutesAgo]: 'минут назад',
-    [lng.hoursAgo]: 'часов назад',
+    [lng.ago]: 'назад',
+    [lng.minutes1]: 'минуту',
+    [lng.minutes2]: 'минуты',
+    [lng.minutes3]: 'минут',
+    [lng.hours1]: 'час',
+    [lng.hours2]: 'часa',
+    [lng.hours3]: 'часов',
     [lng.yesterday]: 'вчера',
 
     [lng.recording]: 'Запись',

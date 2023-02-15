@@ -19,3 +19,5 @@ export const LANGUAGES = ['en', 'ru'];
 export const LANGUAGE_NAMES = ['English', 'Русский'];
 
 export const USER_ROLE_ADMIN = 'ADMIN';
+
+export const SHOW_MAX_USERS_ONLINE = 10;

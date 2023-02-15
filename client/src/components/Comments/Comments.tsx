@@ -14,6 +14,7 @@ import { lng } from 'hooks/useLanguage/types';
 import styles from './Comments.module.scss';
 import { ICommentModel, ICreateCommentRequest, IUpdateCommentRequest } from 'types/types';
 import {
+  alpha,
   IconButton,
   List,
   ListItem,
@@ -21,6 +22,7 @@ import {
   ListItemText,
   Paper,
   Tooltip,
+  useTheme,
 } from '@mui/material';
 import { DeleteForever as DeleteIcon, Edit as EditIcon } from '@mui/icons-material';
 import Avatar from 'components/Avatar';
@@ -41,6 +43,7 @@ export const Comments = ({ postId, data, onChange }: CommentsProps) => {
   const userId = useAppSelector(getUserId);
   const role = useAppSelector(getUserRole);
   const language = useLanguage();
+  const theme = useTheme();
   const [editingId, setEditingId] = useState<number>();
 
   const handleAddComment = async (value: string) => {
@@ -114,61 +117,78 @@ export const Comments = ({ postId, data, onChange }: CommentsProps) => {
               date,
               authorRole,
               editDate,
-            }) => (
-              <ListItem key={id} className={styles.comment}>
-                <ListItemAvatar>
-                  <Link to={`/user/${authorId}`}>
-                    <Avatar size="2.5rem" user={authorId} avatarSrc={authorAvatar} />
-                  </Link>
-                </ListItemAvatar>
-                {id === editingId ? (
-                  <>
+            }) => {
+              const canEdit = authorId === userId || (role === 'ADMIN' && authorRole !== 'ADMIN');
+              const isEditing = id === editingId;
+              return (
+                <ListItem
+                  sx={{
+                    backgroundColor: isEditing
+                      ? alpha(theme.palette.primary.light, 0.15)
+                      : undefined,
+                    '&:hover': {
+                      backgroundColor: isEditing ? undefined : theme.palette.grey[100],
+                    },
+                    cursor: canEdit ? 'pointer' : undefined,
+                  }}
+                  key={id}
+                  className={styles.comment}
+                  onClick={() => canEdit && !isEditing && setEditingId(id)}
+                >
+                  <ListItemAvatar>
+                    <Link to={`/user/${authorId}`}>
+                      <Avatar size="2.5rem" user={authorId} avatarSrc={authorAvatar} />
+                    </Link>
+                  </ListItemAvatar>
+                  {isEditing ? (
                     <CommentInput
                       value={commentText}
                       autoFocus
                       onSubmit={(value) => handleUpdateComment(value, id)}
                       onReset={() => setEditingId(undefined)}
                     />
-                  </>
-                ) : (
-                  <>
-                    <ListItemText>
-                      <div className={styles.text}>{commentText}</div>
-                      <div className={styles.additional}>
-                        <span className={styles.date}>
-                          <PostDate date={date} editDate={editDate} />
-                        </span>
-                        <span className={styles.nickname}>
-                          <Link to={`/user/${authorId}`}>{authorNickname}</Link>
-                        </span>
-                      </div>
-                    </ListItemText>
-                    <Paper className={styles.commentActions} elevation={2}>
-                      {authorId === userId && (
-                        <Tooltip
-                          title={language(lng.commentEdit)}
-                          PopperProps={{ disablePortal: true, keepMounted: true }}
-                        >
-                          <IconButton color="inherit" onClick={() => setEditingId(id)}>
-                            <EditIcon />
-                          </IconButton>
-                        </Tooltip>
+                  ) : (
+                    <>
+                      <ListItemText>
+                        <div className={styles.text}>{commentText}</div>
+                        <div className={styles.additional}>
+                          <span className={styles.date}>
+                            <PostDate date={date} editDate={editDate} />
+                          </span>
+                          <span className={styles.nickname}>
+                            <Link to={`/user/${authorId}`}>{authorNickname}</Link>
+                          </span>
+                        </div>
+                      </ListItemText>
+                      {canEdit && (
+                        <Paper className={styles.commentActions} elevation={2}>
+                          {authorId === userId && (
+                            <Tooltip
+                              title={language(lng.commentEdit)}
+                              PopperProps={{ disablePortal: true, keepMounted: true }}
+                            >
+                              <IconButton color="inherit" onClick={() => setEditingId(id)}>
+                                <EditIcon />
+                              </IconButton>
+                            </Tooltip>
+                          )}
+                          {canEdit && (
+                            <Tooltip
+                              title={language(lng.commentDelete)}
+                              PopperProps={{ disablePortal: true, keepMounted: true }}
+                            >
+                              <IconButton color="warning" onClick={() => handleDeleteComment(id)}>
+                                <DeleteIcon />
+                              </IconButton>
+                            </Tooltip>
+                          )}
+                        </Paper>
                       )}
-                      {(authorId === userId || (role === 'ADMIN' && authorRole !== 'ADMIN')) && (
-                        <Tooltip
-                          title={language(lng.commentDelete)}
-                          PopperProps={{ disablePortal: true, keepMounted: true }}
-                        >
-                          <IconButton color="warning" onClick={() => handleDeleteComment(id)}>
-                            <DeleteIcon />
-                          </IconButton>
-                        </Tooltip>
-                      )}
-                    </Paper>
-                  </>
-                )}
-              </ListItem>
-            )
+                    </>
+                  )}
+                </ListItem>
+              );
+            }
           )}
         </List>
       ) : (

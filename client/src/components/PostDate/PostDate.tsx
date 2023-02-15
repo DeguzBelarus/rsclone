@@ -4,6 +4,9 @@ import React, { useEffect, useState } from 'react';
 import { AccessTime as TimeIcon, Edit as EditIcon } from '@mui/icons-material';
 
 import styles from './PostDate.module.scss';
+import { useAppSelector } from 'app/hooks';
+import { getCurrentLanguage } from 'app/mainSlice';
+import formatTime from 'lib/formatTime';
 
 interface PostDateProps {
   date?: string;
@@ -13,6 +16,7 @@ interface PostDateProps {
 
 export const PostDate = ({ date, editDate, style }: PostDateProps) => {
   const language = useLanguage();
+  const lang = useAppSelector(getCurrentLanguage);
   const [created, setCreated] = useState('');
   const [edited, setEdited] = useState('');
   const [now, setNow] = useState(Date.now());
@@ -28,14 +32,18 @@ export const PostDate = ({ date, editDate, style }: PostDateProps) => {
       if (Number.isNaN(numericDate)) return '';
       const elapsed = (now - numericDate) / 1000;
       if (elapsed < 60) return language(lng.justNow);
-      if (elapsed < 3600) return `${Math.round(elapsed / 60)} ${language(lng.minutesAgo)}`;
-      if (elapsed < 86400) return `${Math.round(elapsed / 3600)} ${language(lng.hoursAgo)}`;
+      if (elapsed < 3600) return formatTime(Math.round(elapsed / 60), 'min', lang);
+      if (elapsed < 86400) return formatTime(Math.round(elapsed / 3600), 'hour', lang);
       if (elapsed < 86400 * 2) return language(lng.yesterday);
-      return new Date(numericDate).toLocaleString();
+      const locale = lang === 'ru' ? 'ru-RU' : 'en-US';
+      return new Date(numericDate).toLocaleString(locale, {
+        dateStyle: 'short',
+        timeStyle: 'short',
+      });
     };
     setCreated(date ? parseDate(date) : '');
     setEdited(editDate ? parseDate(editDate) : '');
-  }, [now, language, date, editDate]);
+  }, [now, language, date, editDate, lang]);
 
   return (
     <>
