@@ -1,0 +1,25 @@
+@import '../../styles/variables';
+.logo {
+  @include flex-line-start-vertical-center;
+  gap: 0.5rem;
+  margin-right: auto;
+
+  .logo_text {
+    font-size: 1rem;
+    text-align: end;
+    font-weight: normal;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .logo_img {
+    background-image: url('../../assets/network.png');
+    height: 2.5em;
+    width: 2.5em;
+    background-size: cover;
+  }
+  @media screen and (max-width: $mobile-breakpoint) {
+    .logo_text {
+      display: none;
+    }
+  }
+}
