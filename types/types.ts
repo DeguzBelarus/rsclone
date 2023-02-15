@@ -59,7 +59,8 @@ export interface IMessageModel {
   authorNickname: string;
   recipientId: number;
   recipientNickname: string;
-  isRead: boolean;
+  isRead?: boolean;
+  userId: number;
 }
 
 export interface IRequestModified extends Request {

@@ -69,7 +69,7 @@ export const Post: Nullable<ModelDefined<IPostModel, IPostModel>> = sequelizeCon
       type: DataTypes.STRING,
     },
     postText: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(1000),
     },
     media: {
       type: DataTypes.STRING,
@@ -142,12 +142,18 @@ export const Message: Nullable<ModelDefined<IMessageModel, IMessageModel>> = seq
     },
   }) : null;
 
-if (User && Post && Comment) {
+if (User && Post && Comment && Message) {
   User.hasMany(Post, {
     as: "posts",
     foreignKey: "userId",
   });
   Post.belongsTo(User);
+
+  User.hasMany(Message, {
+    as: "messages",
+    foreignKey: "userId",
+  });
+  Message.belongsTo(User);
 
   User.hasMany(Comment, {
     as: "comments",
