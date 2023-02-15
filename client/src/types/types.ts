@@ -180,6 +180,40 @@ export interface ICreateCommentResponse {
   statusCode?: number;
 }
 
+export interface ISendMessageRequest {
+  lang: CurrentLanguageType;
+  token: string;
+  requestData: {
+    messageText: string;
+    authorId: number;
+    authorNickname: string;
+    recipientId: number;
+    recipientNickname: string;
+  };
+}
+
+export interface ISendMessageResponse {
+  message: string;
+  statusCode?: number;
+  messageAuthorId?: number;
+  messageAuthorNickname?: string;
+  messageRecipientId?: number;
+  messageRecipientNickname?: string;
+}
+
+export interface IGetDialogMessagesRequest {
+  lang: CurrentLanguageType;
+  token: string;
+  userId: number;
+  interlocutorId: number;
+}
+
+export interface IGetDialogMessagesResponse {
+  message: string;
+  statusCode?: number;
+  messages?: Array<IMessageModel>;
+}
+
 export interface IUpdatePostRequest {
   lang: CurrentLanguageType;
   postId: number;
