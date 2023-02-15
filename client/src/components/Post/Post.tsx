@@ -26,6 +26,7 @@ import { IPostModel } from 'types/types';
 
 import styles from './Post.module.scss';
 import Avatar from 'components/Avatar';
+import { USER_ROLE_ADMIN } from 'consts';
 
 interface PostProps {
   data: IPostModel;
@@ -54,7 +55,8 @@ export const Post = ({ data, single, ownHighlight, onDelete, onEdit }: PostProps
 
   const mediaURL = media && media !== '' ? `/${userId}/posts/${id}/${media}` : undefined;
   const isOwnPost = userId === ownId;
-  const isDeletable = isOwnPost || (role === 'ADMIN' && ownerRole !== 'ADMIN');
+  const isDeletable = isOwnPost || (role === USER_ROLE_ADMIN && ownerRole !== USER_ROLE_ADMIN);
+  const postURL = `/posts/${id}`;
 
   const handleDelete = async () => {
     if (!id || !token || !ownId) return;
@@ -90,7 +92,14 @@ export const Post = ({ data, single, ownHighlight, onDelete, onEdit }: PostProps
         <div className={styles.media}>
           <MediaContainer src={mediaURL} audioMargin />
         </div>
-        <div className={styles.heading}>{heading}</div>
+        {single ? (
+          <div className={styles.heading}>{heading}</div>
+        ) : (
+          <Link to={postURL} className={styles.heading}>
+            {heading}
+          </Link>
+        )}
+
         <div className={styles.subHeading}>
           <Link to={`/user/${userId}`} className={styles.author}>
             <Avatar user={userId} avatarSrc={ownerAvatar} size="1.8rem" />
@@ -132,7 +141,7 @@ export const Post = ({ data, single, ownHighlight, onDelete, onEdit }: PostProps
             <IconButton
               sx={{ marginLeft: 'auto' }}
               component="label"
-              onClick={() => navigate(`/posts/${id}`)}
+              onClick={() => navigate(postURL)}
             >
               <OpenIcon />
             </IconButton>
