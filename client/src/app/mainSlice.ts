@@ -43,12 +43,20 @@ import {
   IDeleteCommentResponse,
   IUpdateCommentRequest,
   IUpdateCommentResponse,
+  IUserDialog,
+  IGetDialogMessagesRequest,
+  IGetDialogMessagesResponse,
+  ISendMessageRequest,
+  ISendMessageResponse,
 } from 'types/types';
 import { requestData, requestMethods } from './dataAPI';
 import { setLocalStorageData } from './storage';
 
 interface MainState {
   posts: Array<IPostModel>;
+  dialogs: Array<IUserDialog>;
+  currentDialogMessages: Nullable<Array<IMessageModel>>;
+  unreadMessagesCount: number;
   allPosts: Array<IPostModel>;
   currentPost: Nullable<IPostModel>;
   messages: Array<IMessageModel>;
@@ -76,6 +84,9 @@ interface MainState {
 
 const initialState: MainState = {
   posts: [],
+  dialogs: [],
+  currentDialogMessages: null,
+  unreadMessagesCount: 0,
   allPosts: [],
   currentPost: null,
   messages: [],
@@ -686,6 +697,93 @@ export const updateCommentAsync = createAsyncThunk(
   }
 );
 
+// messages thunks
+// get the specified dialog messages
+export const getDialogMessagesAsync = createAsyncThunk(
+  'message/get-dialog-messages',
+  async (data: IGetDialogMessagesRequest): Promise<Nullable<IGetDialogMessagesResponse>> => {
+    const params = new URLSearchParams();
+    params.set('lang', data.lang);
+
+    const getDialogMessagesURL = `/api/message/${data.userId}/${data.interlocutorId}/?${params}`;
+    const getDialogMessagesResponse: Undefinable<Response> = await requestData(
+      getDialogMessagesURL,
+      requestMethods.get,
+      undefined,
+      data.token
+    );
+    if (getDialogMessagesResponse) {
+      const getDialogMessagesResponseData: IGetDialogMessagesResponse =
+        await getDialogMessagesResponse.json();
+      return getDialogMessagesResponseData;
+    }
+    return null;
+  }
+);
+
+// send a new message
+export const sendMessageAsync = createAsyncThunk(
+  'message/send',
+  async (
+    data: ISendMessageRequest
+  ): Promise<Nullable<ISendMessageResponse | IGetOneUserResponse | IGetDialogMessagesResponse>> => {
+    const params = new URLSearchParams();
+    params.set('lang', data.lang);
+
+    const sendMessageURL = `/api/message/send?${params}`;
+    const sendMessageResponse: Undefinable<Response> = await requestData(
+      sendMessageURL,
+      requestMethods.post,
+      JSON.stringify(data.requestData),
+      data.token
+    );
+    if (sendMessageResponse) {
+      if (!sendMessageResponse.ok) {
+        const sendMessageResponseData: ISendMessageResponse = await sendMessageResponse.json();
+        sendMessageResponseData.statusCode = sendMessageResponse.status;
+        return sendMessageResponseData;
+      } else {
+        const params = new URLSearchParams();
+        params.set('lang', data.lang);
+
+        const getOneUserURL = `/api/user/${data.requestData.authorId}?${params}`;
+        const getOneUserResponse: Undefinable<Response> = await requestData(
+          getOneUserURL,
+          requestMethods.get,
+          undefined,
+          data.token
+        );
+
+        const getDialogMessagesURL = `/api/message/${data.requestData.authorId}/${data.requestData.recipientId}/?${params}`;
+        const getDialogMessagesResponse: Undefinable<Response> = await requestData(
+          getDialogMessagesURL,
+          requestMethods.get,
+          undefined,
+          data.token
+        );
+        if (getOneUserResponse && getDialogMessagesResponse) {
+          if (!getDialogMessagesResponse.ok) {
+            const getDialogMessagesResponseData: IGetDialogMessagesResponse =
+              await getDialogMessagesResponse.json();
+            return getDialogMessagesResponseData;
+          }
+
+          const sendMessageResponseData: ISendMessageResponse = await sendMessageResponse.json();
+          const getDialogMessagesResponseData: IGetDialogMessagesResponse =
+            await getDialogMessagesResponse.json();
+
+          const getOneUserResponseData: IGetOneUserResponse = await getOneUserResponse.json();
+          getOneUserResponseData.statusCode = sendMessageResponse.status;
+          getOneUserResponseData.message = sendMessageResponseData.message;
+          getOneUserResponseData.messages = getDialogMessagesResponseData.messages;
+          return getOneUserResponseData;
+        }
+      }
+    }
+    return null;
+  }
+);
+
 export const mainSlice = createSlice({
   name: 'main',
   initialState,
@@ -788,6 +886,18 @@ export const mainSlice = createSlice({
     setAllPosts(state: WritableDraft<MainState>, { payload }: PayloadAction<Array<IPostModel>>) {
       state.allPosts = payload;
     },
+    setDialogs(state: WritableDraft<MainState>, { payload }: PayloadAction<Array<IUserDialog>>) {
+      state.dialogs = payload;
+    },
+    setCurrentDialog(
+      state: WritableDraft<MainState>,
+      { payload }: PayloadAction<Nullable<Array<IMessageModel>>>
+    ) {
+      state.currentDialogMessages = payload;
+    },
+    setUnreadMessagesCount(state: WritableDraft<MainState>, { payload }: PayloadAction<number>) {
+      state.unreadMessagesCount = payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -857,6 +967,15 @@ export const mainSlice = createSlice({
             if (fullUserData.userData?.posts !== undefined) {
               state.posts = fullUserData.userData.posts;
             }
+            if (fullUserData.userData?.userDialogs !== undefined) {
+              state.dialogs = fullUserData.userData.userDialogs;
+              state.unreadMessagesCount = fullUserData.userData.userDialogs.reduce(
+                (sum, dialog) => {
+                  return (sum += dialog.unreadMessages);
+                },
+                0
+              );
+            }
           }
           state.alert = { message: payload.message, severity: payload.token ? 'success' : 'error' };
         }
@@ -911,6 +1030,15 @@ export const mainSlice = createSlice({
             }
             if (fullUserData.userData?.posts !== undefined) {
               state.posts = fullUserData.userData.posts;
+            }
+            if (fullUserData.userData?.userDialogs !== undefined) {
+              state.dialogs = fullUserData.userData.userDialogs;
+              state.unreadMessagesCount = fullUserData.userData.userDialogs.reduce(
+                (sum, dialog) => {
+                  return (sum += dialog.unreadMessages);
+                },
+                0
+              );
             }
           }
         }
@@ -980,6 +1108,12 @@ export const mainSlice = createSlice({
               }
               if (payload.userData?.posts !== undefined) {
                 state.posts = payload.userData.posts;
+              }
+              if (payload.userData?.userDialogs !== undefined) {
+                state.dialogs = payload.userData.userDialogs;
+                state.unreadMessagesCount = payload.userData.userDialogs.reduce((sum, dialog) => {
+                  return (sum += dialog.unreadMessages);
+                }, 0);
               }
             }
           }
@@ -1325,6 +1459,60 @@ export const mainSlice = createSlice({
       .addCase(updateCommentAsync.rejected, (state, { error }) => {
         state.userRequestStatus = 'failed';
         console.error('\x1b[40m\x1b[31m\x1b[1m', error.message);
+      })
+
+      // get the specified dialog messages
+      .addCase(getDialogMessagesAsync.pending, (state) => {
+        state.userRequestStatus = 'loading';
+      })
+      .addCase(getDialogMessagesAsync.fulfilled, (state, { payload }) => {
+        state.userRequestStatus = 'idle';
+
+        if (payload) {
+          if (payload.messages) {
+            state.currentDialogMessages = payload.messages;
+          }
+        }
+      })
+      .addCase(getDialogMessagesAsync.rejected, (state, { error }) => {
+        state.userRequestStatus = 'failed';
+        console.error('\x1b[40m\x1b[31m\x1b[1m', error.message);
+      })
+
+      // send a new message
+      .addCase(sendMessageAsync.pending, (state) => {
+        state.userRequestStatus = 'loading';
+      })
+      .addCase(sendMessageAsync.fulfilled, (state, { payload }) => {
+        state.userRequestStatus = 'idle';
+
+        if (payload) {
+          if (payload.statusCode !== 200 && payload.statusCode !== 201) {
+            state.alert = {
+              message: payload.message,
+              severity: 'error',
+            };
+          } else {
+            const successSendingMessageData = payload as IGetOneUserResponse;
+            if (successSendingMessageData.userData?.userDialogs) {
+              state.dialogs = successSendingMessageData.userData?.userDialogs;
+            }
+            if (state.currentDialogMessages) {
+              if (successSendingMessageData.messages) {
+                state.currentDialogMessages = successSendingMessageData.messages;
+              }
+            }
+
+            state.alert = {
+              message: successSendingMessageData.message,
+              severity: 'success',
+            };
+          }
+        }
+      })
+      .addCase(sendMessageAsync.rejected, (state, { error }) => {
+        state.userRequestStatus = 'failed';
+        console.error('\x1b[40m\x1b[31m\x1b[1m', error.message);
       });
   },
 });
@@ -1355,6 +1543,9 @@ export const {
     setPosts,
     setCurrentPost,
     setAllPosts,
+    setCurrentDialog,
+    setDialogs,
+    setUnreadMessagesCount,
   },
 } = mainSlice;
 
@@ -1385,5 +1576,10 @@ export const getPosts = ({ main: { posts } }: RootState) => posts;
 export const getAllPosts = ({ main: { allPosts } }: RootState) => allPosts;
 export const getCurrentPost = ({ main: { currentPost } }: RootState) => currentPost;
 export const getMessages = ({ main: { messages } }: RootState) => messages;
+export const getDialogs = ({ main: { dialogs } }: RootState) => dialogs;
+export const getCurrentDialogMessages = ({ main: { currentDialogMessages } }: RootState) =>
+  currentDialogMessages;
+export const getUnreadMessagesCount = ({ main: { unreadMessagesCount } }: RootState) =>
+  unreadMessagesCount;
 
 export const { reducer } = mainSlice;

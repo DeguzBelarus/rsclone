@@ -69,7 +69,7 @@ export const Post: Nullable<ModelDefined<IPostModel, IPostModel>> = sequelizeCon
       type: DataTypes.STRING,
     },
     postText: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(1000),
     },
     media: {
       type: DataTypes.STRING,
@@ -140,14 +140,28 @@ export const Message: Nullable<ModelDefined<IMessageModel, IMessageModel>> = seq
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
+    authorAvatarSrc: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    recipientAvatarSrc: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
   }) : null;
 
-if (User && Post && Comment) {
+if (User && Post && Comment && Message) {
   User.hasMany(Post, {
     as: "posts",
     foreignKey: "userId",
   });
   Post.belongsTo(User);
+
+  User.hasMany(Message, {
+    as: "dialogs",
+    foreignKey: "userId",
+  });
+  Message.belongsTo(User);
 
   User.hasMany(Comment, {
     as: "comments",

@@ -102,6 +102,7 @@ export interface IGetOneUserResponse {
   statusCode?: number;
   ownId: number;
   token?: string;
+  messages?: Array<IMessageModel>;
 }
 
 export interface IDeleteUserResponse {
@@ -180,6 +181,40 @@ export interface ICreateCommentResponse {
   statusCode?: number;
 }
 
+export interface ISendMessageRequest {
+  lang: CurrentLanguageType;
+  token: string;
+  requestData: {
+    messageText: string;
+    authorId: number;
+    authorNickname: string;
+    recipientId: number;
+    recipientNickname: string;
+  };
+}
+
+export interface ISendMessageResponse {
+  message: string;
+  statusCode?: number;
+  messageAuthorId?: number;
+  messageAuthorNickname?: string;
+  messageRecipientId?: number;
+  messageRecipientNickname?: string;
+}
+
+export interface IGetDialogMessagesRequest {
+  lang: CurrentLanguageType;
+  token: string;
+  userId: number;
+  interlocutorId: number;
+}
+
+export interface IGetDialogMessagesResponse {
+  message: string;
+  statusCode?: number;
+  messages?: Array<IMessageModel>;
+}
+
 export interface IUpdatePostRequest {
   lang: CurrentLanguageType;
   postId: number;
@@ -231,9 +266,24 @@ export interface IMessageModel {
   date: string;
   messageText: string;
   authorNickname: string;
+  authorAvatarSrc?: string;
   recipientId: number;
   recipientNickname: string;
-  isRead: boolean;
+  recipientAvatarSrc?: string;
+  isRead?: boolean;
+  userId: number;
+}
+
+export interface IUserDialog {
+  lastMessageId: number;
+  lastMessageDate: string;
+  lastMessageText: string;
+  lastMessageAuthorNickname: string;
+  authorId: number;
+  authorNickname: string;
+  recipientId: number;
+  recipientNickname: string;
+  unreadMessages: number;
 }
 
 export interface IDeleteCommentRequest {
@@ -273,4 +323,5 @@ export interface IFullUserData extends ITokenDecodeData {
   firstName?: Nullable<string>;
   lastName?: Nullable<string>;
   posts?: Array<IPostModel>;
+  userDialogs?: Array<IUserDialog>;
 }
