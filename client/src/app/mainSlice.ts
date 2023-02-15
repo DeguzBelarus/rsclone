@@ -44,6 +44,8 @@ import {
   IUpdateCommentRequest,
   IUpdateCommentResponse,
   IUserDialog,
+  IGetDialogMessagesRequest,
+  IGetDialogMessagesResponse,
 } from 'types/types';
 import { requestData, requestMethods } from './dataAPI';
 import { setLocalStorageData } from './storage';
@@ -51,7 +53,7 @@ import { setLocalStorageData } from './storage';
 interface MainState {
   posts: Array<IPostModel>;
   dialogs: Array<IUserDialog>;
-  currentDialog: Nullable<Array<IMessageModel>>;
+  currentDialogMessages: Nullable<Array<IMessageModel>>;
   unreadMessagesCount: number;
   allPosts: Array<IPostModel>;
   currentPost: Nullable<IPostModel>;
@@ -81,7 +83,7 @@ interface MainState {
 const initialState: MainState = {
   posts: [],
   dialogs: [],
-  currentDialog: null,
+  currentDialogMessages: null,
   unreadMessagesCount: 0,
   allPosts: [],
   currentPost: null,
@@ -693,6 +695,30 @@ export const updateCommentAsync = createAsyncThunk(
   }
 );
 
+// messages thunks
+// get the specified dialog messages
+export const getDialogMessagesAsync = createAsyncThunk(
+  'message/get-dialog-messages',
+  async (data: IGetDialogMessagesRequest): Promise<Nullable<IGetDialogMessagesResponse>> => {
+    const params = new URLSearchParams();
+    params.set('lang', data.lang);
+
+    const getDialogMessagesURL = `/api/message/${data.userId}/${data.interlocutorId}/?${params}`;
+    const getDialogMessagesResponse: Undefinable<Response> = await requestData(
+      getDialogMessagesURL,
+      requestMethods.get,
+      undefined,
+      data.token
+    );
+    if (getDialogMessagesResponse) {
+      const getDialogMessagesResponseData: IGetDialogMessagesResponse =
+        await getDialogMessagesResponse.json();
+      return getDialogMessagesResponseData;
+    }
+    return null;
+  }
+);
+
 export const mainSlice = createSlice({
   name: 'main',
   initialState,
@@ -802,7 +828,7 @@ export const mainSlice = createSlice({
       state: WritableDraft<MainState>,
       { payload }: PayloadAction<Nullable<Array<IMessageModel>>>
     ) {
-      state.currentDialog = payload;
+      state.currentDialogMessages = payload;
     },
     setUnreadMessagesCount(state: WritableDraft<MainState>, { payload }: PayloadAction<number>) {
       state.unreadMessagesCount = payload;
@@ -1368,6 +1394,24 @@ export const mainSlice = createSlice({
       .addCase(updateCommentAsync.rejected, (state, { error }) => {
         state.userRequestStatus = 'failed';
         console.error('\x1b[40m\x1b[31m\x1b[1m', error.message);
+      })
+
+      // get the specified dialog messages
+      .addCase(getDialogMessagesAsync.pending, (state) => {
+        state.userRequestStatus = 'loading';
+      })
+      .addCase(getDialogMessagesAsync.fulfilled, (state, { payload }) => {
+        state.userRequestStatus = 'idle';
+
+        if (payload) {
+          if (payload.messages) {
+            state.currentDialogMessages = payload.messages;
+          }
+        }
+      })
+      .addCase(getDialogMessagesAsync.rejected, (state, { error }) => {
+        state.userRequestStatus = 'failed';
+        console.error('\x1b[40m\x1b[31m\x1b[1m', error.message);
       });
   },
 });
@@ -1432,7 +1476,8 @@ export const getAllPosts = ({ main: { allPosts } }: RootState) => allPosts;
 export const getCurrentPost = ({ main: { currentPost } }: RootState) => currentPost;
 export const getMessages = ({ main: { messages } }: RootState) => messages;
 export const getDialogs = ({ main: { dialogs } }: RootState) => dialogs;
-export const getCurrentDialog = ({ main: { currentDialog } }: RootState) => currentDialog;
+export const getCurrentDialogMessages = ({ main: { currentDialogMessages } }: RootState) =>
+  currentDialogMessages;
 export const getUnreadMessagesCount = ({ main: { unreadMessagesCount } }: RootState) =>
   unreadMessagesCount;
 
