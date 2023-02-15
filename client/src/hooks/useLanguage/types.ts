@@ -113,6 +113,9 @@ export enum lng {
   recordingVideo,
   recordingAudio,
 
+  messagesHeading,
+  messagesNoneMsg,
+
   loadingMsg,
 }
 

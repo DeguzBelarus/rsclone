@@ -115,6 +115,9 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.recordingAudio]: 'Record audio',
 
     [lng.loadingMsg]: 'Loading...',
+
+    [lng.messagesHeading]: 'Messages',
+    [lng.messagesNoneMsg]: 'Messages are empty.',
   },
 
   ru: {
@@ -233,6 +236,9 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.recordingAudio]: 'Записать аудио',
 
     [lng.loadingMsg]: 'Загрузка...',
+
+    [lng.messagesHeading]: 'Сообщения',
+    [lng.messagesNoneMsg]: 'Сообщения не найдены. Добавьте первое!',
   },
 };
 
