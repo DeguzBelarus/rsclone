@@ -1,4 +1,5 @@
 import { Response, NextFunction } from 'express';
+import { Op } from 'sequelize';
 
 import { Message, User } from '../db-models/db-models';
 import { IRequestModified } from '../types/types';
@@ -101,6 +102,88 @@ class MessageController {
           messageRecipientNickname: recipientNickname,
           message: lang === 'ru' ?
             "Сообщение было успешно отправлено" :
+            "The message was successfully sent",
+        });
+      }
+    } catch (exception: unknown) {
+      if (exception instanceof Error) {
+        next(ApiError.badRequest(exception.message));
+      }
+    }
+  }
+
+  async getDialogMessages(request: IRequestModified, response: Response, next: NextFunction): Promise<void | Response> {
+    try {
+      const { requesterId } = request;
+      const { lang } = request.query;
+      const { userId, interlocutorId } = request.params;
+
+      if (!userId || !interlocutorId) {
+        return next(
+          ApiError.badRequest(
+            lang === 'ru' ?
+              "Недостаточно данных для выполнения операции" :
+              "Not enough data to perform the operation"
+          )
+        );
+      }
+
+      if (requesterId) {
+        if (Number(userId) !== requesterId) {
+          return next(
+            ApiError.forbidden(lang === 'ru' ? "Нет прав" : "No rights"));
+        }
+      } else {
+        return next(
+          ApiError.forbidden(lang === 'ru' ? "Нет прав" : "No rights"));
+      }
+
+      if (User && Message) {
+        const foundSender = await User.findOne({ where: { id: userId } });
+        const foundReceiver = await User.findOne({ where: { id: interlocutorId } });
+
+        if (!foundSender) {
+          return next(
+            ApiError.badRequest(
+              lang === 'ru' ?
+                "Отправитель не найден, операция невозможна" :
+                "The sender was not found, the operation is impossible"
+            )
+          );
+        }
+        if (!foundReceiver) {
+          return next(
+            ApiError.badRequest(
+              lang === 'ru' ?
+                "Получатель не найден, операция невозможна" :
+                "The recipient was not found, the operation is impossible"
+            )
+          );
+        }
+
+        const dialogMessages = await Message.findAll({
+          where: {
+            [Op.or]: {
+              userId: userId || interlocutorId,
+              recipientId: userId || interlocutorId
+            }
+          }
+        });
+
+        if (dialogMessages.length) {
+          dialogMessages.forEach((message) => {
+            if (message.dataValues.recipientId === Number(userId)) {
+              message.update({
+                isRead: true,
+              })
+            }
+          })
+        }
+
+        return response.json({
+          messages: dialogMessages,
+          message: lang === 'ru' ?
+            "Сообщения из диалога получены" :
             "The message was successfully sent",
         });
       }
