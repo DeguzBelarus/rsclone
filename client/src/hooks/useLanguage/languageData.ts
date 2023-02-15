@@ -99,6 +99,7 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.hoursAgo]: 'hours ago',
     [lng.yesterday]: 'yesterday',
 
+    [lng.recording]: 'Recording',
     [lng.recordingStart]: 'Start recording',
     [lng.recordingStop]: 'Stop recording',
     [lng.recordingAccessing]: 'Accessing devices...',
@@ -205,6 +206,7 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.hoursAgo]: 'часов назад',
     [lng.yesterday]: 'вчера',
 
+    [lng.recording]: 'Запись',
     [lng.recordingStart]: 'Начать запись',
     [lng.recordingStop]: 'Остановить запись',
     [lng.recordingAccessing]: 'Идет доступ к устройствам...',

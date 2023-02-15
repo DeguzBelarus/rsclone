@@ -9,6 +9,7 @@ import {
   TextField,
   Tooltip,
   IconButton,
+  Chip,
 } from '@mui/material';
 import useLanguage from 'hooks/useLanguage';
 import { lng } from 'hooks/useLanguage/types';
@@ -26,7 +27,7 @@ import {
   updatePostAsync,
 } from 'app/mainSlice';
 import { IUpdatePostRequest } from '../../types/types';
-import { AddAPhoto, DeleteForever } from '@mui/icons-material';
+import { AddAPhoto } from '@mui/icons-material';
 import { MediaContainer } from 'components/MediaContainer/MediaContainer';
 import { useNavigate } from 'react-router-dom';
 import { RecorderButton } from 'components/RecorderButton/RecorderButton';
@@ -76,6 +77,7 @@ export const EditPostModal = ({
   const validateBody = useValidateInput(POST_BODY_PATTERN, setBodyValue, setBodyError, setTouched);
 
   const handleClose = () => {
+    if (mediaLoading) return;
     if (onClose) onClose();
   };
 
@@ -162,7 +164,6 @@ export const EditPostModal = ({
       open={open}
       scroll="paper"
       onClose={(_, reason) => {
-        if (mediaLoading) return;
         if (reason === 'escapeKeyDown') handleClose();
       }}
       PaperProps={{ sx: { minWidth: { xs: '90vw', sm: 'min(80vw, 600px)' } } }}
@@ -218,18 +219,21 @@ export const EditPostModal = ({
               disabled={mediaLoading}
               onClick={() => handleStartRecording('audio')}
             />
-            {mediaValue && (
+            {mediaValue && mediaFileName && (
               <Tooltip title={language(lng.postUploadMediaDelete)}>
-                <IconButton
-                  component="label"
-                  color="warning"
+                <Chip
+                  className={styles.file}
+                  variant="outlined"
+                  label={
+                    mediaFileName.lastIndexOf('.') >= 0
+                      ? mediaFileName.slice(0, mediaFileName.lastIndexOf('.'))
+                      : mediaFileName
+                  }
+                  onDelete={() => setMediaValue(undefined)}
                   onClick={() => setMediaValue(undefined)}
-                >
-                  <DeleteForever />
-                </IconButton>
+                />
               </Tooltip>
             )}
-            <span className={styles.file}>{mediaValue && mediaFileName}</span>
           </div>
         )}
         {mediaValue && (
@@ -241,7 +245,7 @@ export const EditPostModal = ({
           />
         )}
         <Recorder
-          recording={recording !== undefined}
+          active={recording !== undefined}
           video={recording === 'video'}
           onLoadingStart={handleRecorderLoadingStart}
           onLoadingEnd={handleRecorderLoadingEnd}

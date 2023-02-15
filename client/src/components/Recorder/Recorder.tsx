@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import useLanguage from 'hooks/useLanguage';
 import { lng } from 'hooks/useLanguage/types';
 import { Button } from '@mui/material';
@@ -12,7 +12,7 @@ import { Spinner } from 'components/Spinner/Spinner';
 
 interface RecorderProps {
   video?: boolean;
-  recording?: boolean;
+  active?: boolean;
 
   onLoadingStart?: () => void;
   onLoadingEnd?: () => void;
@@ -21,7 +21,7 @@ interface RecorderProps {
 
 export const Recorder = ({
   video,
-  recording,
+  active,
   onLoadingStart,
   onLoadingEnd,
   onRecordingEnd,
@@ -38,6 +38,8 @@ export const Recorder = ({
   const [stop, setStop] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
+
+  const defaultFileName = useMemo(() => language(lng.recording), [language]);
 
   const handleStartButtonClick = () => {
     if (!recorder) return;
@@ -70,7 +72,7 @@ export const Recorder = ({
       if (!mediaEl) return;
       if (onLoadingStart) onLoadingStart();
       setIsLoading(true);
-      const fn = `Recording.${video ? 'mp4' : 'ogg'}`;
+      const fn = `${defaultFileName}.${video ? 'mp4' : 'ogg'}`;
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: video });
         setMediaStream(stream);
@@ -89,7 +91,6 @@ export const Recorder = ({
         };
 
         setRecorder(mediaRecorder);
-        setError(undefined);
       } catch (e) {
         if (e instanceof Error) setError(e.message);
       } finally {
@@ -105,6 +106,7 @@ export const Recorder = ({
       setFileName('');
       setElapsed(undefined);
       setIsRecording(false);
+      setError(undefined);
       setRecorder((current) => {
         if (current && current.state === 'recording') current.stop();
         return undefined;
@@ -123,10 +125,10 @@ export const Recorder = ({
       setError('Not supported');
       return;
     }
-    if (recording) startStream();
+    if (active) startStream();
 
     return () => stopStream();
-  }, [video, recording, videoRef, audioRef, onLoadingStart, onLoadingEnd]);
+  }, [video, active, videoRef, audioRef, onLoadingStart, onLoadingEnd, defaultFileName]);
 
   useEffect(() => {
     if (!blob || !stop || !onRecordingEnd) return;
@@ -136,7 +138,7 @@ export const Recorder = ({
   return error ? (
     <div>{error}</div>
   ) : (
-    <div style={{ display: !recording ? 'none' : undefined, position: 'relative' }}>
+    <div style={{ display: !active ? 'none' : undefined, position: 'relative' }}>
       {isLoading && (
         <div style={{ position: 'absolute', right: 0 }}>
           <Spinner size={32} />

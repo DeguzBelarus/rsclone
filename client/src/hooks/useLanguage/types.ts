@@ -98,6 +98,7 @@ export enum lng {
   hoursAgo,
   yesterday,
 
+  recording,
   recordingStart,
   recordingStop,
   recordingAccessing,
