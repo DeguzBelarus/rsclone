@@ -16,18 +16,21 @@ export default function formatTime(
   const forms = formKeys[type];
 
   if (lang === 'ru') {
-    switch (time % 10) {
-      case 1:
-        result += getLanguageItem(lang, forms[0]);
-        break;
-      case 2:
-      case 3:
-      case 4:
-        result += getLanguageItem(lang, forms[1]);
-        break;
-      default:
-        result += getLanguageItem(lang, forms[2]);
-    }
+    if (time >= 11 && time <= 19) {
+      result += getLanguageItem(lang, forms[2]);
+    } else
+      switch (time % 10) {
+        case 1:
+          result += getLanguageItem(lang, forms[0]);
+          break;
+        case 2:
+        case 3:
+        case 4:
+          result += getLanguageItem(lang, forms[1]);
+          break;
+        default:
+          result += getLanguageItem(lang, forms[2]);
+      }
   } else {
     result += getLanguageItem(lang, time === 1 ? forms[0] : forms[1]);
   }

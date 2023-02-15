@@ -35,7 +35,11 @@ export const PostDate = ({ date, editDate, style }: PostDateProps) => {
       if (elapsed < 3600) return formatTime(Math.round(elapsed / 60), 'min', lang);
       if (elapsed < 86400) return formatTime(Math.round(elapsed / 3600), 'hour', lang);
       if (elapsed < 86400 * 2) return language(lng.yesterday);
-      return new Date(numericDate).toLocaleString();
+      const locale = lang === 'ru' ? 'ru-RU' : 'en-US';
+      return new Date(numericDate).toLocaleString(locale, {
+        dateStyle: 'short',
+        timeStyle: 'short',
+      });
     };
     setCreated(date ? parseDate(date) : '');
     setEdited(editDate ? parseDate(editDate) : '');
