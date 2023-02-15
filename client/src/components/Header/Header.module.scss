@@ -7,14 +7,6 @@
     display: grid;
     grid-template-columns: 1fr auto auto auto;
     gap: 0.3rem;
-    .logo {
-      margin-right: auto;
-      font-size: 1.2rem;
-      font-weight: normal;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-
-    }
     .userButton {
       display: flex;
       gap: 0.5em;
@@ -29,7 +21,6 @@
     }
     @media screen and (min-width: $mobile-breakpoint) {
       .logo {
-        font-size: 2rem;
         white-space: nowrap;
       }
     }
