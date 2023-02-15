@@ -13,11 +13,20 @@ import useLanguage from 'hooks/useLanguage';
 import { lng } from 'hooks/useLanguage/types';
 import styles from './Comments.module.scss';
 import { ICommentModel, ICreateCommentRequest, IUpdateCommentRequest } from 'types/types';
-import { IconButton, List, ListItem, ListItemAvatar, ListItemText, Tooltip } from '@mui/material';
+import {
+  IconButton,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  Paper,
+  Tooltip,
+} from '@mui/material';
 import { DeleteForever as DeleteIcon, Edit as EditIcon } from '@mui/icons-material';
 import Avatar from 'components/Avatar';
 import { PostDate } from 'components/PostDate/PostDate';
 import { CommentInput } from 'components/CommentInput/CommentInput';
+import { Link } from 'react-router-dom';
 
 interface CommentsProps {
   postId?: number;
@@ -108,7 +117,9 @@ export const Comments = ({ postId, data, onChange }: CommentsProps) => {
             }) => (
               <ListItem key={id} className={styles.comment}>
                 <ListItemAvatar>
-                  <Avatar size="2.5rem" user={authorId} avatarSrc={authorAvatar} />
+                  <Link to={`/user/${authorId}`}>
+                    <Avatar size="2.5rem" user={authorId} avatarSrc={authorAvatar} />
+                  </Link>
                 </ListItemAvatar>
                 {id === editingId ? (
                   <>
@@ -121,29 +132,39 @@ export const Comments = ({ postId, data, onChange }: CommentsProps) => {
                   </>
                 ) : (
                   <>
-                    <ListItemText className={styles.commentText}>
-                      <span>{commentText}</span>
-                      <span className={styles.additional}>
-                        <PostDate date={date} editDate={editDate} />
-                        <span style={{ textTransform: 'uppercase' }}>{authorNickname}</span>
-                      </span>
+                    <ListItemText>
+                      <div className={styles.text}>{commentText}</div>
+                      <div className={styles.additional}>
+                        <span className={styles.date}>
+                          <PostDate date={date} editDate={editDate} />
+                        </span>
+                        <span className={styles.nickname}>
+                          <Link to={`/user/${authorId}`}>{authorNickname}</Link>
+                        </span>
+                      </div>
                     </ListItemText>
-                    <div className={styles.commentActions}>
+                    <Paper className={styles.commentActions} elevation={2}>
                       {authorId === userId && (
-                        <Tooltip title={language(lng.commentEdit)}>
+                        <Tooltip
+                          title={language(lng.commentEdit)}
+                          PopperProps={{ disablePortal: true, keepMounted: true }}
+                        >
                           <IconButton color="inherit" onClick={() => setEditingId(id)}>
                             <EditIcon />
                           </IconButton>
                         </Tooltip>
                       )}
                       {(authorId === userId || (role === 'ADMIN' && authorRole !== 'ADMIN')) && (
-                        <Tooltip title={language(lng.commentDelete)}>
+                        <Tooltip
+                          title={language(lng.commentDelete)}
+                          PopperProps={{ disablePortal: true, keepMounted: true }}
+                        >
                           <IconButton color="warning" onClick={() => handleDeleteComment(id)}>
                             <DeleteIcon />
                           </IconButton>
                         </Tooltip>
                       )}
-                    </div>
+                    </Paper>
                   </>
                 )}
               </ListItem>

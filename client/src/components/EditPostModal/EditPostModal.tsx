@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import React, { ChangeEvent, useCallback, useEffect, useState } from 'react';
 
 import {
   Dialog,
@@ -9,6 +9,7 @@ import {
   TextField,
   Tooltip,
   IconButton,
+  Chip,
 } from '@mui/material';
 import useLanguage from 'hooks/useLanguage';
 import { lng } from 'hooks/useLanguage/types';
@@ -19,14 +20,18 @@ import { POST_BODY_PATTERN, POST_TITLE_PATTERN } from 'consts';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import {
   createPostAsync,
+  getAllPostsAsync,
   getCurrentLanguage,
   getToken,
   getUserId,
   updatePostAsync,
 } from 'app/mainSlice';
 import { IUpdatePostRequest } from '../../types/types';
-import { AddAPhoto, DeleteForever } from '@mui/icons-material';
+import { AddAPhoto } from '@mui/icons-material';
 import { MediaContainer } from 'components/MediaContainer/MediaContainer';
+import { useNavigate } from 'react-router-dom';
+import { RecorderButton } from 'components/RecorderButton/RecorderButton';
+import { Recorder } from 'components/Recorder/Recorder';
 
 export interface EditPostModalProps {
   open: boolean;
@@ -49,13 +54,16 @@ export const EditPostModal = ({
   const [bodyValue, setBodyValue] = useState(postText || '');
   const [titleError, setTitleError] = useState(false);
   const [bodyError, setBodyError] = useState(false);
-  const [mediaValue, setMediaValue] = useState<File>();
+  const [mediaValue, setMediaValue] = useState<Blob>();
   const [mediaFileName, setMediaFileName] = useState<string>();
   const [touched, setTouched] = useState(false);
+  const [recording, setRecording] = useState<'video' | 'audio'>();
+  const [mediaLoading, setMediaLoading] = useState(false);
 
   const language = useLanguage();
   const dispatch = useAppDispatch();
-  const currentLanguage = useAppSelector(getCurrentLanguage);
+  const navigate = useNavigate();
+  const lang = useAppSelector(getCurrentLanguage);
   const token = useAppSelector(getToken);
   const userId = useAppSelector(getUserId);
 
@@ -69,6 +77,7 @@ export const EditPostModal = ({
   const validateBody = useValidateInput(POST_BODY_PATTERN, setBodyValue, setBodyError, setTouched);
 
   const handleClose = () => {
+    if (mediaLoading) return;
     if (onClose) onClose();
   };
 
@@ -81,7 +90,7 @@ export const EditPostModal = ({
 
   const createPost = async (ownId: number, token: string): Promise<boolean> => {
     const requestData = new FormData();
-    requestData.append('lang', currentLanguage);
+    requestData.append('lang', lang);
     requestData.append('postHeading', titleValue);
     requestData.append('postText', bodyValue);
     if (mediaValue) requestData.append('media', mediaValue);
@@ -92,7 +101,7 @@ export const EditPostModal = ({
 
   const editPost = async (id: number, token: string): Promise<boolean> => {
     const postData: IUpdatePostRequest = {
-      lang: currentLanguage,
+      lang,
       postId: id,
       token,
       requestData: {
@@ -113,18 +122,40 @@ export const EditPostModal = ({
     if (result) {
       handleClose();
       if (onSuccess) onSuccess(titleValue, bodyValue);
+      const path = window.location.pathname;
+      if (path === '/posts') {
+        dispatch(getAllPostsAsync({ lang }));
+      }
+      if (['/posts', '/user'].some((item) => path.startsWith(item))) return;
+      navigate(`/posts/`);
     }
   };
+
+  const handleStartRecording = (type: 'audio' | 'video' | undefined) => {
+    setMediaValue(undefined);
+    setMediaFileName(undefined);
+    setRecording(type);
+  };
+
+  const handleEndRecording = useCallback((blob: Blob, fn: string) => {
+    setRecording(undefined);
+    setMediaFileName(fn);
+    setMediaValue(blob);
+  }, []);
+
+  const handleRecorderLoadingStart = useCallback(() => setMediaLoading(true), []);
+  const handleRecorderLoadingEnd = useCallback(() => setMediaLoading(false), []);
 
   useEffect(() => {
     if (open) {
       setTitleValue(postHeading || '');
       setBodyValue(postText || '');
-      setTitleError(false);
-      setBodyError(false);
-      setMediaValue(undefined);
-      setTouched(false);
     }
+    setTitleError(false);
+    setBodyError(false);
+    setMediaValue(undefined);
+    setTouched(false);
+    setRecording(undefined);
   }, [open, postHeading, postText]);
 
   return (
@@ -159,29 +190,50 @@ export const EditPostModal = ({
         {id === undefined && (
           <div className={styles.media}>
             <Tooltip title={language(lng.postUploadMedia)}>
-              <IconButton component="label" color="primary">
-                <input
-                  id="avatar-image"
-                  accept="image/*"
-                  hidden
-                  type="file"
-                  onChange={handleMediaChange}
-                />
-                <AddAPhoto />
-              </IconButton>
-            </Tooltip>
-            {mediaValue && (
-              <Tooltip title={language(lng.postUploadMediaDelete)}>
+              <span>
                 <IconButton
                   component="label"
-                  color="warning"
-                  onClick={() => setMediaValue(undefined)}
+                  color="primary"
+                  disabled={mediaLoading}
+                  onClick={() => setRecording(undefined)}
                 >
-                  <DeleteForever />
+                  <input
+                    id="avatar-image"
+                    accept="image/*"
+                    hidden
+                    type="file"
+                    onChange={handleMediaChange}
+                  />
+                  <AddAPhoto />
                 </IconButton>
+              </span>
+            </Tooltip>
+            <RecorderButton
+              video
+              recording={recording === 'video'}
+              disabled={mediaLoading}
+              onClick={() => handleStartRecording('video')}
+            />
+            <RecorderButton
+              recording={recording === 'audio'}
+              disabled={mediaLoading}
+              onClick={() => handleStartRecording('audio')}
+            />
+            {mediaValue && mediaFileName && (
+              <Tooltip title={language(lng.postUploadMediaDelete)}>
+                <Chip
+                  className={styles.file}
+                  variant="outlined"
+                  label={
+                    mediaFileName.lastIndexOf('.') >= 0
+                      ? mediaFileName.slice(0, mediaFileName.lastIndexOf('.'))
+                      : mediaFileName
+                  }
+                  onDelete={() => setMediaValue(undefined)}
+                  onClick={() => setMediaValue(undefined)}
+                />
               </Tooltip>
             )}
-            <span className={styles.file}>{mediaValue && mediaValue.name}</span>
           </div>
         )}
         {mediaValue && (
@@ -192,6 +244,13 @@ export const EditPostModal = ({
             maxHeight="min(250px, 30vh)"
           />
         )}
+        <Recorder
+          active={recording !== undefined}
+          video={recording === 'video'}
+          onLoadingStart={handleRecorderLoadingStart}
+          onLoadingEnd={handleRecorderLoadingEnd}
+          onRecordingEnd={handleEndRecording}
+        />
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>{language(lng.cancel)}</Button>
