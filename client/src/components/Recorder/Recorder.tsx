@@ -135,49 +135,54 @@ export const Recorder = ({
     onRecordingEnd(blob, fileName);
   }, [blob, fileName, stop, onRecordingEnd]);
 
-  return error ? (
-    <div>{error}</div>
-  ) : (
-    <div style={{ display: !active ? 'none' : undefined, position: 'relative' }}>
-      {isLoading && (
-        <div style={{ position: 'absolute', right: 0 }}>
-          <Spinner size={32} />
-        </div>
-      )}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.5rem 1rem',
-          flexWrap: 'wrap',
-          marginBottom: '1rem',
-          justifyContent: 'space-between',
-        }}
-      >
-        <Button
-          color={isRecording ? 'warning' : 'success'}
-          disabled={isLoading}
-          startIcon={isLoading ? <LoadingIcon /> : isRecording ? <StopIcon /> : <StartIcon />}
-          onClick={handleStartButtonClick}
+  return (
+    <>
+      <div style={{ display: error ? undefined : 'none' }}>{error}</div>
+      <div style={{ display: active && !error ? undefined : 'none', position: 'relative' }}>
+        {isLoading && (
+          <div style={{ position: 'absolute', right: 0 }}>
+            <Spinner size={32} />
+          </div>
+        )}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem 1rem',
+            flexWrap: 'wrap',
+            marginBottom: '1rem',
+            justifyContent: 'space-between',
+          }}
         >
-          {language(
-            isLoading
-              ? lng.recordingAccessing
-              : isRecording
-              ? lng.recordingStop
-              : lng.recordingStart
-          )}
-        </Button>
-        <span>{formatElapsedTime(elapsed)}</span>
+          <Button
+            color={isRecording ? 'warning' : 'success'}
+            disabled={isLoading}
+            startIcon={isLoading ? <LoadingIcon /> : isRecording ? <StopIcon /> : <StartIcon />}
+            onClick={handleStartButtonClick}
+          >
+            {language(
+              isLoading
+                ? lng.recordingAccessing
+                : isRecording
+                ? lng.recordingStop
+                : lng.recordingStart
+            )}
+          </Button>
+          <span>{formatElapsedTime(elapsed)}</span>
+        </div>
+        <video
+          muted
+          width="100%"
+          ref={videoRef}
+          style={{ display: !video ? 'none' : undefined, maxHeight: 'max(35vh, 200px)' }}
+        />
+        <audio
+          muted
+          style={{ width: '100%', display: video ? 'none' : undefined }}
+          ref={audioRef}
+        />
       </div>
-      <video
-        muted
-        width="100%"
-        ref={videoRef}
-        style={{ display: !video ? 'none' : undefined, maxHeight: 'max(35vh, 200px)' }}
-      />
-      <audio muted style={{ width: '100%', display: video ? 'none' : undefined }} ref={audioRef} />
-    </div>
+    </>
   );
 };
 
