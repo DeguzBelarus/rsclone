@@ -143,28 +143,30 @@ export const Comments = ({ postId, data, onChange }: CommentsProps) => {
                         </span>
                       </div>
                     </ListItemText>
-                    <Paper className={styles.commentActions} elevation={2}>
-                      {authorId === userId && (
-                        <Tooltip
-                          title={language(lng.commentEdit)}
-                          PopperProps={{ disablePortal: true, keepMounted: true }}
-                        >
-                          <IconButton color="inherit" onClick={() => setEditingId(id)}>
-                            <EditIcon />
-                          </IconButton>
-                        </Tooltip>
-                      )}
-                      {(authorId === userId || (role === 'ADMIN' && authorRole !== 'ADMIN')) && (
-                        <Tooltip
-                          title={language(lng.commentDelete)}
-                          PopperProps={{ disablePortal: true, keepMounted: true }}
-                        >
-                          <IconButton color="warning" onClick={() => handleDeleteComment(id)}>
-                            <DeleteIcon />
-                          </IconButton>
-                        </Tooltip>
-                      )}
-                    </Paper>
+                    {(authorId === userId || (role === 'ADMIN' && authorRole !== 'ADMIN')) && (
+                      <Paper className={styles.commentActions} elevation={2}>
+                        {authorId === userId && (
+                          <Tooltip
+                            title={language(lng.commentEdit)}
+                            PopperProps={{ disablePortal: true, keepMounted: true }}
+                          >
+                            <IconButton color="inherit" onClick={() => setEditingId(id)}>
+                              <EditIcon />
+                            </IconButton>
+                          </Tooltip>
+                        )}
+                        {(authorId === userId || (role === 'ADMIN' && authorRole !== 'ADMIN')) && (
+                          <Tooltip
+                            title={language(lng.commentDelete)}
+                            PopperProps={{ disablePortal: true, keepMounted: true }}
+                          >
+                            <IconButton color="warning" onClick={() => handleDeleteComment(id)}>
+                              <DeleteIcon />
+                            </IconButton>
+                          </Tooltip>
+                        )}
+                      </Paper>
+                    )}
                   </>
                 )}
               </ListItem>
