@@ -13,7 +13,15 @@ import useLanguage from 'hooks/useLanguage';
 import { lng } from 'hooks/useLanguage/types';
 import styles from './Comments.module.scss';
 import { ICommentModel, ICreateCommentRequest, IUpdateCommentRequest } from 'types/types';
-import { IconButton, List, ListItem, ListItemAvatar, ListItemText, Tooltip } from '@mui/material';
+import {
+  IconButton,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  Paper,
+  Tooltip,
+} from '@mui/material';
 import { DeleteForever as DeleteIcon, Edit as EditIcon } from '@mui/icons-material';
 import Avatar from 'components/Avatar';
 import { PostDate } from 'components/PostDate/PostDate';
@@ -135,22 +143,28 @@ export const Comments = ({ postId, data, onChange }: CommentsProps) => {
                         </span>
                       </div>
                     </ListItemText>
-                    <div className={styles.commentActions}>
+                    <Paper className={styles.commentActions} elevation={2}>
                       {authorId === userId && (
-                        <Tooltip title={language(lng.commentEdit)}>
+                        <Tooltip
+                          title={language(lng.commentEdit)}
+                          PopperProps={{ disablePortal: true, keepMounted: true }}
+                        >
                           <IconButton color="inherit" onClick={() => setEditingId(id)}>
                             <EditIcon />
                           </IconButton>
                         </Tooltip>
                       )}
                       {(authorId === userId || (role === 'ADMIN' && authorRole !== 'ADMIN')) && (
-                        <Tooltip title={language(lng.commentDelete)}>
+                        <Tooltip
+                          title={language(lng.commentDelete)}
+                          PopperProps={{ disablePortal: true, keepMounted: true }}
+                        >
                           <IconButton color="warning" onClick={() => handleDeleteComment(id)}>
                             <DeleteIcon />
                           </IconButton>
                         </Tooltip>
                       )}
-                    </div>
+                    </Paper>
                   </>
                 )}
               </ListItem>
