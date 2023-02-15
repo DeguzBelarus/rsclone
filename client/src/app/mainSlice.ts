@@ -46,6 +46,8 @@ import {
   IUserDialog,
   IGetDialogMessagesRequest,
   IGetDialogMessagesResponse,
+  ISendMessageRequest,
+  ISendMessageResponse,
 } from 'types/types';
 import { requestData, requestMethods } from './dataAPI';
 import { setLocalStorageData } from './storage';
@@ -714,6 +716,69 @@ export const getDialogMessagesAsync = createAsyncThunk(
       const getDialogMessagesResponseData: IGetDialogMessagesResponse =
         await getDialogMessagesResponse.json();
       return getDialogMessagesResponseData;
+    }
+    return null;
+  }
+);
+
+// send a new message
+export const sendMessageAsync = createAsyncThunk(
+  'message/send',
+  async (
+    data: ISendMessageRequest
+  ): Promise<Nullable<ISendMessageResponse | IGetOneUserResponse | IGetDialogMessagesResponse>> => {
+    const params = new URLSearchParams();
+    params.set('lang', data.lang);
+
+    const sendMessageURL = `/api/message/send?${params}`;
+    const sendMessageResponse: Undefinable<Response> = await requestData(
+      sendMessageURL,
+      requestMethods.post,
+      JSON.stringify(data.requestData),
+      data.token
+    );
+    if (sendMessageResponse) {
+      if (!sendMessageResponse.ok) {
+        const sendMessageResponseData: ISendMessageResponse = await sendMessageResponse.json();
+        sendMessageResponseData.statusCode = sendMessageResponse.status;
+        return sendMessageResponseData;
+      } else {
+        const params = new URLSearchParams();
+        params.set('lang', data.lang);
+
+        const getOneUserURL = `/api/user/${data.requestData.authorId}?${params}`;
+        const getOneUserResponse: Undefinable<Response> = await requestData(
+          getOneUserURL,
+          requestMethods.get,
+          undefined,
+          data.token
+        );
+
+        const getDialogMessagesURL = `/api/message/${data.requestData.authorId}/${data.requestData.recipientId}/?${params}`;
+        const getDialogMessagesResponse: Undefinable<Response> = await requestData(
+          getDialogMessagesURL,
+          requestMethods.get,
+          undefined,
+          data.token
+        );
+        if (getOneUserResponse && getDialogMessagesResponse) {
+          if (!getDialogMessagesResponse.ok) {
+            const getDialogMessagesResponseData: IGetDialogMessagesResponse =
+              await getDialogMessagesResponse.json();
+            return getDialogMessagesResponseData;
+          }
+
+          const sendMessageResponseData: ISendMessageResponse = await sendMessageResponse.json();
+          const getDialogMessagesResponseData: IGetDialogMessagesResponse =
+            await getDialogMessagesResponse.json();
+
+          const getOneUserResponseData: IGetOneUserResponse = await getOneUserResponse.json();
+          getOneUserResponseData.statusCode = sendMessageResponse.status;
+          getOneUserResponseData.message = sendMessageResponseData.message;
+          getOneUserResponseData.messages = getDialogMessagesResponseData.messages;
+          return getOneUserResponseData;
+        }
+      }
     }
     return null;
   }
@@ -1410,6 +1475,42 @@ export const mainSlice = createSlice({
         }
       })
       .addCase(getDialogMessagesAsync.rejected, (state, { error }) => {
+        state.userRequestStatus = 'failed';
+        console.error('\x1b[40m\x1b[31m\x1b[1m', error.message);
+      })
+
+      // send a new message
+      .addCase(sendMessageAsync.pending, (state) => {
+        state.userRequestStatus = 'loading';
+      })
+      .addCase(sendMessageAsync.fulfilled, (state, { payload }) => {
+        state.userRequestStatus = 'idle';
+
+        if (payload) {
+          if (payload.statusCode !== 200 && payload.statusCode !== 201) {
+            state.alert = {
+              message: payload.message,
+              severity: 'error',
+            };
+          } else {
+            const successSendingMessageData = payload as IGetOneUserResponse;
+            if (successSendingMessageData.userData?.userDialogs) {
+              state.dialogs = successSendingMessageData.userData?.userDialogs;
+            }
+            if (state.currentDialogMessages) {
+              if (successSendingMessageData.messages) {
+                state.currentDialogMessages = successSendingMessageData.messages;
+              }
+            }
+
+            state.alert = {
+              message: successSendingMessageData.message,
+              severity: 'success',
+            };
+          }
+        }
+      })
+      .addCase(sendMessageAsync.rejected, (state, { error }) => {
         state.userRequestStatus = 'failed';
         console.error('\x1b[40m\x1b[31m\x1b[1m', error.message);
       });

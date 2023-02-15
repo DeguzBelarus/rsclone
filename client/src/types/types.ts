@@ -102,6 +102,7 @@ export interface IGetOneUserResponse {
   statusCode?: number;
   ownId: number;
   token?: string;
+  messages?: Array<IMessageModel>;
 }
 
 export interface IDeleteUserResponse {
