@@ -133,7 +133,7 @@ export const Comments = ({ postId, data, onChange }: CommentsProps) => {
                   }}
                   key={id}
                   className={styles.comment}
-                  onClick={() => canEdit && setEditingId(id)}
+                  onClick={() => canEdit && !isEditing && setEditingId(id)}
                 >
                   <ListItemAvatar>
                     <Link to={`/user/${authorId}`}>

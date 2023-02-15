@@ -68,6 +68,7 @@ export enum lng {
   admin,
   online,
   offline,
+  onlineAndMore,
 
   newPostTitle,
   editPostTitle,

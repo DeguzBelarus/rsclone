@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useMemo, useState } from 'react';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Socket } from 'socket.io-client';
@@ -30,7 +30,7 @@ import {
 import { IGetOneUserRequestData, Nullable, RoleType } from 'types/types';
 import styles from './UserRoom.module.scss';
 import useLanguage from 'hooks/useLanguage';
-import { Chip, Tooltip } from '@mui/material';
+import { Chip, ClickAwayListener, Tooltip } from '@mui/material';
 import FaceIcon from '@mui/icons-material/Face';
 import DotIcon from '@mui/icons-material/FiberManualRecord';
 import Avatar from 'components/Avatar';
@@ -42,6 +42,7 @@ import { Page404 } from 'pages/Page404/Page404';
 import { ProcessingPage } from 'pages/ProcessingPage/ProcessingPage';
 import joinStrings from 'lib/joinStrings';
 import LocationIcon from '@mui/icons-material/LocationOn';
+import { SHOW_MAX_USERS_ONLINE } from 'consts';
 
 interface Props {
   socket: Socket<DefaultEventsMap, DefaultEventsMap>;
@@ -55,6 +56,7 @@ export const UserRoom: FC<Props> = ({ socket }) => {
 
   const [isOwnPage, setIsOwnPage] = useState<boolean>(true);
   const [newPostModalOpen, setNewPostModalOpen] = useState(false);
+  const [usersOnlineOpen, setUsersOnlineOpen] = useState(false);
   const isAuthorized = useAppSelector(getIsAuthorized);
   const userId = useAppSelector<Nullable<number>>(getUserId);
   const token = useAppSelector<Nullable<string>>(getToken);
@@ -75,6 +77,15 @@ export const UserRoom: FC<Props> = ({ socket }) => {
   const userRequestStatus = useAppSelector(getUserRequestStatus);
 
   const isUserFound = isAuthorized && (isOwnPage || (id && guestUserData));
+
+  const usersOnlineToDisplay = useMemo(() => {
+    const users = usersOnline.slice(0, SHOW_MAX_USERS_ONLINE);
+    if (usersOnline.length > SHOW_MAX_USERS_ONLINE)
+      users.push(
+        language(lng.onlineAndMore).replace('%', String(usersOnline.length - SHOW_MAX_USERS_ONLINE))
+      );
+    return users;
+  }, [usersOnline]);
 
   useEffect(() => {
     if (!id || (id && Number(id) === userId)) {
@@ -122,23 +133,27 @@ export const UserRoom: FC<Props> = ({ socket }) => {
   ) => {
     return (
       <div className={styles.user}>
-        <Tooltip
-          arrow
-          title={
-            <ul>
-              {usersOnline.map((nickname) => (
-                <li key={nickname}>{nickname}</li>
-              ))}
-            </ul>
-          }
-        >
-          <Chip
-            className={styles.online}
-            color="success"
-            icon={<FaceIcon />}
-            label={`online: ${usersOnline.length}`}
-          />
-        </Tooltip>
+        <ClickAwayListener onClickAway={() => setUsersOnlineOpen(false)}>
+          <Tooltip
+            arrow
+            open={usersOnlineOpen}
+            title={
+              <ul>
+                {usersOnlineToDisplay.map((nickname) => (
+                  <li key={nickname}>{nickname}</li>
+                ))}
+              </ul>
+            }
+          >
+            <Chip
+              className={styles.online}
+              color="success"
+              icon={<FaceIcon />}
+              label={`online: ${usersOnline.length}`}
+              onClick={() => setUsersOnlineOpen((current) => !current)}
+            />
+          </Tooltip>
+        </ClickAwayListener>
         <div className={styles.info}>
           <Avatar size="min(40vw, 20rem)" user={id || undefined} avatarSrc={avatar || undefined} />
           <span className={styles.nickname}>

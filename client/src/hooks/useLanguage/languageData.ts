@@ -69,6 +69,7 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.admin]: 'admin',
     [lng.online]: 'Online',
     [lng.offline]: 'Offline',
+    [lng.onlineAndMore]: 'and % more',
 
     [lng.newPostTitle]: 'New post',
     [lng.editPostTitle]: 'Edit post',
@@ -180,6 +181,7 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.admin]: 'администратор',
     [lng.online]: 'Онлайн',
     [lng.offline]: 'Оффлайн',
+    [lng.onlineAndMore]: 'и % других',
 
     [lng.newPostTitle]: 'Новый пост',
     [lng.editPostTitle]: 'Редактировать пост',
