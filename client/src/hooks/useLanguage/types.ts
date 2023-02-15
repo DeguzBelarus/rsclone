@@ -94,8 +94,13 @@ export enum lng {
   commentsNoneMsg,
 
   justNow,
-  minutesAgo,
-  hoursAgo,
+  ago,
+  minutes1,
+  minutes2,
+  minutes3,
+  hours1,
+  hours2,
+  hours3,
   yesterday,
 
   recording,
