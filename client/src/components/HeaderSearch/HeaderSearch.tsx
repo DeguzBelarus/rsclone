@@ -108,8 +108,11 @@ export const HeaderSearch = ({ onFocusChange }: HeaderSearchProps) => {
           inputValue={inputValue}
           onInputChange={(_, value, reason) => reason !== 'reset' && handleInputChange(value)}
           ListboxProps={{ style: { maxHeight: 'min(80vh, 50rem)' } }}
+          componentsProps={{
+            popper: { placement: 'top', sx: { minWidth: 'min(90vw, 360px)' } },
+          }}
           renderInput={(params) => {
-            const { InputLabelProps, InputProps, ...rest } = params;
+            const { InputProps, InputLabelProps, ...rest } = params;
             return (
               <InputBase
                 {...InputProps}
