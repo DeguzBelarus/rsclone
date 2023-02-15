@@ -360,9 +360,8 @@ class UserController {
                   authorNickname: message.authorNickname,
                   recipientId: message.recipientId,
                   recipientNickname: message.recipientNickname,
-                  unreadMessages: array.reduce((sum: number, message) => {
-                    if ((message.userId === authorId || message.recipientId === recipientId)
-                      && !message.isRead) {
+                  unreadMessages: incomingMessages.reduce((sum: number, message) => {
+                    if (!message.isRead) {
                       return sum += 1;
                     } else return sum;
                   }, 0),
