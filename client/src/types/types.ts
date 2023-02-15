@@ -231,9 +231,24 @@ export interface IMessageModel {
   date: string;
   messageText: string;
   authorNickname: string;
+  authorAvatarSrc?: string;
   recipientId: number;
   recipientNickname: string;
-  isRead: boolean;
+  recipientAvatarSrc?: string;
+  isRead?: boolean;
+  userId: number;
+}
+
+export interface IUserDialog {
+  lastMessageId: number;
+  lastMessageDate: string;
+  lastMessageText: string;
+  lastMessageAuthorNickname: string;
+  authorId: number;
+  authorNickname: string;
+  recipientId: number;
+  recipientNickname: string;
+  unreadMessages: number;
 }
 
 export interface IDeleteCommentRequest {
@@ -273,4 +288,5 @@ export interface IFullUserData extends ITokenDecodeData {
   firstName?: Nullable<string>;
   lastName?: Nullable<string>;
   posts?: Array<IPostModel>;
+  dialogs?: Array<Array<IUserDialog>>;
 }
