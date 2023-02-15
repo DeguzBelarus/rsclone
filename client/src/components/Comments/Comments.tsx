@@ -21,6 +21,7 @@ import {
   ListItemText,
   Paper,
   Tooltip,
+  useTheme,
 } from '@mui/material';
 import { DeleteForever as DeleteIcon, Edit as EditIcon } from '@mui/icons-material';
 import Avatar from 'components/Avatar';
@@ -41,6 +42,7 @@ export const Comments = ({ postId, data, onChange }: CommentsProps) => {
   const userId = useAppSelector(getUserId);
   const role = useAppSelector(getUserRole);
   const language = useLanguage();
+  const theme = useTheme();
   const [editingId, setEditingId] = useState<number>();
 
   const handleAddComment = async (value: string) => {
@@ -115,7 +117,15 @@ export const Comments = ({ postId, data, onChange }: CommentsProps) => {
               authorRole,
               editDate,
             }) => (
-              <ListItem key={id} className={styles.comment}>
+              <ListItem
+                sx={{
+                  '&:hover': {
+                    backgroundColor: theme.palette.grey[100],
+                  },
+                }}
+                key={id}
+                className={styles.comment}
+              >
                 <ListItemAvatar>
                   <Link to={`/user/${authorId}`}>
                     <Avatar size="2.5rem" user={authorId} avatarSrc={authorAvatar} />
