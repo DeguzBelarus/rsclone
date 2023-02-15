@@ -43,12 +43,16 @@ import {
   IDeleteCommentResponse,
   IUpdateCommentRequest,
   IUpdateCommentResponse,
+  IUserDialog,
 } from 'types/types';
 import { requestData, requestMethods } from './dataAPI';
 import { setLocalStorageData } from './storage';
 
 interface MainState {
   posts: Array<IPostModel>;
+  dialogs: Array<IUserDialog>;
+  currentDialog: Nullable<Array<IMessageModel>>;
+  unreadMessagesCount: number;
   allPosts: Array<IPostModel>;
   currentPost: Nullable<IPostModel>;
   messages: Array<IMessageModel>;
@@ -76,6 +80,9 @@ interface MainState {
 
 const initialState: MainState = {
   posts: [],
+  dialogs: [],
+  currentDialog: null,
+  unreadMessagesCount: 0,
   allPosts: [],
   currentPost: null,
   messages: [],
@@ -788,6 +795,18 @@ export const mainSlice = createSlice({
     setAllPosts(state: WritableDraft<MainState>, { payload }: PayloadAction<Array<IPostModel>>) {
       state.allPosts = payload;
     },
+    setDialogs(state: WritableDraft<MainState>, { payload }: PayloadAction<Array<IUserDialog>>) {
+      state.dialogs = payload;
+    },
+    setCurrentDialog(
+      state: WritableDraft<MainState>,
+      { payload }: PayloadAction<Nullable<Array<IMessageModel>>>
+    ) {
+      state.currentDialog = payload;
+    },
+    setUnreadMessagesCount(state: WritableDraft<MainState>, { payload }: PayloadAction<number>) {
+      state.unreadMessagesCount = payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -857,6 +876,15 @@ export const mainSlice = createSlice({
             if (fullUserData.userData?.posts !== undefined) {
               state.posts = fullUserData.userData.posts;
             }
+            if (fullUserData.userData?.userDialogs !== undefined) {
+              state.dialogs = fullUserData.userData.userDialogs;
+              state.unreadMessagesCount = fullUserData.userData.userDialogs.reduce(
+                (sum, dialog) => {
+                  return (sum += dialog.unreadMessages);
+                },
+                0
+              );
+            }
           }
           state.alert = { message: payload.message, severity: payload.token ? 'success' : 'error' };
         }
@@ -911,6 +939,15 @@ export const mainSlice = createSlice({
             }
             if (fullUserData.userData?.posts !== undefined) {
               state.posts = fullUserData.userData.posts;
+            }
+            if (fullUserData.userData?.userDialogs !== undefined) {
+              state.dialogs = fullUserData.userData.userDialogs;
+              state.unreadMessagesCount = fullUserData.userData.userDialogs.reduce(
+                (sum, dialog) => {
+                  return (sum += dialog.unreadMessages);
+                },
+                0
+              );
             }
           }
         }
@@ -980,6 +1017,12 @@ export const mainSlice = createSlice({
               }
               if (payload.userData?.posts !== undefined) {
                 state.posts = payload.userData.posts;
+              }
+              if (payload.userData?.userDialogs !== undefined) {
+                state.dialogs = payload.userData.userDialogs;
+                state.unreadMessagesCount = payload.userData.userDialogs.reduce((sum, dialog) => {
+                  return (sum += dialog.unreadMessages);
+                }, 0);
               }
             }
           }
@@ -1355,6 +1398,9 @@ export const {
     setPosts,
     setCurrentPost,
     setAllPosts,
+    setCurrentDialog,
+    setDialogs,
+    setUnreadMessagesCount,
   },
 } = mainSlice;
 
@@ -1385,5 +1431,9 @@ export const getPosts = ({ main: { posts } }: RootState) => posts;
 export const getAllPosts = ({ main: { allPosts } }: RootState) => allPosts;
 export const getCurrentPost = ({ main: { currentPost } }: RootState) => currentPost;
 export const getMessages = ({ main: { messages } }: RootState) => messages;
+export const getDialogs = ({ main: { dialogs } }: RootState) => dialogs;
+export const getCurrentDialog = ({ main: { currentDialog } }: RootState) => currentDialog;
+export const getUnreadMessagesCount = ({ main: { unreadMessagesCount } }: RootState) =>
+  unreadMessagesCount;
 
 export const { reducer } = mainSlice;

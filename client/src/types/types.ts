@@ -288,5 +288,5 @@ export interface IFullUserData extends ITokenDecodeData {
   firstName?: Nullable<string>;
   lastName?: Nullable<string>;
   posts?: Array<IPostModel>;
-  dialogs?: Array<Array<IUserDialog>>;
+  userDialogs?: Array<IUserDialog>;
 }
