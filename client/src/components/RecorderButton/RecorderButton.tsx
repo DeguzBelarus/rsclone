@@ -23,7 +23,8 @@ export const RecorderButton = ({ recording, video, disabled, onClick }: Recorder
             variant="dot"
             sx={{
               '& .MuiBadge-badge': {
-                backgroundColor: recording ? theme.palette.warning.main : theme.palette.grey[400],
+                backgroundColor:
+                  recording && !disabled ? theme.palette.warning.main : theme.palette.grey[400],
               },
             }}
             anchorOrigin={{
