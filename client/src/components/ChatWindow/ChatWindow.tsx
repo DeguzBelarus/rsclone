@@ -1,4 +1,4 @@
-import { alpha, Collapse, useTheme } from '@mui/material';
+import { alpha, useTheme } from '@mui/material';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import {
   getCurrentDialogMessages,
@@ -12,6 +12,8 @@ import {
 import Avatar from 'components/Avatar';
 import { CommentInput } from 'components/CommentInput/CommentInput';
 import { PostDate } from 'components/PostDate/PostDate';
+import useLanguage from 'hooks/useLanguage';
+import { lng } from 'hooks/useLanguage/types';
 import combineClasses from 'lib/combineClasses';
 import React, { useEffect } from 'react';
 import { IGetDialogMessagesRequest, ISendMessageRequest } from 'types/types';
@@ -25,6 +27,7 @@ interface ChatWindowProps {
 
 export const ChatWindow = ({ recipientId, recipientNickname, collapsed }: ChatWindowProps) => {
   const { palette } = useTheme();
+  const language = useLanguage();
   const dispatch = useAppDispatch();
   const lang = useAppSelector(getCurrentLanguage);
   const token = useAppSelector(getToken);
@@ -93,7 +96,7 @@ export const ChatWindow = ({ recipientId, recipientNickname, collapsed }: ChatWi
           </ul>
         )}
       </div>
-      <CommentInput value="" onSubmit={handleSend} />
+      <CommentInput value="" onSubmit={handleSend} placeholder={language(lng.chatsInputEmpty)} />
     </div>
   );
 };

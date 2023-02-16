@@ -120,6 +120,7 @@ export enum lng {
 
   chats,
   chatWith,
+  chatsInputEmpty,
 }
 
 export type LangaugeData = {

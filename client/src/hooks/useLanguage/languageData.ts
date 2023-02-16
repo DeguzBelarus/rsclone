@@ -121,6 +121,7 @@ const LANGUAGE_DATA: LangaugeData = {
 
     [lng.chats]: 'Chats',
     [lng.chatWith]: 'Chat with',
+    [lng.chatsInputEmpty]: 'Message',
   },
 
   ru: {
@@ -244,6 +245,7 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.messagesNoneMsg]: 'Сообщения не найдены. Добавьте первое!',
     [lng.chats]: 'Чаты',
     [lng.chatWith]: 'Чат с',
+    [lng.chatsInputEmpty]: 'Сообщение',
   },
 };
 
