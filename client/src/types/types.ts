@@ -342,7 +342,7 @@ export interface IFullUserData extends ITokenDecodeData {
   userDialogs?: Array<IUserDialog>;
 }
 
-export interface IUserDataCreationPost {
+export interface IUserDataPostEvent {
   userNickname: string;
   userId: number;
 }

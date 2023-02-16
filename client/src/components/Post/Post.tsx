@@ -23,6 +23,7 @@ import {
   getUserId,
   getUserRole,
   setAlert,
+  getUserNickname,
 } from 'app/mainSlice';
 import { ConfirmModal } from 'components/ConfirmModal/ConfirmModal';
 import { EditPostModal } from 'components/EditPostModal/EditPostModal';
@@ -54,6 +55,7 @@ export const Post = ({ data, single, ownHighlight, onDelete, onEdit, socket }: P
   const lang = useAppSelector(getCurrentLanguage);
   const ownId = useAppSelector(getUserId);
   const role = useAppSelector(getUserRole);
+  const userNickname = useAppSelector(getUserRole);
   const navigate = useNavigate();
   const theme = useTheme();
 
@@ -78,6 +80,7 @@ export const Post = ({ data, single, ownHighlight, onDelete, onEdit, socket }: P
       token,
     };
     const result = await dispatch(deletePostAsync(deleteRequest));
+    socket.emit('userDeletePost', { userNickname, userId: ownId });
     if (result.meta.requestStatus === 'fulfilled' && onDelete) onDelete();
   };
 

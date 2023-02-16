@@ -94,6 +94,10 @@ io.on("connection", (socket) => {
   socket.on("userAddPost", (userData) => {
     socket.broadcast.emit("userAddedPost", userData)
   })
+  // deletion post socket event
+  socket.on("userDeletePost", (userData) => {
+    socket.broadcast.emit("userDeletedPost", userData)
+  })
 });
 
 (async function () {
