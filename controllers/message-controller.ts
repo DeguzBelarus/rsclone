@@ -163,11 +163,11 @@ class MessageController {
 
         const dialogMessages = await Message.findAll({
           where: {
-            [Op.or]: {
-              userId: userId || interlocutorId,
-              recipientId: userId || interlocutorId
-            }
-          }
+            [Op.or]: [
+              { [Op.and]: [{ userId: userId, recipientId: interlocutorId }] },
+              { [Op.and]: [{ userId: interlocutorId, recipientId: userId }] }
+            ]
+          },
         });
 
         if (dialogMessages.length) {
@@ -184,7 +184,7 @@ class MessageController {
           messages: dialogMessages,
           message: lang === 'ru' ?
             "Сообщения из диалога получены" :
-            "The message was successfully sent",
+            "Messages from the dialog have been received",
         });
       }
     } catch (exception: unknown) {
