@@ -190,7 +190,7 @@ export const Header: FC<Props> = ({ socket }) => {
       )}
       sx={{
         color: searchFocused ? palette.secondary.contrastText : undefined,
-        backgroundColor: searchFocused ? palette.secondary.main : undefined,
+        backgroundColor: searchFocused ? palette.secondary.dark : undefined,
         transition: 'background-color 0.5s linear',
       }}
     >
