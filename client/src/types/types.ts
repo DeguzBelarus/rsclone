@@ -233,6 +233,8 @@ export interface IUpdatePostResponse {
 export interface IDeleteMessageRequest {
   lang: CurrentLanguageType;
   messageId: number;
+  ownerId: number;
+  recipientId: number;
   token: string;
 }
 
