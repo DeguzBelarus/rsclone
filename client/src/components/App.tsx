@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { Socket } from 'socket.io-client';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
@@ -24,6 +24,7 @@ interface Props {
 export const App: FC<Props> = ({ socket }): JSX.Element => {
   const dispatch = useAppDispatch();
   const routes = useRoutes(socket);
+  const [theme, setTheme] = useState(createTheme());
 
   const currentLanguageFromStore = useAppSelector(getCurrentLanguage);
   const currentTheme = useAppSelector(getCurrentColorTheme);
@@ -47,10 +48,21 @@ export const App: FC<Props> = ({ socket }): JSX.Element => {
     }
   }, [dispatch]);
 
+  useEffect(() => {
+    setTheme(createTheme({ palette: { mode: currentTheme } }));
+  }, [currentTheme]);
+
   return (
-    <ThemeProvider theme={createTheme({ palette: { mode: currentTheme } })}>
+    <ThemeProvider theme={theme}>
       <Header socket={socket} />
-      <main>{routes}</main>
+      <main
+        style={{
+          color: theme.palette.text.primary,
+          backgroundColor: theme.palette.background.default,
+        }}
+      >
+        {routes}
+      </main>
       <Alert />
       <Footer />
     </ThemeProvider>
