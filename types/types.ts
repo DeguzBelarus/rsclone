@@ -81,12 +81,21 @@ export interface IServerToClientEvents {
   basicEmit: (a: number, b: string, c: Buffer) => void;
   withAck: (d: string, callback: (e: number) => void) => void;
   onlineUsersUpdate: (onlineUsers: Array<string>) => void;
+  userAddedPost: (userData: IUserDataPostEvent) => void;
+  userDeletedPost: (userData: IUserDataPostEvent) => void;
+}
+
+export interface IUserDataPostEvent {
+  userNickname: string;
+  userId: number;
 }
 
 export interface IClientToServerEvents {
   userOnline: (onlineUserNickname: string) => void;
   userOffline: (onlineUserNickname: string) => void;
   nicknameUpdated: (userNickname: string) => void;
+  userAddPost: (userData: IUserDataPostEvent) => void;
+  userDeletePost: (userData: IUserDataPostEvent) => void;
 }
 
 export interface IInterServerEvents {

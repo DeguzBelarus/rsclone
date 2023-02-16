@@ -1,5 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, FC } from 'react';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
+import { Socket } from 'socket.io-client';
+import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import {
   getCurrentLanguage,
   getCurrentPost,
@@ -16,7 +18,11 @@ import { useNavigate, useParams } from 'react-router-dom';
 import styles from './PostPage.module.scss';
 import { Comments } from 'components/Comments/Comments';
 
-export const PostPage = () => {
+interface Props {
+  socket: Socket<DefaultEventsMap, DefaultEventsMap>;
+}
+
+export const PostPage: FC<Props> = ({ socket }) => {
   const dispatch = useAppDispatch();
   const post = useAppSelector(getCurrentPost);
   const userRequestStatus = useAppSelector(getUserRequestStatus);
@@ -37,7 +43,7 @@ export const PostPage = () => {
 
   return post ? (
     <div className={styles.wrapper}>
-      <Post data={post} single onDelete={() => navigate('/')} />
+      <Post data={post} socket={socket} single onDelete={() => navigate('/')} />
       <Comments
         postId={Number(id)}
         data={post.comments}

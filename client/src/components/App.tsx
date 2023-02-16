@@ -11,12 +11,19 @@ import {
   getCurrentLanguage,
   getCurrentColorTheme,
   setCurrentColorTheme,
+  getUserId,
+  getOneUserInfoAsync,
+  getToken,
+  getGuestUserData,
+  getAllPosts,
+  getAllPostsAsync,
 } from 'app/mainSlice';
 import { getLocalStorageData } from 'app/storage';
 import { Header } from './Header/Header';
 import { Alert } from './Alert/Alert';
 import { Footer } from './Footer/Footer';
 import { createTheme, ThemeProvider } from '@mui/material';
+import { IUserDataPostEvent } from 'types/types';
 
 interface Props {
   socket: Socket<DefaultEventsMap, DefaultEventsMap>;
@@ -29,16 +36,38 @@ export const App: FC<Props> = ({ socket }): JSX.Element => {
   const [theme, setTheme] = useState(createTheme({ palette: { mode: currentThemeSaved } }));
 
   const currentLanguageFromStore = useAppSelector(getCurrentLanguage);
+  const userId = useAppSelector(getUserId);
+  const token = useAppSelector(getToken);
+  const guestUserData = useAppSelector(getGuestUserData);
+  const allPosts = useAppSelector(getAllPosts);
   const currentTheme = useAppSelector(getCurrentColorTheme);
 
-  useEffect(() => {
-    socket.on('connect', () => {
-      console.log('websocket connection has been established...');
-    });
-    socket.on('onlineUsersUpdate', (data: Array<string>) => {
-      dispatch(setUsersOnline(data));
-    });
-  }, [socket, dispatch]);
+  const postsDataRefresh = (data: IUserDataPostEvent) => {
+    if (userId && token) {
+      if (userId === data.userId) {
+        dispatch(
+          getOneUserInfoAsync({
+            token,
+            requestData: { lang: currentLanguageFromStore, id: userId },
+          })
+        );
+      } else {
+        if (guestUserData) {
+          if (guestUserData.id === data.userId) {
+            dispatch(
+              getOneUserInfoAsync({
+                token,
+                requestData: { lang: currentLanguageFromStore, id: data.userId },
+              })
+            );
+          }
+        }
+      }
+      if (allPosts) {
+        dispatch(getAllPostsAsync({ lang: currentLanguageFromStore }));
+      }
+    }
+  };
 
   useEffect(() => {
     const { token, currentLanguage, currentTheme } = getLocalStorageData();
@@ -57,6 +86,34 @@ export const App: FC<Props> = ({ socket }): JSX.Element => {
   useEffect(() => {
     setTheme(createTheme({ palette: { mode: currentTheme } }));
   }, [currentTheme]);
+
+  useEffect(() => {
+    // create post socket event
+    socket.on('userAddedPost', (data: IUserDataPostEvent) => {
+      postsDataRefresh(data);
+    });
+    // delete post socket event
+    socket.on('userDeletedPost', (data: IUserDataPostEvent) => {
+      postsDataRefresh(data);
+    });
+
+    return () => {
+      socket.off('userAddedPost');
+      socket.off('userDeletedPost');
+    };
+  }, [userId, guestUserData, allPosts]);
+
+  useEffect(() => {
+    // connection socket events
+    socket.on('connect', () => {
+      console.log('websocket connection has been established...');
+    });
+
+    // user info updating socket events
+    socket.on('onlineUsersUpdate', (data: Array<string>) => {
+      dispatch(setUsersOnline(data));
+    });
+  }, [socket]);
 
   return (
     <ThemeProvider theme={theme}>

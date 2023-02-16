@@ -341,3 +341,8 @@ export interface IFullUserData extends ITokenDecodeData {
   posts?: Array<IPostModel>;
   userDialogs?: Array<IUserDialog>;
 }
+
+export interface IUserDataPostEvent {
+  userNickname: string;
+  userId: number;
+}

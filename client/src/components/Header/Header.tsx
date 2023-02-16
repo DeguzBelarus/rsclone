@@ -268,7 +268,11 @@ export const Header: FC<Props> = ({ socket }) => {
           {isAuthorized ? authorizedMenu : unauthorizedMenu}
         </CustomMenu>
       </Toolbar>
-      <EditPostModal open={newPostModalOpen} onClose={() => setNewPostModalOpen(false)} />
+      <EditPostModal
+        open={newPostModalOpen}
+        socket={socket}
+        onClose={() => setNewPostModalOpen(false)}
+      />
     </AppBar>
   );
 };

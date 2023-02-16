@@ -13,6 +13,8 @@ import {
 } from '@mui/material';
 import useLanguage from 'hooks/useLanguage';
 import { lng } from 'hooks/useLanguage/types';
+import { Socket } from 'socket.io-client';
+import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 
 import styles from './EditPostModal.module.scss';
 import useValidateInput from 'hooks/useValidateInput';
@@ -24,6 +26,7 @@ import {
   getCurrentLanguage,
   getToken,
   getUserId,
+  getUserNickname,
   updatePostAsync,
 } from 'app/mainSlice';
 import { IUpdatePostRequest } from '../../types/types';
@@ -40,6 +43,7 @@ export interface EditPostModalProps {
   postHeading?: string;
   onClose?: () => void;
   onSuccess?: (heading: string, text: string) => void;
+  socket: Socket<DefaultEventsMap, DefaultEventsMap>;
 }
 
 export const EditPostModal = ({
@@ -49,6 +53,7 @@ export const EditPostModal = ({
   postHeading,
   onClose,
   onSuccess,
+  socket,
 }: EditPostModalProps) => {
   const [titleValue, setTitleValue] = useState(postHeading || '');
   const [bodyValue, setBodyValue] = useState(postText || '');
@@ -66,6 +71,7 @@ export const EditPostModal = ({
   const lang = useAppSelector(getCurrentLanguage);
   const token = useAppSelector(getToken);
   const userId = useAppSelector(getUserId);
+  const userNickname = useAppSelector(getUserId);
 
   const validateTitle = useValidateInput(
     POST_TITLE_PATTERN,
@@ -96,6 +102,7 @@ export const EditPostModal = ({
     if (mediaValue) requestData.append('media', mediaValue);
 
     const result = await dispatch(createPostAsync({ ownId, token, requestData }));
+    socket.emit('userAddPost', { userNickname, userId });
     return result && result.meta.requestStatus === 'fulfilled';
   };
 

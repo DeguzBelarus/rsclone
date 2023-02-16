@@ -197,7 +197,7 @@ export const UserRoom: FC<Props> = ({ socket }) => {
             role === 'ADMIN',
             true
           )}
-          <Posts data={posts} className={styles.posts} />
+          <Posts data={posts} socket={socket} className={styles.posts} />
           <FabButton value={language(lng.userAddPost)} onClick={() => setNewPostModalOpen(true)} />
         </>
       ) : (
@@ -216,11 +216,15 @@ export const UserRoom: FC<Props> = ({ socket }) => {
               guestUserData.role === 'ADMIN',
               usersOnline.find((nickname) => nickname === guestUserData.nickname) !== undefined
             )}
-            {guestUserData.posts && <Posts data={guestUserData.posts} />}
+            {guestUserData.posts && <Posts data={guestUserData.posts} socket={socket} />}
           </>
         )
       )}
-      <EditPostModal open={newPostModalOpen} onClose={() => setNewPostModalOpen(false)} />
+      <EditPostModal
+        open={newPostModalOpen}
+        socket={socket}
+        onClose={() => setNewPostModalOpen(false)}
+      />
     </div>
   ) : userRequestStatus === 'loading' ? (
     <ProcessingPage />
