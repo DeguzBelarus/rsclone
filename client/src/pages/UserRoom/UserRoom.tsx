@@ -197,7 +197,7 @@ export const UserRoom: FC<Props> = ({ socket }) => {
             role === 'ADMIN',
             true
           )}
-          <Posts data={posts} />
+          <Posts data={posts} className={styles.posts} />
           <FabButton value={language(lng.userAddPost)} onClick={() => setNewPostModalOpen(true)} />
         </>
       ) : (
