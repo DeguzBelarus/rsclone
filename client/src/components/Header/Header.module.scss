@@ -19,11 +19,6 @@
         font-weight: 600;
       }
     }
-    @media screen and (min-width: $mobile-breakpoint) {
-      .logo {
-        white-space: nowrap;
-      }
-    }
   }
 
   &.focused {
@@ -40,7 +35,16 @@
     }
   }
 
-  &.authorized .toolbar {
-    grid-template-columns: auto 1fr auto auto auto auto auto auto;
+  &.authorized {
+    .toolbar {
+      grid-template-columns: auto 1fr auto auto auto auto auto auto;
+      @media screen and (max-width: $mobile-breakpoint) {
+        & {
+         grid-template-columns: auto 1fr auto auto auto;
+        }     
+      }
+    }
   }
+
+
 }
