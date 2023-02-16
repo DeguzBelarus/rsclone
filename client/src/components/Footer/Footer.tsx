@@ -14,7 +14,7 @@ export const Footer = () => {
       className={styles.footer}
       style={{
         color: mode === 'dark' ? palette.text.primary : palette.primary.contrastText,
-        backgroundColor: mode === 'dark' ? palette.background.paper : palette.primary.main,
+        backgroundColor: mode === 'dark' ? palette.background.default : palette.primary.dark,
       }}
     >
       <a
