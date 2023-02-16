@@ -50,7 +50,6 @@ import {
   Dns as PostIcon,
   PostAdd,
 } from '@mui/icons-material';
-import { blue, amber } from '@mui/material/colors';
 import { Link, useNavigate } from 'react-router-dom';
 import useLanguage from 'hooks/useLanguage';
 import { lng } from 'hooks/useLanguage/types';
@@ -63,7 +62,6 @@ import { HeaderSearch } from 'components/HeaderSearch/HeaderSearch';
 import combineClasses from 'lib/combineClasses';
 import { EditPostModal } from 'components/EditPostModal/EditPostModal';
 import { Logo } from 'components/Logo/Logo';
-import { CurrentColorTheme } from 'types/types';
 import DarkModeIcon from '@mui/icons-material/Brightness4';
 import LightModeIcon from '@mui/icons-material/Brightness7';
 
@@ -84,7 +82,7 @@ export const Header: FC<Props> = ({ socket }) => {
   const currentTheme = useAppSelector(getCurrentColorTheme);
   const navigate = useNavigate();
   const language = useLanguage();
-  const theme = useTheme();
+  const { palette } = useTheme();
   const role = isAuthorized ? userRole : undefined;
 
   const handleUserLogout = () => {
@@ -191,7 +189,8 @@ export const Header: FC<Props> = ({ socket }) => {
         [styles.authorized, isAuthorized]
       )}
       sx={{
-        backgroundColor: searchFocused ? theme.palette.primary.dark : undefined,
+        color: searchFocused ? palette.secondary.contrastText : undefined,
+        backgroundColor: searchFocused ? palette.secondary.main : undefined,
         transition: 'background-color 0.5s linear',
       }}
     >
@@ -243,12 +242,12 @@ export const Header: FC<Props> = ({ socket }) => {
           onClick={(event) => setUserMenuAnchor(event.currentTarget)}
           sx={{
             display: 'block',
-            bgcolor: role === USER_ROLE_ADMIN ? amber[700] : undefined,
-            color: blue[50],
+            bgcolor: role === USER_ROLE_ADMIN ? palette.warning.main : undefined,
+            color: palette.warning.contrastText,
             borderRadius: { xs: '50%', sm: '2em' },
             padding: '6px',
             '&:hover': {
-              bgcolor: role === USER_ROLE_ADMIN ? amber[800] : undefined,
+              bgcolor: role === USER_ROLE_ADMIN ? palette.warning.dark : undefined,
             },
           }}
         >

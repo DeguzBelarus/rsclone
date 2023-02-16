@@ -918,6 +918,7 @@ export const mainSlice = createSlice({
       { payload }: PayloadAction<CurrentColorTheme>
     ) {
       state.currentColorTheme = payload;
+      setLocalStorageData({ currentTheme: payload });
     },
     setGuestUserData(
       state: WritableDraft<MainState>,

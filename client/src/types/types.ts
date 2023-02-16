@@ -143,6 +143,7 @@ export interface ISearchUsersResponse {
 export interface ILocalStorageSaveData {
   token?: string;
   currentLanguage?: CurrentLanguageType;
+  currentTheme?: CurrentColorTheme;
 }
 
 export interface AlertMessage {

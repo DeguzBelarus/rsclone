@@ -10,6 +10,7 @@ import {
   setUsersOnline,
   getCurrentLanguage,
   getCurrentColorTheme,
+  setCurrentColorTheme,
 } from 'app/mainSlice';
 import { getLocalStorageData } from 'app/storage';
 import { Header } from './Header/Header';
@@ -24,7 +25,8 @@ interface Props {
 export const App: FC<Props> = ({ socket }): JSX.Element => {
   const dispatch = useAppDispatch();
   const routes = useRoutes(socket);
-  const [theme, setTheme] = useState(createTheme());
+  const { currentTheme: currentThemeSaved } = getLocalStorageData();
+  const [theme, setTheme] = useState(createTheme({ palette: { mode: currentThemeSaved } }));
 
   const currentLanguageFromStore = useAppSelector(getCurrentLanguage);
   const currentTheme = useAppSelector(getCurrentColorTheme);
@@ -39,12 +41,16 @@ export const App: FC<Props> = ({ socket }): JSX.Element => {
   }, [socket, dispatch]);
 
   useEffect(() => {
-    const { token, currentLanguage } = getLocalStorageData();
+    const { token, currentLanguage, currentTheme } = getLocalStorageData();
+
     if (token) {
       dispatch(authCheckUserAsync({ token, lang: currentLanguageFromStore }));
     }
     if (currentLanguage) {
       dispatch(setCurrentLanguage(currentLanguage));
+    }
+    if (currentTheme) {
+      dispatch(setCurrentColorTheme(currentTheme));
     }
   }, [dispatch]);
 
