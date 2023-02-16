@@ -14,6 +14,7 @@ export function CustomMenu({ children, open, anchorEl, onClick, onClose }: Custo
     <Menu
       open={open}
       anchorEl={anchorEl}
+      disableScrollLock
       onClick={onClick}
       onClose={onClose}
       PaperProps={{
