@@ -1,8 +1,8 @@
 import { Response, NextFunction } from 'express';
-import { Model, Op } from 'sequelize';
+import { Op } from 'sequelize';
 
 import { Message, User } from '../db-models/db-models';
-import { IMessageModel, IRequestModified } from '../types/types';
+import { IRequestModified } from '../types/types';
 import { ApiError } from '../error-handler/error-handler';
 
 class MessageController {
