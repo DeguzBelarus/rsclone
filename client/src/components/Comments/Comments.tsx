@@ -123,11 +123,9 @@ export const Comments = ({ postId, data, onChange }: CommentsProps) => {
               return (
                 <ListItem
                   sx={{
-                    backgroundColor: isEditing
-                      ? alpha(theme.palette.primary.light, 0.15)
-                      : undefined,
+                    backgroundColor: isEditing ? alpha(theme.palette.info.main, 0.15) : undefined,
                     '&:hover': {
-                      backgroundColor: isEditing ? undefined : theme.palette.grey[100],
+                      backgroundColor: isEditing ? undefined : alpha(theme.palette.info.main, 0.1),
                     },
                     cursor: canEdit ? 'pointer' : undefined,
                   }}
