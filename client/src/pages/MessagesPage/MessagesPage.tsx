@@ -12,12 +12,13 @@ import {
 import useLanguage from 'hooks/useLanguage';
 import { lng } from 'hooks/useLanguage/types';
 import React from 'react';
+import { IUserDialog } from 'types/types';
 import styles from './MessagesPage.module.scss';
 
 export const MessagesPage = () => {
   const language = useLanguage();
   const dispatch = useAppDispatch();
-  const dialogs = useAppSelector(getDialogs);
+  const dialogs: IUserDialog[] = useAppSelector(getDialogs);
   const userId = useAppSelector(getUserId);
   const nickname = useAppSelector(getUserNickname);
   const lang = useAppSelector(getCurrentLanguage);
@@ -35,13 +36,16 @@ export const MessagesPage = () => {
     <div className={styles.wrapper}>
       <h2>{language(lng.messagesHeading)}</h2>
       <List>
-        {dialogs.map(({ recipientId, recipientNickname, unreadMessages }) => (
-          <ListItem key={recipientId} disablePadding>
-            <ListItemButton onClick={() => handleStartChat(recipientId, recipientNickname)}>
-              <ListItemText primary={`${recipientNickname} (${unreadMessages})`} />
-            </ListItemButton>
-          </ListItem>
-        ))}
+        {dialogs.map(({ authorNickname, recipientId, recipientNickname, unreadMessages }) => {
+          const nickname = recipientId === userId ? authorNickname : recipientNickname;
+          return (
+            <ListItem key={recipientId} disablePadding>
+              <ListItemButton onClick={() => handleStartChat(recipientId, recipientNickname)}>
+                <ListItemText primary={`${nickname} (${unreadMessages})`} />
+              </ListItemButton>
+            </ListItem>
+          );
+        })}
       </List>
     </div>
   );
