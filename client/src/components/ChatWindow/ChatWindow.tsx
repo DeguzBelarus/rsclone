@@ -1,6 +1,7 @@
-import { alpha, useTheme } from '@mui/material';
+import { alpha, IconButton, Paper, Tooltip, useTheme } from '@mui/material';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import {
+  deleteMessageAsync,
   getCurrentDialogMessages,
   getCurrentLanguage,
   getDialogMessagesAsync,
@@ -16,8 +17,9 @@ import useLanguage from 'hooks/useLanguage';
 import { lng } from 'hooks/useLanguage/types';
 import combineClasses from 'lib/combineClasses';
 import React, { useEffect } from 'react';
-import { IGetDialogMessagesRequest, ISendMessageRequest } from 'types/types';
+import { IDeleteMessageRequest, IGetDialogMessagesRequest, ISendMessageRequest } from 'types/types';
 import styles from './ChatWindow.module.scss';
+import DeleteIcon from '@mui/icons-material/DeleteForever';
 
 interface ChatWindowProps {
   recipientId?: number;
@@ -51,6 +53,16 @@ export const ChatWindow = ({ recipientId, recipientNickname, collapsed }: ChatWi
     dispatch(sendMessageAsync(request));
   };
 
+  const handleDelete = (messageId: number) => {
+    // const request: IDeleteMessageRequest = {
+    //   lang,
+    //   token,
+    //   messageId,
+    //   ownerId:
+    // }
+    // dispatch(deleteMessageAsync({}))
+  };
+
   useEffect(() => {
     if (!token || !authorId || !recipientId) return;
     const request: IGetDialogMessagesRequest = {
@@ -80,6 +92,13 @@ export const ChatWindow = ({ recipientId, recipientNickname, collapsed }: ChatWi
                     ),
                   }}
                 >
+                  <Paper className={styles.delete}>
+                    <Tooltip title={language(lng.postDelete)}>
+                      <IconButton size="small" color="warning">
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  </Paper>
                   <Avatar user={userId} avatarSrc={authorAvatarSrc} />
                   <div className={styles.text}>
                     <div className={styles.name}>

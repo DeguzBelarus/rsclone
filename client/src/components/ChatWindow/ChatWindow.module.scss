@@ -17,6 +17,7 @@
     min-height: 280px;
 
     .message {
+      position: relative;
       display: grid;
       grid-template-columns: auto 1fr;
       gap: 0.5rem;
@@ -24,6 +25,19 @@
       border-radius: 1em;
       border-bottom-left-radius: 0em;
       margin-right: var(--message-margin);
+      isolation: isolate;
+
+      .delete {
+        position:  absolute;
+        z-index: 5;
+        right: 0;
+        border-radius: 50%;
+        padding: 0.2em;
+      }
+
+      &:not(:hover) .delete {
+        display: none;
+      }
 
 
       .text {
@@ -52,6 +66,13 @@
         border-bottom-left-radius: 1em;
         border-bottom-right-radius: 0em;
       }
+
+      @media screen and (max-width: 420px) {
+        &, &.self {
+          margin-left: 0;
+          margin-right: 0;
+        }
+      }      
    }
   }
 
