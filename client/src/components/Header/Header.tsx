@@ -196,7 +196,7 @@ export const Header: FC<Props> = ({ socket }) => {
     >
       <Toolbar className={styles.toolbar}>
         <Link to={userId === null ? '/' : `user/${userId}`}>
-          <Logo />
+          <Logo responsive />
         </Link>
         {isAuthorized && <HeaderSearch onFocusChange={(focused) => setSearchFocused(focused)} />}
         <LanguageSwitch className={styles.language} />

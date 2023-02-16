@@ -9,6 +9,7 @@ import { lng } from 'hooks/useLanguage/types';
 import { getCurrentLanguage, loginUserAsync } from 'app/mainSlice';
 import styles from './AuthPage.module.scss';
 import useValidateInput from 'hooks/useValidateInput';
+import { Logo } from 'components/Logo/Logo';
 
 export const AuthPage = () => {
   const dispatch = useAppDispatch();
@@ -51,7 +52,8 @@ export const AuthPage = () => {
       <Card className={styles.card}>
         <form onSubmit={handleSubmit} noValidate>
           <CardContent className={styles.content}>
-            <h3>{language(lng.loginWelcome)}</h3>
+            <Logo className={styles.logo} />
+            <h3 className={styles.heading}>{language(lng.loginWelcome)}</h3>
             <TextField
               value={emailValue}
               label={language(lng.email)}

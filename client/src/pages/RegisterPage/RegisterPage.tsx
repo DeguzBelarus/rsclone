@@ -9,6 +9,7 @@ import { lng } from 'hooks/useLanguage/types';
 import { getCurrentLanguage, registrationUserAsync } from 'app/mainSlice';
 import styles from './RegisterPage.module.scss';
 import useValidateInput from 'hooks/useValidateInput';
+import { Logo } from 'components/Logo/Logo';
 
 export const RegisterPage = () => {
   const dispatch = useAppDispatch();
@@ -71,7 +72,8 @@ export const RegisterPage = () => {
       <Card className={styles.card}>
         <form onSubmit={handleSubmit} noValidate>
           <CardContent className={styles.content}>
-            <h3>{language(lng.registerWelcome)}</h3>
+            <Logo className={styles.logo} />
+            <h3 className={styles.heading}>{language(lng.registerWelcome)}</h3>
             <TextField
               value={nicknameValue}
               label={language(lng.nickname)}

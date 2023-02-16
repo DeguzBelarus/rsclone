@@ -1,4 +1,4 @@
-type ClassDefinition = string | undefined | null | [string, boolean];
+type ClassDefinition = string | undefined | null | [string, boolean | undefined];
 
 export default function combineClasses(...classes: ClassDefinition[]): string {
   return classes
