@@ -1,6 +1,5 @@
 import dotenv from 'dotenv';
 import path from 'path';
-import fs from 'fs';
 import express, { Express, Request, Response } from 'express';
 import { IClientToServerEvents, IInterServerEvents, IServerToClientEvents, ISocketData, UserOnlineData } from './types/types'
 import { createServer } from 'http';
@@ -45,9 +44,9 @@ io.on("connection", (socket) => {
   socket.on("disconnect", (data) => {
     const disconnectedUser = usersOnline.find((user: UserOnlineData) => user.socketId === socket.id);
     if (disconnectedUser) {
-      usersOnline = usersOnline.filter((user: UserOnlineData) => user.nickname !== disconnectedUser.nickname);
+      usersOnline = usersOnline.filter((user: UserOnlineData) => user.socketId !== socket.id);
       console.log(`user ${disconnectedUser.nickname} is offline`);
-      const userNicknamesOnline = usersOnline.map((user: UserOnlineData) => user.nickname);
+      const userNicknamesOnline = Array.from(new Set(usersOnline.map((user: UserOnlineData) => user.nickname)));
       socket.broadcast.emit("onlineUsersUpdate", userNicknamesOnline);
       console.log(`users online: ${userNicknamesOnline}`);
     } else {
@@ -56,20 +55,17 @@ io.on("connection", (socket) => {
   });
 
   socket.on("userOnline", (onlineUserNickname) => {
-    const isConnectedUserAlreadyAdded = usersOnline.find((user: UserOnlineData) => user.socketId === socket.id);
-    if (!isConnectedUserAlreadyAdded) {
-      usersOnline.push({ socketId: socket.id, nickname: onlineUserNickname })
-      console.log(`user ${onlineUserNickname} is online`);
-      const userNicknamesOnline = usersOnline.map((user: UserOnlineData) => user.nickname);
-      io.emit("onlineUsersUpdate", userNicknamesOnline);
-      console.log(`users online: ${userNicknamesOnline}`);
-    }
+    usersOnline.push({ socketId: socket.id, nickname: onlineUserNickname })
+    console.log(`user ${onlineUserNickname} is online`);
+    const userNicknamesOnline = Array.from(new Set(usersOnline.map((user: UserOnlineData) => user.nickname)));
+    io.emit("onlineUsersUpdate", userNicknamesOnline);
+    console.log(`users online: ${userNicknamesOnline}`);
   })
 
   socket.on("userOffline", (onlineUserNickname) => {
-    usersOnline = usersOnline.filter((user: UserOnlineData) => user.nickname !== onlineUserNickname);
+    usersOnline = usersOnline.filter((user: UserOnlineData) => user.socketId !== socket.id);
     console.log(`user ${onlineUserNickname} is offline`);
-    const userNicknamesOnline = usersOnline.map((user: UserOnlineData) => user.nickname);
+    const userNicknamesOnline = Array.from(new Set(usersOnline.map((user: UserOnlineData) => user.nickname)));
     socket.broadcast.emit("onlineUsersUpdate", userNicknamesOnline);
     console.log(`users online: ${userNicknamesOnline}`);
   })

@@ -48,6 +48,8 @@ import {
   IGetDialogMessagesResponse,
   ISendMessageRequest,
   ISendMessageResponse,
+  IDeleteMessageRequest,
+  IDeleteMessageResponse,
 } from 'types/types';
 import { requestData, requestMethods } from './dataAPI';
 import { setLocalStorageData } from './storage';
@@ -784,6 +786,73 @@ export const sendMessageAsync = createAsyncThunk(
   }
 );
 
+// delete the specified message
+export const deleteMessageAsync = createAsyncThunk(
+  'message/delete',
+  async (
+    data: IDeleteMessageRequest
+  ): Promise<
+    Nullable<IDeleteMessageResponse | IGetOneUserResponse | IGetDialogMessagesResponse>
+  > => {
+    const params = new URLSearchParams();
+    params.set('lang', data.lang);
+
+    const deleteMessageURL = `/api/message/${data.messageId}/delete?${params}`;
+    const deleteMessageResponse: Undefinable<Response> = await requestData(
+      deleteMessageURL,
+      requestMethods.delete,
+      undefined,
+      data.token
+    );
+    if (deleteMessageResponse) {
+      if (!deleteMessageResponse.ok || deleteMessageResponse.status === 204) {
+        const deleteMessageResponseData: IDeleteMessageResponse =
+          await deleteMessageResponse.json();
+        deleteMessageResponseData.statusCode = deleteMessageResponse.status;
+        return deleteMessageResponseData;
+      } else {
+        const params = new URLSearchParams();
+        params.set('lang', data.lang);
+
+        const getOneUserURL = `/api/user/${data.ownerId}?${params}`;
+        const getOneUserResponse: Undefinable<Response> = await requestData(
+          getOneUserURL,
+          requestMethods.get,
+          undefined,
+          data.token
+        );
+
+        const getDialogMessagesURL = `/api/message/${data.ownerId}/${data.recipientId}/?${params}`;
+        const getDialogMessagesResponse: Undefinable<Response> = await requestData(
+          getDialogMessagesURL,
+          requestMethods.get,
+          undefined,
+          data.token
+        );
+        if (getOneUserResponse && getDialogMessagesResponse) {
+          if (!getDialogMessagesResponse.ok) {
+            const getDialogMessagesResponseData: IGetDialogMessagesResponse =
+              await getDialogMessagesResponse.json();
+            return getDialogMessagesResponseData;
+          }
+
+          const deleteMessageResponseData: IDeleteMessageResponse =
+            await deleteMessageResponse.json();
+          const getDialogMessagesResponseData: IGetDialogMessagesResponse =
+            await getDialogMessagesResponse.json();
+
+          const getOneUserResponseData: IGetOneUserResponse = await getOneUserResponse.json();
+          getOneUserResponseData.statusCode = deleteMessageResponse.status;
+          getOneUserResponseData.message = deleteMessageResponseData.message;
+          getOneUserResponseData.messages = getDialogMessagesResponseData.messages;
+          return getOneUserResponseData;
+        }
+      }
+    }
+    return null;
+  }
+);
+
 export const mainSlice = createSlice({
   name: 'main',
   initialState,
@@ -1511,6 +1580,42 @@ export const mainSlice = createSlice({
         }
       })
       .addCase(sendMessageAsync.rejected, (state, { error }) => {
+        state.userRequestStatus = 'failed';
+        console.error('\x1b[40m\x1b[31m\x1b[1m', error.message);
+      })
+
+      // delete the specified message
+      .addCase(deleteMessageAsync.pending, (state) => {
+        state.userRequestStatus = 'loading';
+      })
+      .addCase(deleteMessageAsync.fulfilled, (state, { payload }) => {
+        state.userRequestStatus = 'idle';
+
+        if (payload) {
+          if (payload.statusCode !== 200) {
+            state.alert = {
+              message: payload.message,
+              severity: 'error',
+            };
+          } else {
+            const successDeletingMessageData = payload as IGetOneUserResponse;
+            if (successDeletingMessageData.userData?.userDialogs) {
+              state.dialogs = successDeletingMessageData.userData?.userDialogs;
+            }
+            if (state.currentDialogMessages) {
+              if (successDeletingMessageData.messages) {
+                state.currentDialogMessages = successDeletingMessageData.messages;
+              }
+            }
+
+            state.alert = {
+              message: successDeletingMessageData.message,
+              severity: 'success',
+            };
+          }
+        }
+      })
+      .addCase(deleteMessageAsync.rejected, (state, { error }) => {
         state.userRequestStatus = 'failed';
         console.error('\x1b[40m\x1b[31m\x1b[1m', error.message);
       });

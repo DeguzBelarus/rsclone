@@ -230,6 +230,21 @@ export interface IUpdatePostResponse {
   statusCode?: number;
 }
 
+export interface IDeleteMessageRequest {
+  lang: CurrentLanguageType;
+  messageId: number;
+  ownerId: number;
+  recipientId: number;
+  token: string;
+}
+
+export interface IDeleteMessageResponse {
+  message: string;
+  messageOwnerId: number;
+  messageId: number;
+  statusCode?: number;
+}
+
 export interface IGetAllPostsResponse {
   postsData: Array<IPostModel>;
   message: string;
