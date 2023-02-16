@@ -193,6 +193,62 @@ class MessageController {
       }
     }
   }
+
+  async delete(request: IRequestModified, response: Response, next: NextFunction): Promise<void | Response> {
+    try {
+      const { requesterId } = request;
+      const { id } = request.params;
+      const { lang } = request.query;
+
+      if (!id) {
+        return next(
+          ApiError.badRequest(
+            lang === 'ru' ?
+              "Недостаточно данных для выполнения операции" :
+              "Not enough data to perform the operation"
+          )
+        );
+      }
+
+      if (Message) {
+        const foundMessageForDeleting = await Message.findOne({
+          where: { id: Number(id) },
+        });
+        if (foundMessageForDeleting) {
+          if (requesterId) {
+            if (requesterId !== foundMessageForDeleting.dataValues.userId) {
+              return next(
+                ApiError.forbidden(lang === 'ru' ? "Нет прав" : "No rights"));
+            }
+          } else {
+            return next(
+              ApiError.forbidden(lang === 'ru' ? "Нет прав" : "No rights"));
+          }
+
+          await Message.destroy({ where: { id: Number(id) } });
+
+          return response.json({
+            messageOwnerId: foundMessageForDeleting.dataValues.userId,
+            messageId: foundMessageForDeleting.dataValues.id,
+            message: lang === 'ru' ?
+              "Сообщение удалено!" :
+              "The message has been deleted!",
+          });
+        }
+      } else {
+        return response.status(204).json({
+          message:
+            lang === "ru"
+              ? "Указанное сообщение не найдено"
+              : "The specified message was not found",
+        });
+      }
+    } catch (exception: unknown) {
+      if (exception instanceof Error) {
+        next(ApiError.badRequest(exception.message));
+      }
+    }
+  }
 };
 
 export const messageController = new MessageController();
