@@ -14,12 +14,14 @@ import {
 } from '@mui/material';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import {
+  getCurrentColorTheme,
   getIsAuthorized,
   getUserId,
   getUserNickname,
   getUserRole,
   setAllPosts,
   setAvatarSrc,
+  setCurrentColorTheme,
   setGuestUserData,
   setIsAuthorized,
   setIsLoginNotificationSent,
@@ -48,7 +50,6 @@ import {
   Dns as PostIcon,
   PostAdd,
 } from '@mui/icons-material';
-import { blue, amber } from '@mui/material/colors';
 import { Link, useNavigate } from 'react-router-dom';
 import useLanguage from 'hooks/useLanguage';
 import { lng } from 'hooks/useLanguage/types';
@@ -61,6 +62,8 @@ import { HeaderSearch } from 'components/HeaderSearch/HeaderSearch';
 import combineClasses from 'lib/combineClasses';
 import { EditPostModal } from 'components/EditPostModal/EditPostModal';
 import { Logo } from 'components/Logo/Logo';
+import DarkModeIcon from '@mui/icons-material/Brightness4';
+import LightModeIcon from '@mui/icons-material/Brightness7';
 
 interface Props {
   socket: Socket<DefaultEventsMap, DefaultEventsMap>;
@@ -76,9 +79,10 @@ export const Header: FC<Props> = ({ socket }) => {
   const userRole = useAppSelector(getUserRole);
   const userId = useAppSelector(getUserId);
   const dispatch = useAppDispatch();
+  const currentTheme = useAppSelector(getCurrentColorTheme);
   const navigate = useNavigate();
   const language = useLanguage();
-  const theme = useTheme();
+  const { palette } = useTheme();
   const role = isAuthorized ? userRole : undefined;
 
   const handleUserLogout = () => {
@@ -109,6 +113,10 @@ export const Header: FC<Props> = ({ socket }) => {
   const handleAddPost = () => setNewPostModalOpen(true);
 
   const handlePosts = () => navigate('/posts');
+
+  const handleDarkMode = () => {
+    dispatch(setCurrentColorTheme(currentTheme === 'light' ? 'dark' : 'light'));
+  };
 
   const authorizedMenu = [
     <MenuItem key="1" sx={{ display: { sm: 'none' }, cursor: 'default', pointerEvents: 'none' }}>
@@ -181,18 +189,23 @@ export const Header: FC<Props> = ({ socket }) => {
         [styles.authorized, isAuthorized]
       )}
       sx={{
-        backgroundColor: searchFocused ? theme.palette.primary.dark : undefined,
+        color: searchFocused ? palette.secondary.contrastText : undefined,
+        backgroundColor: searchFocused ? palette.secondary.dark : undefined,
         transition: 'background-color 0.5s linear',
       }}
     >
       <Toolbar className={styles.toolbar}>
         <Link to={userId === null ? '/' : `user/${userId}`}>
-          <Logo />
+          <Logo responsive />
         </Link>
-        {/* <h1 className={styles.logo}>
-        </h1> */}
         {isAuthorized && <HeaderSearch onFocusChange={(focused) => setSearchFocused(focused)} />}
         <LanguageSwitch className={styles.language} />
+
+        <Tooltip title={language(currentTheme === 'dark' ? lng.lightMode : lng.darkMode)}>
+          <IconButton className={styles.darkMode} color="inherit" onClick={handleDarkMode}>
+            {currentTheme === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
+          </IconButton>
+        </Tooltip>
 
         {isAuthorized && (
           <>
@@ -229,12 +242,12 @@ export const Header: FC<Props> = ({ socket }) => {
           onClick={(event) => setUserMenuAnchor(event.currentTarget)}
           sx={{
             display: 'block',
-            bgcolor: role === USER_ROLE_ADMIN ? amber[700] : undefined,
-            color: blue[50],
+            bgcolor: role === USER_ROLE_ADMIN ? palette.warning.main : undefined,
+            color: palette.warning.contrastText,
             borderRadius: { xs: '50%', sm: '2em' },
             padding: '6px',
             '&:hover': {
-              bgcolor: role === USER_ROLE_ADMIN ? amber[800] : undefined,
+              bgcolor: role === USER_ROLE_ADMIN ? palette.warning.dark : undefined,
             },
           }}
         >

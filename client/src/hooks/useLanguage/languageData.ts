@@ -22,6 +22,8 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.registerError]: 'Regisration error. Try again later!',
 
     [lng.languageSelect]: 'App language',
+    [lng.darkMode]: 'Dark mode',
+    [lng.lightMode]: 'Light mode',
     [lng.userMessages]: 'Messages',
     [lng.userPosts]: 'All Posts',
     [lng.userAddPost]: 'Create new post',
@@ -111,6 +113,8 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.recordingAccessing]: 'Accessing devices...',
     [lng.recordingVideo]: 'Record video',
     [lng.recordingAudio]: 'Record audio',
+
+    [lng.loadingMsg]: 'Loading...',
   },
 
   ru: {
@@ -134,6 +138,9 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.registerError]: 'Ошибка при регистрации. Повторите позже!',
 
     [lng.languageSelect]: 'Язык приложения',
+    [lng.darkMode]: 'Темная тема',
+    [lng.lightMode]: 'Светлая тема',
+
     [lng.userMessages]: 'Сообщения',
     [lng.userPosts]: 'Все посты',
     [lng.userAddPost]: 'Добавить пост',
@@ -224,6 +231,8 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.recordingAccessing]: 'Идет доступ к устройствам...',
     [lng.recordingVideo]: 'Записать видео',
     [lng.recordingAudio]: 'Записать аудио',
+
+    [lng.loadingMsg]: 'Загрузка...',
   },
 };
 

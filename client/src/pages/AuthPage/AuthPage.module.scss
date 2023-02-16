@@ -11,6 +11,13 @@
   .content {
     display: flex;
     flex-direction: column;
-    gap: 2em;
+    gap: 1em;
+
+    .logo, .heading {
+      align-self: center;
+    }
+    .heading {
+      margin-bottom: 2rem;
+    }
   }
 }

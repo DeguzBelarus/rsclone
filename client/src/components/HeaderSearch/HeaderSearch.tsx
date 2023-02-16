@@ -24,7 +24,7 @@ export const HeaderSearch = ({ onFocusChange }: HeaderSearchProps) => {
   const [value, setValue] = useState<IFoundUserData | null>(null);
   const [inputValue, setInputValue] = useState('');
   const [freeSolo, setFreeSolo] = useState(true);
-  const theme = useTheme();
+  const { palette } = useTheme();
   const language = useLanguage();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -80,9 +80,9 @@ export const HeaderSearch = ({ onFocusChange }: HeaderSearchProps) => {
         component="label"
         htmlFor={SEARCH_ID}
         sx={{
-          backgroundColor: alpha(theme.palette.common.white, 0.15),
+          backgroundColor: alpha(palette.common.white, 0.15),
           '&:hover': {
-            backgroundColor: alpha(theme.palette.common.white, 0.25),
+            backgroundColor: alpha(palette.common.white, 0.25),
           },
         }}
       >
@@ -119,7 +119,7 @@ export const HeaderSearch = ({ onFocusChange }: HeaderSearchProps) => {
                 {...rest}
                 className={styles.input}
                 placeholder={language(lng.searchPlaceholder)}
-                sx={{ color: theme.palette.common.white }}
+                sx={{ color: inputFocus ? palette.secondary.contrastText : 'inherit' }}
                 onFocus={() => handleInputFocus(true)}
                 onBlur={() => handleInputFocus(false)}
               />

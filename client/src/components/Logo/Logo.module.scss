@@ -2,7 +2,6 @@
 .logo {
   @include flex-line-start-vertical-center;
   gap: 0.5rem;
-  margin-right: auto;
 
   .logo_text {
     font-size: 1rem;
@@ -10,6 +9,9 @@
     font-weight: normal;
     text-transform: uppercase;
     letter-spacing: 0.1em;
+    .rs {
+      font-weight: 600;
+    }
   }
   .logo_img {
     background-image: url('../../assets/network.png');
@@ -17,9 +19,12 @@
     width: 2.5em;
     background-size: cover;
   }
-  @media screen and (max-width: $mobile-breakpoint) {
-    .logo_text {
-      display: none;
+
+  &.responsive {
+    @media screen and (max-width: $mobile-breakpoint) {
+      .logo_text {
+        display: none;
+      }
     }
   }
 }

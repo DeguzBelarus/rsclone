@@ -21,6 +21,8 @@ export enum lng {
   registerError,
 
   languageSelect,
+  darkMode,
+  lightMode,
   userMessages,
   userPosts,
   userAddPost,
@@ -110,6 +112,8 @@ export enum lng {
   recordingAccessing,
   recordingVideo,
   recordingAudio,
+
+  loadingMsg,
 }
 
 export type LangaugeData = {

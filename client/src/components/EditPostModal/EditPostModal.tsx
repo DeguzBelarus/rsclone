@@ -162,6 +162,7 @@ export const EditPostModal = ({
     <Dialog
       className={styles.dialog}
       open={open}
+      disableScrollLock
       scroll="paper"
       onClose={(_, reason) => {
         if (reason === 'escapeKeyDown') handleClose();

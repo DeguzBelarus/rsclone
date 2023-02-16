@@ -19,11 +19,6 @@ html {
   position: relative;
 }
 
-footer {
-  position: fixed;
-  bottom: 0;
-}
-
 main {
   position: relative;
   width: 100%;
@@ -35,6 +30,7 @@ main {
   grid-template-rows: 1fr auto;
   overflow-y: auto;
   overflow-x: hidden;
+  transition: background-color 0.5s linear;
 
   & > div {
     min-width: 100%;

@@ -1,15 +1,17 @@
 @import "../../styles/variables";
 
-footer {
+.footer {
   width: 100%;
   height: var(--footer-height);
   padding: 0.5rem 1.5rem;
   @include flex-line-spacebetween-vertical-center;
   @include user-select-none;
-  background-color: #1976d2;
-  color: #fff;
   font-size: clamp(0.6rem, 4vw, 0.9rem);
   gap: 1rem;
+  z-index: 2000;
+  position: fixed;
+  bottom: 0;
+  transition: background-color 0.5s linear;
 
   a {
     opacity: 0.8;
@@ -22,7 +24,7 @@ footer {
     opacity: 0.8;
   }
 
-  .rsschool-footer-link {
+  .rssLink {
     height: 1.2em;
     width: 3.2em;
     margin-left: auto;
@@ -33,7 +35,7 @@ footer {
   }
 
   @media screen and (max-width: $mobile-breakpoint) {
-    .last-name {
+    .lastName {
       display: none;
     }
   }

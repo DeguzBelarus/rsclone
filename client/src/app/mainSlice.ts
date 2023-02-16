@@ -107,7 +107,7 @@ const initialState: MainState = {
   foundUsers: null,
   guestUserData: null,
   currentLanguage: 'en',
-  currentColorTheme: 'white',
+  currentColorTheme: 'light',
   usersOnline: [],
   isLoginNotificationSent: false,
   alert: null,
@@ -918,6 +918,7 @@ export const mainSlice = createSlice({
       { payload }: PayloadAction<CurrentColorTheme>
     ) {
       state.currentColorTheme = payload;
+      setLocalStorageData({ currentTheme: payload });
     },
     setGuestUserData(
       state: WritableDraft<MainState>,

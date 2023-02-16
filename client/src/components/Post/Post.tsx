@@ -4,7 +4,15 @@ import {
   Link as CopyLinkIcon,
   Launch as OpenIcon,
 } from '@mui/icons-material';
-import { Card, CardActions, CardContent, IconButton, Tooltip, useTheme } from '@mui/material';
+import {
+  alpha,
+  Card,
+  CardActions,
+  CardContent,
+  IconButton,
+  Tooltip,
+  useTheme,
+} from '@mui/material';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import {
   deletePostAsync,
@@ -85,7 +93,8 @@ export const Post = ({ data, single, ownHighlight, onDelete, onEdit }: PostProps
     <Card
       className={styles.post}
       style={{
-        backgroundColor: ownHighlight && isOwnPost ? theme.palette.grey[100] : undefined,
+        backgroundColor:
+          ownHighlight && isOwnPost ? alpha(theme.palette.info.main, 0.1) : undefined,
       }}
     >
       <CardContent sx={{ padding: '0' }}>
