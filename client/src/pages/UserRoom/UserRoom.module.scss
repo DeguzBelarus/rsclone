@@ -17,6 +17,12 @@
       z-index: 1;
     }
 
+    .message {
+      position: absolute;
+      align-self: flex-end;
+      z-index: 1;
+    }
+
     .info {
       display: flex;
       flex-direction: column;

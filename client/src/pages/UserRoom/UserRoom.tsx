@@ -33,6 +33,7 @@ import useLanguage from 'hooks/useLanguage';
 import { Chip, ClickAwayListener, Tooltip } from '@mui/material';
 import FaceIcon from '@mui/icons-material/Face';
 import DotIcon from '@mui/icons-material/FiberManualRecord';
+import MessageIcon from '@mui/icons-material/QuestionAnswerRounded';
 import Avatar from 'components/Avatar';
 import { lng } from 'hooks/useLanguage/types';
 import { FabButton } from 'components/FabButton/FabButton';
@@ -86,6 +87,11 @@ export const UserRoom: FC<Props> = ({ socket }) => {
       );
     return users;
   }, [usersOnline]);
+
+  const handleStartChat = () => {
+    if (!guestUserData) return;
+    console.log(guestUserData);
+  };
 
   useEffect(() => {
     if (!id || (id && Number(id) === userId)) {
@@ -155,6 +161,17 @@ export const UserRoom: FC<Props> = ({ socket }) => {
               />
             </Tooltip>
           </ClickAwayListener>
+        )}
+        {!isOwnPage && (
+          <Tooltip title="Write message">
+            <Chip
+              className={styles.message}
+              color="primary"
+              label="chat"
+              icon={<MessageIcon />}
+              onClick={handleStartChat}
+            />
+          </Tooltip>
         )}
         <div className={styles.info}>
           <Avatar size="min(40vw, 20rem)" user={id || undefined} avatarSrc={avatar || undefined} />
