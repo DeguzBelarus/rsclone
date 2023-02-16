@@ -26,6 +26,7 @@ import {
   getCurrentLanguage,
   getToken,
   getUserId,
+  getUserNickname,
   updatePostAsync,
 } from 'app/mainSlice';
 import { IUpdatePostRequest } from '../../types/types';
@@ -70,6 +71,7 @@ export const EditPostModal = ({
   const lang = useAppSelector(getCurrentLanguage);
   const token = useAppSelector(getToken);
   const userId = useAppSelector(getUserId);
+  const userNickname = useAppSelector(getUserId);
 
   const validateTitle = useValidateInput(
     POST_TITLE_PATTERN,
@@ -100,6 +102,7 @@ export const EditPostModal = ({
     if (mediaValue) requestData.append('media', mediaValue);
 
     const result = await dispatch(createPostAsync({ ownId, token, requestData }));
+    socket.emit('userAddPost', { userNickname, userId });
     return result && result.meta.requestStatus === 'fulfilled';
   };
 

@@ -33,6 +33,7 @@ if (process.env.NODE_ENV === "production") {
 }
 
 let usersOnline: Array<UserOnlineData> = [];
+// connection and disconnection socket events
 io.on("connection", (socket) => {
   console.log(`New websocket connection: socket ${socket.id}`);
   console.log(
@@ -54,6 +55,7 @@ io.on("connection", (socket) => {
     }
   });
 
+  // login/logout/self-deletion user events
   socket.on("userOnline", (onlineUserNickname) => {
     usersOnline.push({ socketId: socket.id, nickname: onlineUserNickname })
     console.log(`user ${onlineUserNickname} is online`);
@@ -70,6 +72,7 @@ io.on("connection", (socket) => {
     console.log(`users online: ${userNicknamesOnline}`);
   })
 
+  // nickname change user event
   socket.on("nicknameUpdated", (userNickname) => {
     const updatingNicknameUser = usersOnline.find((user: UserOnlineData) => user.socketId === socket.id);
     if (updatingNicknameUser) {
@@ -84,6 +87,12 @@ io.on("connection", (socket) => {
       io.emit("onlineUsersUpdate", userNicknamesOnline);
       console.log(`users online: ${userNicknamesOnline}`);
     }
+  })
+
+  // posts socket events
+  // creation post socket event
+  socket.on("userAddPost", (userData) => {
+    socket.broadcast.emit("userAddedPost", userData)
   })
 });
 
