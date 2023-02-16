@@ -1,10 +1,22 @@
+import { useTheme } from '@mui/material';
+import { useAppSelector } from 'app/hooks';
+import { getCurrentColorTheme } from 'app/mainSlice';
 import React from 'react';
 
-import './Footer.scss';
+import styles from './Footer.module.scss';
 
 export const Footer = () => {
+  const mode = useAppSelector(getCurrentColorTheme);
+  const { palette } = useTheme();
+
   return (
-    <footer>
+    <footer
+      className={styles.footer}
+      style={{
+        color: mode === 'dark' ? palette.text.primary : palette.primary.contrastText,
+        backgroundColor: mode === 'dark' ? palette.background.paper : palette.primary.main,
+      }}
+    >
       <a
         href="https://github.com/DeguzBelarus"
         target={'_blank'}
@@ -12,7 +24,7 @@ export const Footer = () => {
         title="DeguzBelarus"
         rel="noreferrer"
       >
-        Anton <span className="last-name"> Dektyarev</span>
+        Anton <span className={styles.lastName}> Dektyarev</span>
       </a>
       <a
         href="https://github.com/shalick"
@@ -21,7 +33,7 @@ export const Footer = () => {
         title="Shalick"
         rel="noreferrer"
       >
-        Aliaksandr <span className="last-name">Shabanovich</span>
+        Aliaksandr <span className={styles.lastName}>Shabanovich</span>
       </a>
       <a
         href="https://github.com/elquespera"
@@ -30,10 +42,10 @@ export const Footer = () => {
         title="Elquespera"
         rel="noreferrer"
       >
-        Pavel <span className="last-name">Grinkevich</span>
+        Pavel <span className={styles.lastName}>Grinkevich</span>
       </a>
       <a
-        className="rsschool-footer-link"
+        className={styles.rssLink}
         href="https://rs.school/js/"
         target="_blank"
         title="RS School"
