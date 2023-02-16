@@ -26,7 +26,6 @@ import {
   getCurrentLanguage,
   getToken,
   getUserId,
-  getUserNickname,
   updatePostAsync,
 } from 'app/mainSlice';
 import { IUpdatePostRequest } from '../../types/types';

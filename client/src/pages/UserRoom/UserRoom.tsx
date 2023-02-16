@@ -90,7 +90,7 @@ export const UserRoom: FC<Props> = ({ socket }) => {
         language(lng.onlineAndMore).replace('%', String(usersOnline.length - SHOW_MAX_USERS_ONLINE))
       );
     return users;
-  }, [usersOnline]);
+  }, [usersOnline, language]);
 
   const handleStartChat = () => {
     if (!guestUserData) return;

@@ -23,7 +23,6 @@ import {
   getUserId,
   getUserRole,
   setAlert,
-  getUserNickname,
 } from 'app/mainSlice';
 import { ConfirmModal } from 'components/ConfirmModal/ConfirmModal';
 import { EditPostModal } from 'components/EditPostModal/EditPostModal';

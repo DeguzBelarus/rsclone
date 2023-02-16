@@ -117,6 +117,9 @@ export enum lng {
   messagesNoneMsg,
 
   loadingMsg,
+
+  chats,
+  chatWith,
 }
 
 export type LangaugeData = {

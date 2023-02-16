@@ -1,16 +1,18 @@
-import { alpha, useTheme } from '@mui/material';
+import { alpha, Collapse, useTheme } from '@mui/material';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import {
   getCurrentDialogMessages,
   getCurrentLanguage,
   getDialogMessagesAsync,
-  getMessages,
   getToken,
   getUserId,
   getUserNickname,
   sendMessageAsync,
 } from 'app/mainSlice';
+import Avatar from 'components/Avatar';
 import { CommentInput } from 'components/CommentInput/CommentInput';
+import { PostDate } from 'components/PostDate/PostDate';
+import combineClasses from 'lib/combineClasses';
 import React, { useEffect } from 'react';
 import { IGetDialogMessagesRequest, ISendMessageRequest } from 'types/types';
 import styles from './ChatWindow.module.scss';
@@ -18,19 +20,10 @@ import styles from './ChatWindow.module.scss';
 interface ChatWindowProps {
   recipientId?: number;
   recipientNickname?: string;
-  onEdit?: () => void;
+  collapsed?: boolean;
 }
 
-const sampleMessages = [
-  'Alice: Hey Bob, how are you doing?',
-  "Bob: Hey Alice, I'm doing pretty well. How about you?",
-  "Alice: I'm good too, thanks. Did you finish that project we were working on?",
-  'Bob: Not yet, but I should have it done by the end of the day.',
-  'Alice: Great! Let me know if you need any help with it.',
-  'Bob: Will do. Thanks!',
-];
-
-export const ChatWindow = ({ recipientId, recipientNickname }: ChatWindowProps) => {
+export const ChatWindow = ({ recipientId, recipientNickname, collapsed }: ChatWindowProps) => {
   const { palette } = useTheme();
   const dispatch = useAppDispatch();
   const lang = useAppSelector(getCurrentLanguage);
@@ -64,22 +57,39 @@ export const ChatWindow = ({ recipientId, recipientNickname }: ChatWindowProps) 
       interlocutorId: recipientId,
     };
     dispatch(getDialogMessagesAsync(request));
-  }, [recipientId, authorId]);
+  }, [recipientId, authorId, dispatch, lang, token]);
 
   return (
-    <div className={styles.wrapper}>
+    <div className={combineClasses(styles.wrapper, [styles.collapsed, collapsed])}>
       <div className={styles.messages}>
         {messages && (
           <ul className={styles.messages}>
-            {messages.map(({ id, messageText }) => (
-              <li
-                key={id}
-                className={styles.message}
-                style={{ backgroundColor: alpha(palette.primary.main, 0.15) }}
-              >
-                {messageText}
-              </li>
-            ))}
+            {messages.map(({ id, messageText, userId, authorNickname, authorAvatarSrc, date }) => {
+              const self = userId === authorId;
+              return (
+                <li
+                  key={id}
+                  className={combineClasses(styles.message, [styles.self, self])}
+                  style={{
+                    backgroundColor: alpha(
+                      self ? palette.primary.main : palette.secondary.main,
+                      0.1
+                    ),
+                  }}
+                >
+                  <Avatar user={userId} avatarSrc={authorAvatarSrc} />
+                  <div className={styles.text}>
+                    <div className={styles.name}>
+                      <span className={styles.nickname}> {authorNickname}</span>
+                      <span className={styles.date}>
+                        <PostDate date={date} />
+                      </span>
+                    </div>
+                    <div className={styles.messageBody}>{messageText}</div>
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         )}
       </div>

@@ -9,9 +9,11 @@ interface AvatarProps {
   size?: number | string;
   user?: number;
   avatarSrc?: string | null;
+  className?: string;
+  onClick?: () => void;
 }
 
-export default function Avatar({ size = 32, user, avatarSrc }: AvatarProps) {
+export default function Avatar({ size = 32, user, avatarSrc, className, onClick }: AvatarProps) {
   const isAuthorized = useAppSelector(getIsAuthorized);
   const ownAvatarSrc = useAppSelector(getAvatarSrc);
   const userId = useAppSelector(getUserId);
@@ -34,8 +36,10 @@ export default function Avatar({ size = 32, user, avatarSrc }: AvatarProps) {
 
   return (
     <MUIAvatar
+      className={className}
       src={src}
       sx={{ width: size, height: size, bgcolor: purple[50], color: purple[300] }}
+      onClick={onClick}
     >
       {!src && <PersonIcon sx={{ width: '70%', height: '70%' }}></PersonIcon>}
     </MUIAvatar>
