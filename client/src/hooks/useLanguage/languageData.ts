@@ -4,6 +4,7 @@ const LANGUAGE_DATA: LangaugeData = {
   en: {
     [lng.email]: 'Email',
     [lng.emailHint]: 'Please enter a valid email address',
+    [lng.emoji]: 'Emoji',
     [lng.password]: 'Password',
     [lng.passwordHint]: 'Please enter your password',
     [lng.register]: 'Register',
@@ -120,6 +121,7 @@ const LANGUAGE_DATA: LangaugeData = {
   ru: {
     [lng.email]: 'Электронная почта',
     [lng.emailHint]: 'Введите валидный адрес',
+    [lng.emoji]: 'Эмоджи',
     [lng.password]: 'Пароль',
     [lng.passwordHint]: 'Минимальная длина пароля - 8 символов',
     [lng.register]: 'Регистрация',

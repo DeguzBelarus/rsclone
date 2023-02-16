@@ -3,6 +3,7 @@ import { CurrentLanguageType } from 'types/types';
 export enum lng {
   email,
   emailHint,
+  emoji,
   password,
   passwordHint,
   register,
