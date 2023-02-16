@@ -13,6 +13,8 @@ import {
 } from '@mui/material';
 import useLanguage from 'hooks/useLanguage';
 import { lng } from 'hooks/useLanguage/types';
+import { Socket } from 'socket.io-client';
+import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 
 import styles from './EditPostModal.module.scss';
 import useValidateInput from 'hooks/useValidateInput';
@@ -40,6 +42,7 @@ export interface EditPostModalProps {
   postHeading?: string;
   onClose?: () => void;
   onSuccess?: (heading: string, text: string) => void;
+  socket: Socket<DefaultEventsMap, DefaultEventsMap>;
 }
 
 export const EditPostModal = ({
@@ -49,6 +52,7 @@ export const EditPostModal = ({
   postHeading,
   onClose,
   onSuccess,
+  socket,
 }: EditPostModalProps) => {
   const [titleValue, setTitleValue] = useState(postHeading || '');
   const [bodyValue, setBodyValue] = useState(postText || '');

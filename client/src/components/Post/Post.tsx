@@ -4,6 +4,8 @@ import {
   Link as CopyLinkIcon,
   Launch as OpenIcon,
 } from '@mui/icons-material';
+import { Socket } from 'socket.io-client';
+import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import {
   alpha,
   Card,
@@ -42,9 +44,10 @@ interface PostProps {
   ownHighlight?: boolean;
   onDelete?: () => void;
   onEdit?: () => void;
+  socket: Socket<DefaultEventsMap, DefaultEventsMap>;
 }
 
-export const Post = ({ data, single, ownHighlight, onDelete, onEdit }: PostProps) => {
+export const Post = ({ data, single, ownHighlight, onDelete, onEdit, socket }: PostProps) => {
   const language = useLanguage();
   const dispatch = useAppDispatch();
   const token = useAppSelector(getToken);
@@ -160,6 +163,7 @@ export const Post = ({ data, single, ownHighlight, onDelete, onEdit }: PostProps
       <EditPostModal
         open={editPostModalOpen}
         id={id}
+        socket={socket}
         postHeading={heading}
         postText={text}
         onClose={() => setEditPostModalOpen(false)}

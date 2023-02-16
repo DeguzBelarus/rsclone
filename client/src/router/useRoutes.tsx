@@ -29,8 +29,8 @@ export const useRoutes = (socket: Socket<DefaultEventsMap, DefaultEventsMap>) =>
           <Route path="user/:id" element={<UserRoom socket={socket} />} />
           <Route path="user/*" element={<UserRoom socket={socket} />} />
           <Route path="settings" element={<UserSettings socket={socket} />} />
-          <Route path="/posts/" element={<AllPostsPage />} />
-          <Route path="/posts/:id" element={<PostPage />} />
+          <Route path="/posts/" element={<AllPostsPage socket={socket} />} />
+          <Route path="/posts/:id" element={<PostPage socket={socket} />} />
           <Route
             path="*"
             element={userRequestStatus === 'loading' ? <ProcessingPage /> : <Page404 />}
