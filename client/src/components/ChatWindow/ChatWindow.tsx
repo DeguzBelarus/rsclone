@@ -17,7 +17,12 @@ import useLanguage from 'hooks/useLanguage';
 import { lng } from 'hooks/useLanguage/types';
 import combineClasses from 'lib/combineClasses';
 import React, { useEffect } from 'react';
-import { IDeleteMessageRequest, IGetDialogMessagesRequest, ISendMessageRequest } from 'types/types';
+import {
+  IDeleteMessageRequest,
+  IGetDialogMessagesRequest,
+  IMessageModel,
+  ISendMessageRequest,
+} from 'types/types';
 import styles from './ChatWindow.module.scss';
 import DeleteIcon from '@mui/icons-material/DeleteForever';
 
@@ -35,7 +40,7 @@ export const ChatWindow = ({ recipientId, recipientNickname, collapsed }: ChatWi
   const token = useAppSelector(getToken);
   const authorId = useAppSelector(getUserId);
   const authorNickname = useAppSelector(getUserNickname);
-  const messages = useAppSelector(getCurrentDialogMessages);
+  const messages: IMessageModel[] | null = useAppSelector(getCurrentDialogMessages);
 
   const handleSend = (messageText: string) => {
     if (!token || !authorId || !authorNickname || !recipientId || !recipientNickname) return;
@@ -53,14 +58,19 @@ export const ChatWindow = ({ recipientId, recipientNickname, collapsed }: ChatWi
     dispatch(sendMessageAsync(request));
   };
 
-  const handleDelete = (messageId: number) => {
-    // const request: IDeleteMessageRequest = {
-    //   lang,
-    //   token,
-    //   messageId,
-    //   ownerId:
-    // }
-    // dispatch(deleteMessageAsync({}))
+  const handleDelete = async (messageId?: number, ownerId?: number, recipientId?: number) => {
+    if (!token || !messageId || !ownerId || !recipientId) return;
+    const request: IDeleteMessageRequest = {
+      lang,
+      token,
+      messageId,
+      ownerId,
+      recipientId,
+    };
+    const result = await dispatch(deleteMessageAsync(request));
+    if (result.meta.requestStatus === 'fulfilled') {
+      console.log(result);
+    }
   };
 
   useEffect(() => {
@@ -92,13 +102,19 @@ export const ChatWindow = ({ recipientId, recipientNickname, collapsed }: ChatWi
                     ),
                   }}
                 >
-                  <Paper className={styles.delete}>
-                    <Tooltip title={language(lng.postDelete)}>
-                      <IconButton size="small" color="warning">
-                        <DeleteIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                  </Paper>
+                  {self && (
+                    <Paper className={styles.delete}>
+                      <Tooltip title={language(lng.postDelete)}>
+                        <IconButton
+                          size="small"
+                          color="warning"
+                          onClick={() => handleDelete(id, userId, recipientId)}
+                        >
+                          <DeleteIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    </Paper>
+                  )}
                   <Avatar user={userId} avatarSrc={authorAvatarSrc} />
                   <div className={styles.text}>
                     <div className={styles.name}>
