@@ -21,6 +21,8 @@ export enum lng {
   registerError,
 
   languageSelect,
+  darkMode,
+  lightMode,
   userMessages,
   userPosts,
   userAddPost,
