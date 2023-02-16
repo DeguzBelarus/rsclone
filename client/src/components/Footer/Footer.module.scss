@@ -9,6 +9,9 @@
   font-size: clamp(0.6rem, 4vw, 0.9rem);
   gap: 1rem;
   z-index: 2000;
+  position: fixed;
+  bottom: 0;
+  transition: background-color 0.5s linear;
 
   a {
     opacity: 0.8;

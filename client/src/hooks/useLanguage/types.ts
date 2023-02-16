@@ -112,6 +112,8 @@ export enum lng {
   recordingAccessing,
   recordingVideo,
   recordingAudio,
+
+  loadingMsg,
 }
 
 export type LangaugeData = {
