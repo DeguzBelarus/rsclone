@@ -1,0 +1,74 @@
+.wrapper {
+  position: fixed;
+  right: 2rem;
+  bottom: calc(var(--footer-height) + 6rem);
+  display: flex;
+  gap: 2rem;
+
+  .side {
+    display: flex;
+    flex-direction: column;
+    align-self: flex-end;
+    padding: 0.5rem;
+    backdrop-filter: blur(4px);
+    border-radius: 0.5em;
+    gap: 1rem;
+
+    .heading {
+      text-align: center;
+    }
+
+    .people {
+      display: flex;
+      flex-direction: column;
+      gap: 1em;
+      cursor: pointer;
+
+      .avatar {
+        transition: 0.3s;
+      }
+
+      & .active {
+        .avatar {
+         transform: scale(1.2);
+        }
+      }
+
+      .person {
+        position: relative;
+        isolation: isolate;
+        .delete {
+          z-index: 2;
+          position: absolute;
+          top: -0.5em;
+          right: -0.5em;
+        }
+      }
+    }
+  }
+
+
+  .window {
+    display: flex;
+    flex-flow: column;
+    gap: 0.5rem;
+    min-width: 200px;
+    min-height: 280px;
+    max-width: 400px;
+    max-height: calc(min(400px, 70vh));
+    padding: 1rem;
+    border-radius: 0.5rem;
+    transform: scale(0);
+    animation: window-animation 0.3s forwards;
+
+    .heading {
+
+    }
+  }
+}
+
+@keyframes window-animation {
+  to {
+    transform: scale(1)
+  }
+}
