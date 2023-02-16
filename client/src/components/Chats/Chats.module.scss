@@ -1,0 +1,93 @@
+.wrapper {
+  position: fixed;
+  right: clamp(1rem, 4vw, 2rem);
+  bottom: calc(var(--footer-height) + 6rem);
+  display: flex;
+  align-items: flex-end;
+  gap: 0;
+
+  .side {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+
+    .heading {
+      padding: 0.3rem 0.8rem;
+      border-radius: 0.5em;
+      text-align: center;
+      backdrop-filter: blur(4px);
+    }
+
+    .people {
+      display: flex;
+      flex-direction: column;
+      gap: 1em;
+      cursor: pointer;
+
+      .avatar {
+        position: relative;
+        box-shadow: 0 0 10px #bebebe;
+        transition: 0.3s;
+        transform: scale(0.8);
+
+        &::after {
+          content: '';
+          position: absolute;
+          inset: 0;
+        }
+      }
+
+      & .active {
+        .avatar {
+         transform: scale(1.2);
+        }
+      }
+
+      .person {
+        position: relative;
+        isolation: isolate;
+        .delete {
+          z-index: 2;
+          position: absolute;
+          top: -0.8em;
+          right: -0.8em;
+        }
+      }
+    }
+  }
+
+
+  .window {
+    position: relative;
+    display: flex;
+    flex-flow: column;
+    max-width: 400px;
+    max-height: calc(min(800px, 65vh));
+    margin: 0 1rem;    
+    padding: 1rem;
+    border-radius: 0.5rem;
+    transform: scale(0);
+    animation: window-animation 0.3s forwards;
+
+    .heading {
+      text-align: center;
+    }
+
+    .windowButtons {
+      position: absolute;
+      right: 0;
+      top: 0;
+    }
+
+    &.collapsed .collapse {
+      transform: rotate(180deg);
+    }
+  }
+}
+
+@keyframes window-animation {
+  to {
+    transform: scale(1);
+  }
+}

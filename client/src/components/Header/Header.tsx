@@ -16,6 +16,7 @@ import { useAppDispatch, useAppSelector } from 'app/hooks';
 import {
   getCurrentColorTheme,
   getIsAuthorized,
+  getUnreadMessagesCount,
   getUserId,
   getUserNickname,
   getUserRole,
@@ -78,6 +79,7 @@ export const Header: FC<Props> = ({ socket }) => {
   const userName = useAppSelector(getUserNickname);
   const userRole = useAppSelector(getUserRole);
   const userId = useAppSelector(getUserId);
+  const unreadMessagesCount = useAppSelector(getUnreadMessagesCount);
   const dispatch = useAppDispatch();
   const currentTheme = useAppSelector(getCurrentColorTheme);
   const navigate = useNavigate();
@@ -133,7 +135,7 @@ export const Header: FC<Props> = ({ socket }) => {
     <Divider key="2" sx={{ display: { sm: 'none' } }} />,
     <MenuItem key="3" onClick={handleMessages} sx={{ display: { sm: 'none' } }}>
       <ListItemIcon>
-        <Badge badgeContent={4} color="warning">
+        <Badge badgeContent={unreadMessagesCount} color="warning">
           <MessageIcon />
         </Badge>
       </ListItemIcon>
@@ -195,7 +197,7 @@ export const Header: FC<Props> = ({ socket }) => {
       }}
     >
       <Toolbar className={styles.toolbar}>
-        <Link to={userId === null ? '/' : `user/${userId}`}>
+        <Link className={styles.logo} to={userId === null ? '/' : `user/${userId}`}>
           <Logo responsive />
         </Link>
         {isAuthorized && <HeaderSearch onFocusChange={(focused) => setSearchFocused(focused)} />}
@@ -223,11 +225,11 @@ export const Header: FC<Props> = ({ socket }) => {
               </IconButton>
             </Tooltip>
             <Tooltip
-              title={`${language(lng.userMessages)} (4)`}
+              title={`${language(lng.userMessages)} (${unreadMessagesCount})`}
               sx={{ display: { xs: 'none', sm: 'flex' } }}
             >
               <IconButton color="inherit" onClick={handleMessages}>
-                <Badge badgeContent={4} color="warning">
+                <Badge badgeContent={unreadMessagesCount} color="warning">
                   <MessageIcon />
                 </Badge>
               </IconButton>

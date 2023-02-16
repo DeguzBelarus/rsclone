@@ -8,6 +8,7 @@ import useValidateInput from 'hooks/useValidateInput';
 interface CommentInputProps {
   value: string;
   autoFocus?: boolean;
+  placeholder?: string;
   onSubmit?: (value: string) => void;
   onReset?: () => void;
 }
@@ -15,6 +16,7 @@ interface CommentInputProps {
 export const CommentInput = ({
   value: initialValue,
   autoFocus,
+  placeholder,
   onSubmit,
   onReset,
 }: CommentInputProps) => {
@@ -26,7 +28,7 @@ export const CommentInput = ({
   const inputRef = useRef<HTMLInputElement>(null);
 
   const validateInput = useValidateInput(
-    (value) => value.length < 3,
+    (value) => value.trim().length === 0,
     setValue,
     setError,
     setTouched
@@ -41,7 +43,7 @@ export const CommentInput = ({
   const handleSubmit = () => {
     const isValid = touched && validateInput(value);
     if (onSubmit && isValid) {
-      onSubmit(value);
+      onSubmit(value.trim());
       resetInput();
     }
   };
@@ -66,7 +68,7 @@ export const CommentInput = ({
       sx={{ width: '100%' }}
       variant="standard"
       inputRef={inputRef}
-      placeholder={language(lng.commentWrite)}
+      placeholder={placeholder ? placeholder : language(lng.commentWrite)}
       value={value}
       onChange={validateInput}
       onKeyDownCapture={(event) => {

@@ -50,6 +50,7 @@ import {
   ISendMessageResponse,
   IDeleteMessageRequest,
   IDeleteMessageResponse,
+  OpenChats,
 } from 'types/types';
 import { requestData, requestMethods } from './dataAPI';
 import { setLocalStorageData } from './storage';
@@ -82,6 +83,8 @@ interface MainState {
   isLoginNotificationSent: boolean;
   alert: Nullable<AlertMessage>;
   userRequestStatus: RequestStatus;
+  chats: OpenChats;
+  activeChatId: Nullable<number>;
 }
 
 const initialState: MainState = {
@@ -112,6 +115,8 @@ const initialState: MainState = {
   isLoginNotificationSent: false,
   alert: null,
   userRequestStatus: 'idle',
+  chats: [],
+  activeChatId: null,
 };
 
 const userReset = (state: WritableDraft<MainState>) => {
@@ -130,6 +135,8 @@ const userReset = (state: WritableDraft<MainState>) => {
   state.foundUsers = null;
   state.guestUserData = null;
   state.isLoginNotificationSent = false;
+  state.chats = [];
+  state.activeChatId = null;
   setLocalStorageData({ token: undefined });
 };
 
@@ -968,6 +975,12 @@ export const mainSlice = createSlice({
     setUnreadMessagesCount(state: WritableDraft<MainState>, { payload }: PayloadAction<number>) {
       state.unreadMessagesCount = payload;
     },
+    setChats(state: WritableDraft<MainState>, { payload }: PayloadAction<OpenChats>) {
+      state.chats = payload;
+    },
+    setActiveChatId(state: WritableDraft<MainState>, { payload }: PayloadAction<Nullable<number>>) {
+      state.activeChatId = payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -1652,6 +1665,8 @@ export const {
     setCurrentDialog,
     setDialogs,
     setUnreadMessagesCount,
+    setChats,
+    setActiveChatId,
   },
 } = mainSlice;
 
@@ -1687,5 +1702,7 @@ export const getCurrentDialogMessages = ({ main: { currentDialogMessages } }: Ro
   currentDialogMessages;
 export const getUnreadMessagesCount = ({ main: { unreadMessagesCount } }: RootState) =>
   unreadMessagesCount;
+export const getChats = ({ main: { chats } }: RootState) => chats;
+export const getActiveChatId = ({ main: { activeChatId } }: RootState) => activeChatId;
 
 export const { reducer } = mainSlice;

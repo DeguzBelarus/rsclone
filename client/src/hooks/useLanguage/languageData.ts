@@ -115,6 +115,13 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.recordingAudio]: 'Record audio',
 
     [lng.loadingMsg]: 'Loading...',
+
+    [lng.messagesHeading]: 'Conversations',
+    [lng.messagesNoneMsg]: 'Conversations are empty.',
+
+    [lng.chats]: 'Chats',
+    [lng.chatWith]: 'Chat with',
+    [lng.chatsInputEmpty]: 'Message',
   },
 
   ru: {
@@ -233,6 +240,12 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.recordingAudio]: 'Записать аудио',
 
     [lng.loadingMsg]: 'Загрузка...',
+
+    [lng.messagesHeading]: 'Сообщения',
+    [lng.messagesNoneMsg]: 'Сообщения не найдены. Добавьте первое!',
+    [lng.chats]: 'Чаты',
+    [lng.chatWith]: 'Чат с',
+    [lng.chatsInputEmpty]: 'Сообщение',
   },
 };
 

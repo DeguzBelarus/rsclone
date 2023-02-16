@@ -26,6 +26,9 @@ import {
   getUserFirstName,
   getUserLastName,
   getUserRequestStatus,
+  setChats,
+  getChats,
+  setActiveChatId,
 } from 'app/mainSlice';
 import { IGetOneUserRequestData, Nullable, RoleType } from 'types/types';
 import styles from './UserRoom.module.scss';
@@ -33,6 +36,7 @@ import useLanguage from 'hooks/useLanguage';
 import { Chip, ClickAwayListener, Tooltip } from '@mui/material';
 import FaceIcon from '@mui/icons-material/Face';
 import DotIcon from '@mui/icons-material/FiberManualRecord';
+import MessageIcon from '@mui/icons-material/QuestionAnswerRounded';
 import Avatar from 'components/Avatar';
 import { lng } from 'hooks/useLanguage/types';
 import { FabButton } from 'components/FabButton/FabButton';
@@ -75,6 +79,7 @@ export const UserRoom: FC<Props> = ({ socket }) => {
   const usersOnline = useAppSelector(getUsersOnline);
   const posts = useAppSelector(getPosts);
   const userRequestStatus = useAppSelector(getUserRequestStatus);
+  const chats = useAppSelector(getChats);
 
   const isUserFound = isAuthorized && (isOwnPage || (id && guestUserData));
 
@@ -85,7 +90,17 @@ export const UserRoom: FC<Props> = ({ socket }) => {
         language(lng.onlineAndMore).replace('%', String(usersOnline.length - SHOW_MAX_USERS_ONLINE))
       );
     return users;
-  }, [usersOnline]);
+  }, [usersOnline, language]);
+
+  const handleStartChat = () => {
+    if (!guestUserData) return;
+    const { id: partnerId, nickname: partnerNickname, avatar: partnerAvatar } = guestUserData;
+    const addedChatIndex = chats.findIndex((chat) => partnerId === chat.partnerId);
+    if (addedChatIndex < 0) {
+      dispatch(setChats([...chats, { partnerId, partnerAvatar, partnerNickname }]));
+    }
+    dispatch(setActiveChatId(partnerId));
+  };
 
   useEffect(() => {
     if (!id || (id && Number(id) === userId)) {
@@ -133,27 +148,40 @@ export const UserRoom: FC<Props> = ({ socket }) => {
   ) => {
     return (
       <div className={styles.user}>
-        <ClickAwayListener onClickAway={() => setUsersOnlineOpen(false)}>
-          <Tooltip
-            arrow
-            open={usersOnlineOpen}
-            title={
-              <ul>
-                {usersOnlineToDisplay.map((nickname) => (
-                  <li key={nickname}>{nickname}</li>
-                ))}
-              </ul>
-            }
-          >
+        {usersOnline.length > 0 && (
+          <ClickAwayListener onClickAway={() => setUsersOnlineOpen(false)}>
+            <Tooltip
+              arrow
+              open={usersOnlineOpen}
+              title={
+                <ul>
+                  {usersOnlineToDisplay.map((nickname) => (
+                    <li key={nickname}>{nickname}</li>
+                  ))}
+                </ul>
+              }
+            >
+              <Chip
+                className={styles.online}
+                color="success"
+                icon={<FaceIcon />}
+                label={`online: ${usersOnline.length}`}
+                onClick={() => setUsersOnlineOpen((current) => !current)}
+              />
+            </Tooltip>
+          </ClickAwayListener>
+        )}
+        {!isOwnPage && (
+          <Tooltip title="Write message">
             <Chip
-              className={styles.online}
-              color="success"
-              icon={<FaceIcon />}
-              label={`online: ${usersOnline.length}`}
-              onClick={() => setUsersOnlineOpen((current) => !current)}
+              className={styles.message}
+              color="primary"
+              label="chat"
+              icon={<MessageIcon />}
+              onClick={handleStartChat}
             />
           </Tooltip>
-        </ClickAwayListener>
+        )}
         <div className={styles.info}>
           <Avatar size="min(40vw, 20rem)" user={id || undefined} avatarSrc={avatar || undefined} />
           <span className={styles.nickname}>

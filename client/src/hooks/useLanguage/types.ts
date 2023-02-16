@@ -113,7 +113,14 @@ export enum lng {
   recordingVideo,
   recordingAudio,
 
+  messagesHeading,
+  messagesNoneMsg,
+
   loadingMsg,
+
+  chats,
+  chatWith,
+  chatsInputEmpty,
 }
 
 export type LangaugeData = {
