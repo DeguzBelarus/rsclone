@@ -133,27 +133,29 @@ export const UserRoom: FC<Props> = ({ socket }) => {
   ) => {
     return (
       <div className={styles.user}>
-        <ClickAwayListener onClickAway={() => setUsersOnlineOpen(false)}>
-          <Tooltip
-            arrow
-            open={usersOnlineOpen}
-            title={
-              <ul>
-                {usersOnlineToDisplay.map((nickname) => (
-                  <li key={nickname}>{nickname}</li>
-                ))}
-              </ul>
-            }
-          >
-            <Chip
-              className={styles.online}
-              color="success"
-              icon={<FaceIcon />}
-              label={`online: ${usersOnline.length}`}
-              onClick={() => setUsersOnlineOpen((current) => !current)}
-            />
-          </Tooltip>
-        </ClickAwayListener>
+        {usersOnline.length > 0 && (
+          <ClickAwayListener onClickAway={() => setUsersOnlineOpen(false)}>
+            <Tooltip
+              arrow
+              open={usersOnlineOpen}
+              title={
+                <ul>
+                  {usersOnlineToDisplay.map((nickname) => (
+                    <li key={nickname}>{nickname}</li>
+                  ))}
+                </ul>
+              }
+            >
+              <Chip
+                className={styles.online}
+                color="success"
+                icon={<FaceIcon />}
+                label={`online: ${usersOnline.length}`}
+                onClick={() => setUsersOnlineOpen((current) => !current)}
+              />
+            </Tooltip>
+          </ClickAwayListener>
+        )}
         <div className={styles.info}>
           <Avatar size="min(40vw, 20rem)" user={id || undefined} avatarSrc={avatar || undefined} />
           <span className={styles.nickname}>
