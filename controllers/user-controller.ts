@@ -427,7 +427,7 @@ class UserController {
 
   async delete(request: IRequestModified, response: Response, next: NextFunction): Promise<void | Response> {
     try {
-      if (User && Post && Comment) {
+      if (User && Post && Comment && Message) {
         const { id } = request.params;
         const { lang } = request.query;
         const { requesterId, role } = request;
@@ -445,6 +445,19 @@ class UserController {
                   ? "Админу не разрешено удаление другого админа"
                   : "Admin is not allowed to delete another admin"));
             }
+          }
+
+          const foundMessagesForDeleting = await Message.findOne({
+            where: {
+              userId: deletedUser.dataValues.id,
+            }
+          })
+          if (foundMessagesForDeleting) {
+            await Message.destroy({
+              where: {
+                userId: deletedUser.dataValues.id,
+              }
+            });
           }
 
           const foundCommentsForDeleting = await Comment.findOne({
