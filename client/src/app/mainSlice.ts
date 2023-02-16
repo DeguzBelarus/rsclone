@@ -107,7 +107,7 @@ const initialState: MainState = {
   foundUsers: null,
   guestUserData: null,
   currentLanguage: 'en',
-  currentColorTheme: 'white',
+  currentColorTheme: 'light',
   usersOnline: [],
   isLoginNotificationSent: false,
   alert: null,

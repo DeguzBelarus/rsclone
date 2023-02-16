@@ -4,7 +4,7 @@ export type Undefinable<T> = T | undefined;
 export type RequestStatus = 'idle' | 'loading' | 'failed';
 export type VoidMethod = () => void;
 export type CurrentLanguageType = 'en' | 'ru';
-export type CurrentColorTheme = 'white' | 'dark';
+export type CurrentColorTheme = 'light' | 'dark';
 export type RoleType = 'USER' | 'ADMIN';
 export type UpdateUserType = 'info' | 'avatar' | 'role';
 

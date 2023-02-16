@@ -117,7 +117,7 @@ export const Header: FC<Props> = ({ socket }) => {
   const handlePosts = () => navigate('/posts');
 
   const handleDarkMode = () => {
-    dispatch(setCurrentColorTheme(currentTheme === 'white' ? 'dark' : 'white'));
+    dispatch(setCurrentColorTheme(currentTheme === 'light' ? 'dark' : 'light'));
   };
 
   const authorizedMenu = [

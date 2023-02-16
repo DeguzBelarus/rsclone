@@ -9,11 +9,13 @@ import {
   setCurrentLanguage,
   setUsersOnline,
   getCurrentLanguage,
+  getCurrentColorTheme,
 } from 'app/mainSlice';
 import { getLocalStorageData } from 'app/storage';
 import { Header } from './Header/Header';
 import { Alert } from './Alert/Alert';
 import { Footer } from './Footer/Footer';
+import { createTheme, ThemeProvider } from '@mui/material';
 
 interface Props {
   socket: Socket<DefaultEventsMap, DefaultEventsMap>;
@@ -24,6 +26,7 @@ export const App: FC<Props> = ({ socket }): JSX.Element => {
   const routes = useRoutes(socket);
 
   const currentLanguageFromStore = useAppSelector(getCurrentLanguage);
+  const currentTheme = useAppSelector(getCurrentColorTheme);
 
   useEffect(() => {
     socket.on('connect', () => {
@@ -45,11 +48,11 @@ export const App: FC<Props> = ({ socket }): JSX.Element => {
   }, [dispatch]);
 
   return (
-    <>
+    <ThemeProvider theme={createTheme({ palette: { mode: currentTheme } })}>
       <Header socket={socket} />
       <main>{routes}</main>
       <Alert />
       <Footer />
-    </>
+    </ThemeProvider>
   );
 };
