@@ -116,8 +116,8 @@ const LANGUAGE_DATA: LangaugeData = {
 
     [lng.loadingMsg]: 'Loading...',
 
-    [lng.messagesHeading]: 'Messages',
-    [lng.messagesNoneMsg]: 'Messages are empty.',
+    [lng.messagesHeading]: 'Conversations',
+    [lng.messagesNoneMsg]: 'Conversations are empty.',
   },
 
   ru: {

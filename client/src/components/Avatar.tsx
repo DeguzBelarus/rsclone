@@ -8,7 +8,7 @@ import { getAvatarSrc, getIsAuthorized, getUserId } from 'app/mainSlice';
 interface AvatarProps {
   size?: number | string;
   user?: number;
-  avatarSrc?: string;
+  avatarSrc?: string | null;
 }
 
 export default function Avatar({ size = 32, user, avatarSrc }: AvatarProps) {

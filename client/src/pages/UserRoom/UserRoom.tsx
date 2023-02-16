@@ -26,6 +26,9 @@ import {
   getUserFirstName,
   getUserLastName,
   getUserRequestStatus,
+  setChats,
+  getChats,
+  setActiveChatId,
 } from 'app/mainSlice';
 import { IGetOneUserRequestData, Nullable, RoleType } from 'types/types';
 import styles from './UserRoom.module.scss';
@@ -76,6 +79,7 @@ export const UserRoom: FC<Props> = ({ socket }) => {
   const usersOnline = useAppSelector(getUsersOnline);
   const posts = useAppSelector(getPosts);
   const userRequestStatus = useAppSelector(getUserRequestStatus);
+  const chats = useAppSelector(getChats);
 
   const isUserFound = isAuthorized && (isOwnPage || (id && guestUserData));
 
@@ -90,7 +94,12 @@ export const UserRoom: FC<Props> = ({ socket }) => {
 
   const handleStartChat = () => {
     if (!guestUserData) return;
-    console.log(guestUserData);
+    const { id: partnerId, nickname: partnerNickname, avatar: partnerAvatar } = guestUserData;
+    const addedChatIndex = chats.findIndex((chat) => partnerId === chat.partnerId);
+    if (addedChatIndex < 0) {
+      dispatch(setChats([...chats, { partnerId, partnerAvatar, partnerNickname }]));
+    }
+    dispatch(setActiveChatId(partnerId));
   };
 
   useEffect(() => {

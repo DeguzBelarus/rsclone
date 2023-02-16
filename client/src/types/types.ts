@@ -342,6 +342,14 @@ export interface IFullUserData extends ITokenDecodeData {
   userDialogs?: Array<IUserDialog>;
 }
 
+export interface OpenChat {
+  partnerId?: number;
+  partnerAvatar?: string | null;
+  partnerNickname?: string;
+}
+
+export type OpenChats = OpenChat[];
+
 export interface IUserDataPostEvent {
   userNickname: string;
   userId: number;

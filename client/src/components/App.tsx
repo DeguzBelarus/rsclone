@@ -24,6 +24,7 @@ import { Alert } from './Alert/Alert';
 import { Footer } from './Footer/Footer';
 import { createTheme, ThemeProvider } from '@mui/material';
 import { IUserDataPostEvent } from 'types/types';
+import { Chats } from './Chats/Chats';
 
 interface Props {
   socket: Socket<DefaultEventsMap, DefaultEventsMap>;
@@ -128,6 +129,7 @@ export const App: FC<Props> = ({ socket }): JSX.Element => {
       </main>
       <Alert />
       <Footer />
+      <Chats />
     </ThemeProvider>
   );
 };
