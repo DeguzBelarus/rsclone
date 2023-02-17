@@ -74,10 +74,12 @@ export const Chats = ({}: ChatsProps) => {
           className={combineClasses(styles.window, [styles.collapsed, collapsed])}
           elevation={6}
         >
-          <h4
-            className={styles.heading}
-            onClick={() => setCollapsed((current) => !current)}
-          >{`${language(lng.chatWith)} ${activeChat?.partnerNickname}`}</h4>
+          <Tooltip title={language(collapsed ? lng.expand : lng.collapse)}>
+            <h4
+              className={styles.heading}
+              onClick={() => setCollapsed((current) => !current)}
+            >{`${language(lng.chatWith)} ${activeChat?.partnerNickname}`}</h4>
+          </Tooltip>
           <div className={styles.windowButtons}>
             <Tooltip title={language(collapsed ? lng.expand : lng.collapse)}>
               <IconButton
