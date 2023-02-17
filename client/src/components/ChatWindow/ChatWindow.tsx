@@ -9,6 +9,7 @@ import {
   getUserId,
   getUserNickname,
   sendMessageAsync,
+  getOneUserInfoAsync,
 } from 'app/mainSlice';
 import Avatar from 'components/Avatar';
 import { CommentInput } from 'components/CommentInput/CommentInput';
@@ -20,6 +21,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import {
   IDeleteMessageRequest,
   IGetDialogMessagesRequest,
+  IGetOneUserRequestData,
   IMessageModel,
   ISendMessageRequest,
 } from 'types/types';
@@ -105,6 +107,19 @@ export const ChatWindow = ({
       messagesDiv.scrollTo({ top: messagesDiv.scrollHeight });
     }
   }, [messages, isLoading, messagesRef]);
+
+  useEffect(() => {
+    if (token && authorId) {
+      const request: IGetOneUserRequestData = {
+        token,
+        requestData: {
+          id: authorId,
+          lang,
+        },
+      };
+      dispatch(getOneUserInfoAsync(request));
+    }
+  }, [authorId]);
 
   return (
     <div className={combineClasses(styles.wrapper, [styles.collapsed, collapsed])}>
