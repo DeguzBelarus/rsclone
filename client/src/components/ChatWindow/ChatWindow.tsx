@@ -107,7 +107,7 @@ export const ChatWindow = ({
   useEffect(() => {
     setIsLoading(false);
 
-    if (!isUserDataUpdated && authorId && messages) {
+    if (!isUserDataUpdated && authorId && messages?.length) {
       if (token && authorId) {
         const request: IGetOneUserRequestData = {
           token,
