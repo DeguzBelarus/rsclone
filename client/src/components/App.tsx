@@ -25,6 +25,7 @@ import { Footer } from './Footer/Footer';
 import { createTheme, ThemeProvider } from '@mui/material';
 import { IUserDataPostEvent } from 'types/types';
 import { Chats } from './Chats/Chats';
+import { setAppTitle } from 'lib/changeMetadata';
 
 interface Props {
   socket: Socket<DefaultEventsMap, DefaultEventsMap>;
@@ -115,6 +116,8 @@ export const App: FC<Props> = ({ socket }): JSX.Element => {
       dispatch(setUsersOnline(data));
     });
   }, [socket]);
+
+  useEffect(() => setAppTitle(), []);
 
   return (
     <ThemeProvider theme={theme}>
