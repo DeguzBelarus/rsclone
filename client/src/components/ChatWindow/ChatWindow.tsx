@@ -131,7 +131,12 @@ export const ChatWindow = ({ recipientId, recipientNickname, collapsed }: ChatWi
           </ul>
         )}
       </div>
-      <CommentInput value="" onSubmit={handleSend} placeholder={language(lng.chatsInputEmpty)} />
+      <CommentInput
+        value=""
+        onSubmit={handleSend}
+        autoFocus
+        placeholder={language(lng.chatsInputEmpty)}
+      />
     </div>
   );
 };
