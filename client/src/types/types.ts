@@ -299,8 +299,10 @@ export interface IUserDialog {
   lastMessageAuthorNickname: string;
   authorId: number;
   authorNickname: string;
+  authorAvatarSrc: Nullable<string>;
   recipientId: number;
   recipientNickname: string;
+  recipientAvatarSrc: Nullable<string>;
   unreadMessages: number;
 }
 

@@ -24,10 +24,14 @@ export const MessagesPage = () => {
   const lang = useAppSelector(getCurrentLanguage);
   const chats = useAppSelector(getChats);
 
-  const handleStartChat = (partnerId: number, partnerNickname: string) => {
+  const handleStartChat = (
+    partnerId: number,
+    partnerNickname: string,
+    partnerAvatar?: string | null
+  ) => {
     const addedChatIndex = chats.findIndex((chat) => partnerId === chat.partnerId);
     if (addedChatIndex < 0) {
-      dispatch(setChats([...chats, { partnerId, partnerNickname }]));
+      dispatch(setChats([...chats, { partnerId, partnerNickname, partnerAvatar }]));
     }
     dispatch(setActiveChatId(partnerId));
   };
@@ -52,7 +56,10 @@ export const MessagesPage = () => {
                       dialog.authorId === userId ? dialog.recipientId : dialog.authorId,
                       dialog.authorNickname === nickname
                         ? dialog.recipientNickname
-                        : dialog.authorNickname
+                        : dialog.authorNickname,
+                      dialog.authorId === userId
+                        ? dialog.recipientAvatarSrc
+                        : dialog.authorAvatarSrc
                     )
                   }
                 >
