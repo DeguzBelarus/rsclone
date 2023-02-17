@@ -109,8 +109,6 @@ export const ChatWindow = ({
 
     if (!isUserDataUpdated && authorId && messages) {
       if (token && authorId) {
-        console.log('here');
-
         const request: IGetOneUserRequestData = {
           token,
           requestData: {
