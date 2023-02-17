@@ -102,6 +102,7 @@ export const Chats = () => {
             collapsed={windowCollapsed}
             recipientId={activeChat?.partnerId}
             recipientNickname={activeChat?.partnerNickname}
+            onCancel={() => setWindowCollapsed(true)}
           />
         </Paper>
       )}

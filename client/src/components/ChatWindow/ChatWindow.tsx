@@ -31,9 +31,15 @@ interface ChatWindowProps {
   recipientId?: number;
   recipientNickname?: string;
   collapsed?: boolean;
+  onCancel?: () => void;
 }
 
-export const ChatWindow = ({ recipientId, recipientNickname, collapsed }: ChatWindowProps) => {
+export const ChatWindow = ({
+  recipientId,
+  recipientNickname,
+  collapsed,
+  onCancel,
+}: ChatWindowProps) => {
   const { palette } = useTheme();
   const language = useLanguage();
   const dispatch = useAppDispatch();
@@ -151,9 +157,10 @@ export const ChatWindow = ({ recipientId, recipientNickname, collapsed }: ChatWi
       </div>
       <CommentInput
         value=""
-        onSubmit={handleSend}
         autoFocus
         placeholder={language(lng.chatsInputEmpty)}
+        onSubmit={handleSend}
+        onCancel={onCancel}
       />
     </div>
   );
