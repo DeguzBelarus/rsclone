@@ -17,6 +17,7 @@ import {
   getGuestUserData,
   getAllPosts,
   getAllPostsAsync,
+  setChats,
 } from 'app/mainSlice';
 import { getLocalStorageData } from 'app/storage';
 import { Header } from './Header/Header';
@@ -25,6 +26,7 @@ import { Footer } from './Footer/Footer';
 import { createTheme, ThemeProvider } from '@mui/material';
 import { IUserDataPostEvent } from 'types/types';
 import { Chats } from './Chats/Chats';
+import { setAppTitle } from 'lib/changeMetadata';
 
 interface Props {
   socket: Socket<DefaultEventsMap, DefaultEventsMap>;
@@ -71,7 +73,7 @@ export const App: FC<Props> = ({ socket }): JSX.Element => {
   };
 
   useEffect(() => {
-    const { token, currentLanguage, currentTheme } = getLocalStorageData();
+    const { token, currentLanguage, currentTheme, activeChats } = getLocalStorageData();
 
     if (token) {
       dispatch(authCheckUserAsync({ token, lang: currentLanguageFromStore }));
@@ -81,6 +83,9 @@ export const App: FC<Props> = ({ socket }): JSX.Element => {
     }
     if (currentTheme) {
       dispatch(setCurrentColorTheme(currentTheme));
+    }
+    if (activeChats) {
+      dispatch(setChats(activeChats));
     }
   }, [dispatch]);
 
@@ -115,6 +120,8 @@ export const App: FC<Props> = ({ socket }): JSX.Element => {
       dispatch(setUsersOnline(data));
     });
   }, [socket]);
+
+  useEffect(() => setAppTitle(), []);
 
   return (
     <ThemeProvider theme={theme}>

@@ -977,6 +977,7 @@ export const mainSlice = createSlice({
     },
     setChats(state: WritableDraft<MainState>, { payload }: PayloadAction<OpenChats>) {
       state.chats = payload;
+      setLocalStorageData({ activeChats: payload });
     },
     setActiveChatId(state: WritableDraft<MainState>, { payload }: PayloadAction<Nullable<number>>) {
       state.activeChatId = payload;

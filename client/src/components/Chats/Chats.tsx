@@ -1,13 +1,4 @@
-import {
-  alpha,
-  Button,
-  ClickAwayListener,
-  IconButton,
-  Paper,
-  Tooltip,
-  useMediaQuery,
-  useTheme,
-} from '@mui/material';
+import { alpha, Button, IconButton, Paper, Tooltip, useMediaQuery, useTheme } from '@mui/material';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import {
   getActiveChatId,
@@ -26,12 +17,9 @@ import { ChatWindow } from 'components/ChatWindow/ChatWindow';
 import combineClasses from 'lib/combineClasses';
 import { lng } from 'hooks/useLanguage/types';
 import useLanguage from 'hooks/useLanguage';
+import { getLocalStorageData, setLocalStorageData } from 'app/storage';
 
-interface ChatsProps {
-  someprop?: string;
-}
-
-export const Chats = ({}: ChatsProps) => {
+export const Chats = () => {
   const isAuthorized = useAppSelector(getIsAuthorized);
   const chats = useAppSelector(getChats);
   const activeChatId = useAppSelector(getActiveChatId);
@@ -41,7 +29,7 @@ export const Chats = ({}: ChatsProps) => {
   const dispatch = useAppDispatch();
   const { palette } = useTheme();
 
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(getLocalStorageData()?.chatsCollapsed === true);
   const [windowCollapsed, setWindowCollapsed] = useState(false);
 
   const mobile = useMediaQuery('(max-width: 600px)');
@@ -70,12 +58,15 @@ export const Chats = ({}: ChatsProps) => {
   };
 
   useEffect(() => {
-    setCollapsed(false);
-    setWindowCollapsed(false);
+    if (activeChatId !== null) {
+      setCollapsed(false);
+      setWindowCollapsed(false);
+    }
   }, [activeChatId]);
 
   useEffect(() => {
     if (!collapsed) setWindowCollapsed(false);
+    setLocalStorageData({ chatsCollapsed: collapsed });
   }, [collapsed]);
 
   return isAuthorized && chats.length > 0 ? (
@@ -102,8 +93,8 @@ export const Chats = ({}: ChatsProps) => {
               </IconButton>
             </Tooltip>
             <Tooltip title={language(lng.close)}>
-              <IconButton color="warning">
-                <DeleteIcon fontSize="small" onClick={() => handleSetActiveChat(undefined)} />
+              <IconButton color="warning" onClick={() => handleSetActiveChat(undefined)}>
+                <DeleteIcon fontSize="small" />
               </IconButton>
             </Tooltip>
           </div>
@@ -111,6 +102,7 @@ export const Chats = ({}: ChatsProps) => {
             collapsed={windowCollapsed}
             recipientId={activeChat?.partnerId}
             recipientNickname={activeChat?.partnerNickname}
+            onCancel={() => setWindowCollapsed(true)}
           />
         </Paper>
       )}

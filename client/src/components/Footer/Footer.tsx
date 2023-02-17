@@ -1,20 +1,18 @@
 import { useTheme } from '@mui/material';
-import { useAppSelector } from 'app/hooks';
-import { getCurrentColorTheme } from 'app/mainSlice';
 import React from 'react';
 
 import styles from './Footer.module.scss';
 
 export const Footer = () => {
-  const mode = useAppSelector(getCurrentColorTheme);
   const { palette } = useTheme();
 
   return (
     <footer
       className={styles.footer}
       style={{
-        color: mode === 'dark' ? palette.text.primary : palette.primary.contrastText,
-        backgroundColor: mode === 'dark' ? palette.background.default : palette.primary.dark,
+        color: palette.mode === 'dark' ? palette.text.primary : palette.primary.contrastText,
+        backgroundColor:
+          palette.mode === 'dark' ? palette.background.default : palette.primary.dark,
       }}
     >
       <a

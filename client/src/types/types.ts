@@ -144,6 +144,8 @@ export interface ILocalStorageSaveData {
   token?: string;
   currentLanguage?: CurrentLanguageType;
   currentTheme?: CurrentColorTheme;
+  activeChats?: OpenChats;
+  chatsCollapsed?: boolean;
 }
 
 export interface AlertMessage {
@@ -297,8 +299,10 @@ export interface IUserDialog {
   lastMessageAuthorNickname: string;
   authorId: number;
   authorNickname: string;
+  authorAvatarSrc: Nullable<string>;
   recipientId: number;
   recipientNickname: string;
+  recipientAvatarSrc: Nullable<string>;
   unreadMessages: number;
 }
 

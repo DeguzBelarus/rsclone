@@ -11,6 +11,7 @@ interface CommentInputProps {
   placeholder?: string;
   onSubmit?: (value: string) => void;
   onReset?: () => void;
+  onCancel?: () => void;
 }
 
 export const CommentInput = ({
@@ -19,6 +20,7 @@ export const CommentInput = ({
   placeholder,
   onSubmit,
   onReset,
+  onCancel,
 }: CommentInputProps) => {
   const language = useLanguage();
 
@@ -78,6 +80,7 @@ export const CommentInput = ({
         } else if (event.key === 'Escape') {
           event.preventDefault();
           handleReset();
+          if (onCancel) onCancel();
         }
       }}
       InputProps={{

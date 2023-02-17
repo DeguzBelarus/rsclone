@@ -22,6 +22,7 @@ import {
   getUserRole,
   setAllPosts,
   setAvatarSrc,
+  setChats,
   setCurrentColorTheme,
   setGuestUserData,
   setIsAuthorized,
@@ -40,7 +41,7 @@ import {
   setUserRole,
 } from 'app/mainSlice';
 import { LanguageSwitch } from 'components/LanguageSwitch';
-import React, { useState, FC } from 'react';
+import React, { useState, FC, useEffect } from 'react';
 import styles from './Header.module.scss';
 import {
   Settings as SettingsIcon,
@@ -65,6 +66,7 @@ import { EditPostModal } from 'components/EditPostModal/EditPostModal';
 import { Logo } from 'components/Logo/Logo';
 import DarkModeIcon from '@mui/icons-material/Brightness4';
 import LightModeIcon from '@mui/icons-material/Brightness7';
+import { setAppBarColor } from 'lib/changeMetadata';
 
 interface Props {
   socket: Socket<DefaultEventsMap, DefaultEventsMap>;
@@ -105,6 +107,7 @@ export const Header: FC<Props> = ({ socket }) => {
     dispatch(setUserLastName(null));
     dispatch(setAvatarSrc(null));
     dispatch(setGuestUserData(null));
+    dispatch(setChats([]));
 
     socket.emit('userOffline', userName);
     navigate('/login');
@@ -119,6 +122,16 @@ export const Header: FC<Props> = ({ socket }) => {
   const handleDarkMode = () => {
     dispatch(setCurrentColorTheme(currentTheme === 'light' ? 'dark' : 'light'));
   };
+
+  useEffect(() => {
+    setAppBarColor(
+      searchFocused
+        ? palette.secondary.dark
+        : palette.mode === 'dark'
+        ? palette.background.default
+        : palette.primary.main
+    );
+  }, [palette, searchFocused]);
 
   const authorizedMenu = [
     <MenuItem key="1" sx={{ display: { sm: 'none' }, cursor: 'default', pointerEvents: 'none' }}>

@@ -16,7 +16,7 @@ import { PostDate } from 'components/PostDate/PostDate';
 import useLanguage from 'hooks/useLanguage';
 import { lng } from 'hooks/useLanguage/types';
 import combineClasses from 'lib/combineClasses';
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   IDeleteMessageRequest,
   IGetDialogMessagesRequest,
@@ -25,14 +25,21 @@ import {
 } from 'types/types';
 import styles from './ChatWindow.module.scss';
 import DeleteIcon from '@mui/icons-material/DeleteForever';
+import { Spinner } from 'components/Spinner/Spinner';
 
 interface ChatWindowProps {
   recipientId?: number;
   recipientNickname?: string;
   collapsed?: boolean;
+  onCancel?: () => void;
 }
 
-export const ChatWindow = ({ recipientId, recipientNickname, collapsed }: ChatWindowProps) => {
+export const ChatWindow = ({
+  recipientId,
+  recipientNickname,
+  collapsed,
+  onCancel,
+}: ChatWindowProps) => {
   const { palette } = useTheme();
   const language = useLanguage();
   const dispatch = useAppDispatch();
@@ -41,6 +48,9 @@ export const ChatWindow = ({ recipientId, recipientNickname, collapsed }: ChatWi
   const authorId = useAppSelector(getUserId);
   const authorNickname = useAppSelector(getUserNickname);
   const messages: IMessageModel[] | null = useAppSelector(getCurrentDialogMessages);
+
+  const [isLoading, setIsLoading] = useState(false);
+  const messagesRef = useRef<HTMLUListElement>(null);
 
   const handleSend = (messageText: string) => {
     if (!token || !authorId || !authorNickname || !recipientId || !recipientNickname) return;
@@ -75,6 +85,7 @@ export const ChatWindow = ({ recipientId, recipientNickname, collapsed }: ChatWi
 
   useEffect(() => {
     if (!token || !authorId || !recipientId) return;
+    setIsLoading(true);
     const request: IGetDialogMessagesRequest = {
       lang,
       token,
@@ -84,11 +95,22 @@ export const ChatWindow = ({ recipientId, recipientNickname, collapsed }: ChatWi
     dispatch(getDialogMessagesAsync(request));
   }, [recipientId, authorId, dispatch, lang, token]);
 
+  useEffect(() => {
+    setIsLoading(false);
+  }, [messages]);
+
+  useEffect(() => {
+    const messagesDiv = messagesRef.current;
+    if (messagesDiv) {
+      messagesDiv.scrollTo({ top: messagesDiv.scrollHeight });
+    }
+  }, [messages, isLoading, messagesRef]);
+
   return (
     <div className={combineClasses(styles.wrapper, [styles.collapsed, collapsed])}>
       <div className={styles.messages}>
-        {messages && (
-          <ul className={styles.messages}>
+        {messages && !isLoading ? (
+          <ul className={styles.messages} ref={messagesRef}>
             {messages.map(({ id, messageText, userId, authorNickname, authorAvatarSrc, date }) => {
               const self = userId === authorId;
               return (
@@ -129,9 +151,17 @@ export const ChatWindow = ({ recipientId, recipientNickname, collapsed }: ChatWi
               );
             })}
           </ul>
+        ) : (
+          <Spinner size={42} />
         )}
       </div>
-      <CommentInput value="" onSubmit={handleSend} placeholder={language(lng.chatsInputEmpty)} />
+      <CommentInput
+        value=""
+        autoFocus
+        placeholder={language(lng.chatsInputEmpty)}
+        onSubmit={handleSend}
+        onCancel={onCancel}
+      />
     </div>
   );
 };
