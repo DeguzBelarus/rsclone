@@ -133,7 +133,7 @@ export const ChatWindow = ({
 
   useEffect(() => {
     return () => {
-      setCurrentDialogMessages([]);
+      dispatch(setCurrentDialogMessages([]));
     };
   }, []);
   return (
