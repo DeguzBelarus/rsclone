@@ -52,6 +52,7 @@ export const ChatWindow = ({
   const messages: IMessageModel[] | null = useAppSelector(getCurrentDialogMessages);
 
   const [isLoading, setIsLoading] = useState(false);
+  const [isUserDataUpdated, setIsUserDataUpdated] = useState(false);
   const messagesRef = useRef<HTMLUListElement>(null);
 
   const handleSend = (messageText: string) => {
@@ -99,6 +100,20 @@ export const ChatWindow = ({
 
   useEffect(() => {
     setIsLoading(false);
+
+    if (!isUserDataUpdated && authorId && messages) {
+      if (token && authorId) {
+        const request: IGetOneUserRequestData = {
+          token,
+          requestData: {
+            id: authorId,
+            lang,
+          },
+        };
+        dispatch(getOneUserInfoAsync(request));
+        setIsUserDataUpdated(true);
+      }
+    }
   }, [messages]);
 
   useEffect(() => {
@@ -107,20 +122,6 @@ export const ChatWindow = ({
       messagesDiv.scrollTo({ top: messagesDiv.scrollHeight });
     }
   }, [messages, isLoading, messagesRef]);
-
-  useEffect(() => {
-    if (token && authorId) {
-      const request: IGetOneUserRequestData = {
-        token,
-        requestData: {
-          id: authorId,
-          lang,
-        },
-      };
-      dispatch(getOneUserInfoAsync(request));
-    }
-  }, [authorId]);
-
   return (
     <div className={combineClasses(styles.wrapper, [styles.collapsed, collapsed])}>
       <div className={styles.messages}>
