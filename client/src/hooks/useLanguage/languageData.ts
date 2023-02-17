@@ -119,7 +119,11 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.loadingMsg]: 'Loading...',
 
     [lng.messagesHeading]: 'Conversations',
-    [lng.messagesNoneMsg]: 'Conversations are empty.',
+    [lng.messagesNoneMsg]:
+      'Conversations are empty. Please use user search in the header and start a new conversation.',
+    [lng.messagesLastMsg]: 'Last message',
+    [lng.messagesUnread]: 'Unread',
+    [lng.messagesClickToChat]: 'Click to chat',
 
     [lng.chats]: 'Chats',
     [lng.chatWith]: 'Chat with',
@@ -246,7 +250,12 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.loadingMsg]: 'Загрузка...',
 
     [lng.messagesHeading]: 'Сообщения',
-    [lng.messagesNoneMsg]: 'Сообщения не найдены. Добавьте первое!',
+    [lng.messagesNoneMsg]:
+      'Сообщения не найдены. Воспользуйтесь поиском пользователей сверху и напишите первое сообщение.',
+    [lng.messagesLastMsg]: 'Последнее',
+    [lng.messagesUnread]: 'Непрочитанные',
+    [lng.messagesClickToChat]: 'Начать чат',
+
     [lng.chats]: 'Чаты',
     [lng.chatWith]: 'Чат с',
     [lng.chatsInputEmpty]: 'Сообщение',

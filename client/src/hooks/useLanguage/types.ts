@@ -117,6 +117,9 @@ export enum lng {
 
   messagesHeading,
   messagesNoneMsg,
+  messagesLastMsg,
+  messagesUnread,
+  messagesClickToChat,
 
   loadingMsg,
 

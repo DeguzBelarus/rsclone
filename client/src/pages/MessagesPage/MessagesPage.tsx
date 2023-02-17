@@ -1,18 +1,14 @@
-import { List, ListItem, ListItemButton, ListItemText } from '@mui/material';
+import { List, ListItemAvatar, ListItemButton, ListItemText, Tooltip } from '@mui/material';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
-import {
-  getChats,
-  getCurrentLanguage,
-  getDialogs,
-  getUserId,
-  getUserNickname,
-  setActiveChatId,
-  setChats,
-} from 'app/mainSlice';
+import { getChats, getDialogs, getUserId, setActiveChatId, setChats } from 'app/mainSlice';
+import Avatar from 'components/Avatar';
+import { PostDate } from 'components/PostDate/PostDate';
 import useLanguage from 'hooks/useLanguage';
 import { lng } from 'hooks/useLanguage/types';
 import React from 'react';
 import { IUserDialog } from 'types/types';
+import UnreadIcon from '@mui/icons-material/MarkUnreadChatAlt';
+import MessageIcon from '@mui/icons-material/Message';
 import styles from './MessagesPage.module.scss';
 
 export const MessagesPage = () => {
@@ -20,8 +16,6 @@ export const MessagesPage = () => {
   const dispatch = useAppDispatch();
   const dialogs: IUserDialog[] = useAppSelector(getDialogs);
   const userId = useAppSelector(getUserId);
-  const nickname = useAppSelector(getUserNickname);
-  const lang = useAppSelector(getCurrentLanguage);
   const chats = useAppSelector(getChats);
 
   const handleStartChat = (
@@ -39,44 +33,59 @@ export const MessagesPage = () => {
   return (
     <div className={styles.wrapper}>
       <h2>{language(lng.messagesHeading)}</h2>
-      <List>
-        {dialogs.length && userId
-          ? dialogs.map((dialog, index) => {
+      {dialogs.length && userId ? (
+        <List>
+          {dialogs.map(
+            ({
+              authorId,
+              recipientId,
+              authorNickname,
+              recipientNickname,
+              authorAvatarSrc,
+              recipientAvatarSrc,
+              lastMessageText,
+              lastMessageDate,
+              unreadMessages,
+            }) => {
+              const partnerId = authorId === userId ? recipientId : authorId;
+              const partnerNickname = authorId === userId ? recipientNickname : authorNickname;
+              const partnerAvatar = authorId === userId ? recipientAvatarSrc : authorAvatarSrc;
               return (
-                <div
-                  style={{
-                    border: '1px solid white',
-                    padding: '20px',
-                    cursor: 'pointer',
-                    margin: '5px',
-                  }}
-                  key={index}
-                  onClick={() =>
-                    handleStartChat(
-                      dialog.authorId === userId ? dialog.recipientId : dialog.authorId,
-                      dialog.authorNickname === nickname
-                        ? dialog.recipientNickname
-                        : dialog.authorNickname,
-                      dialog.authorId === userId
-                        ? dialog.recipientAvatarSrc
-                        : dialog.authorAvatarSrc
-                    )
-                  }
+                <ListItemButton
+                  key={partnerId}
+                  onClick={() => handleStartChat(partnerId, partnerNickname, partnerAvatar)}
                 >
-                  <h1>
-                    {dialog.authorNickname === nickname
-                      ? dialog.recipientNickname
-                      : dialog.authorNickname}
-                  </h1>
-                  <p>{`message: ${dialog.lastMessageText} (from ${new Date(
-                    Number(dialog.lastMessageDate)
-                  )})`}</p>
-                  <span>{`unread: ${dialog.unreadMessages}`}</span>
-                </div>
+                  <Tooltip title={language(lng.messagesClickToChat)}>
+                    <ListItemAvatar>
+                      <Avatar user={partnerId} avatarSrc={partnerAvatar} size="3rem" />
+                    </ListItemAvatar>
+                  </Tooltip>
+                  <ListItemText
+                    primary={partnerNickname}
+                    secondary={
+                      <span className={styles.secondary}>
+                        <span className={styles.unread}>
+                          <MessageIcon fontSize="small" />
+                          {`${language(lng.messagesLastMsg)}: ${lastMessageText}`}
+                        </span>
+                        <span className={styles.unread}>
+                          <UnreadIcon fontSize="small" />
+                          {`${language(lng.messagesUnread)}: ${unreadMessages}`}
+                        </span>
+                        <span>
+                          <PostDate date={lastMessageDate} />
+                        </span>
+                      </span>
+                    }
+                  />
+                </ListItemButton>
               );
-            })
-          : null}
-      </List>
+            }
+          )}
+        </List>
+      ) : (
+        <div>{language(lng.messagesNoneMsg)}</div>
+      )}
     </div>
   );
 };
