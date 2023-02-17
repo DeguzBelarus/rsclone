@@ -342,48 +342,58 @@ class UserController {
             allMessages.sort((prevMessage, nextMessage) => {
               if (prevMessage.id && nextMessage.id) {
                 if (prevMessage.id > nextMessage.id) {
-                  return 1;
+                  return -1;
                 }
                 if (prevMessage.id < nextMessage.id) {
                   return 1;
                 }
               }
               return 0;
-            }).reverse();
+            });
             const modifiedDialogs = allMessages
               .map((message, i, array) => {
                 const authorId = message.userId;
                 const recipientId = message.recipientId;
-
                 return {
                   authorId: message.userId,
                   authorNickname: message.authorNickname,
                   recipientId: message.recipientId,
                   recipientNickname: message.recipientNickname,
                   unreadMessages: incomingMessages.reduce((sum: number, message) => {
-                    if (!message.isRead) {
+                    if (message.userId === authorId && !message.isRead) {
                       return sum += 1;
                     } else return sum;
                   }, 0),
-                  lastMessageDate: array.find((message) => (message.userId === authorId
-                    || message.recipientId === recipientId))?.date,
-                  lastMessageText: array.find((message) => (message.userId === authorId
-                    || message.recipientId === recipientId))?.messageText,
-                  lastMessageId: message.id,
-                  lastMessageAuthorNickname: array.find((message) => (message.userId === authorId
-                    || message.recipientId === recipientId))?.authorNickname,
+                  lastMessageText: array.find((message) => ((message.userId === authorId && message.recipientId === recipientId)
+                    || (message.recipientId === authorId && message.userId === recipientId)))?.messageText,
+                  lastMessageId: array.find((message) => ((message.userId === authorId && message.recipientId === recipientId)
+                    || (message.recipientId === authorId && message.userId === recipientId)))?.id,
+                  lastMessageDate: array.find((message) => ((message.userId === authorId && message.recipientId === recipientId)
+                    || (message.recipientId === authorId && message.userId === recipientId)))?.date,
+                  lastMessageAuthorNickname: array.find((message) => ((message.userId === authorId && message.recipientId === recipientId)
+                    || (message.recipientId === authorId && message.userId === recipientId)))?.authorNickname,
                   authorAvatarSrc: message.authorAvatarSrc,
                   recipientAvatarSrc: message.recipientAvatarSrc,
                 }
               }) as Array<IUserDialog>;
 
-            const userDialogs: Array<IUserDialog> = [];
+            let userDialogs: Array<IUserDialog> = [];
             modifiedDialogs.forEach((modifiedDialog) => {
-              if (!userDialogs.find((uniqueDialog: IUserDialog) => uniqueDialog.authorId === modifiedDialog.authorId
-                && uniqueDialog.recipientId === modifiedDialog.recipientId)) {
+              if (!userDialogs.some((uniqueDialog: IUserDialog) => uniqueDialog.lastMessageId === modifiedDialog.lastMessageId)) {
                 userDialogs.push(modifiedDialog);
               }
             });
+            userDialogs.sort((prevDialog, nextDialog) => {
+              if (Number(prevDialog.lastMessageDate) > Number(nextDialog.lastMessageDate)) {
+                return -1;
+              }
+              if (Number(prevDialog.lastMessageDate) < Number(nextDialog.lastMessageDate)) {
+                return 1;
+              }
+              return 0;
+            });
+
+            userDialogs = userDialogs.filter((dialog) => dialog.recipientId === Number(userId) || dialog.authorId === Number(userId))
             response.json({
               userData: {
                 id, age, city, country, email, firstName, lastName, nickname, role: userRole,
