@@ -8,6 +8,7 @@ import { Socket } from 'socket.io-client';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import {
   alpha,
+  Badge,
   Card,
   CardActions,
   CardContent,
@@ -37,6 +38,7 @@ import { IPostModel } from 'types/types';
 import styles from './Post.module.scss';
 import Avatar from 'components/Avatar';
 import { USER_ROLE_ADMIN } from 'consts';
+import CommentsIcon from '@mui/icons-material/SpeakerNotes';
 
 interface PostProps {
   data: IPostModel;
@@ -158,6 +160,15 @@ export const Post = ({ data, single, ownHighlight, onDelete, onEdit, socket }: P
               onClick={() => navigate(postURL)}
             >
               <OpenIcon />
+            </IconButton>
+          </Tooltip>
+        )}
+        {data.comments && (
+          <Tooltip title={language(lng.commentsHeading)}>
+            <IconButton component="a" href="#comments" sx={{ marginLeft: 'auto' }}>
+              <Badge badgeContent={data.comments.length} color="warning">
+                <CommentsIcon />
+              </Badge>
             </IconButton>
           </Tooltip>
         )}
