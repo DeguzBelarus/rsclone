@@ -36,15 +36,39 @@ export const MessagesPage = () => {
     <div className={styles.wrapper}>
       <h2>{language(lng.messagesHeading)}</h2>
       <List>
-        {dialogs.map(({ authorNickname, recipientId, recipientNickname, unreadMessages }) => {
-          return (
-            <ListItem key={recipientId} disablePadding>
-              <ListItemButton onClick={() => handleStartChat(recipientId, recipientNickname)}>
-                <ListItemText primary={`${recipientNickname} (${unreadMessages})`} />
-              </ListItemButton>
-            </ListItem>
-          );
-        })}
+        {dialogs.length && userId
+          ? dialogs.map((dialog, index) => {
+              return (
+                <div
+                  style={{
+                    border: '1px solid white',
+                    padding: '20px',
+                    cursor: 'pointer',
+                    margin: '5px',
+                  }}
+                  key={index}
+                  onClick={() =>
+                    handleStartChat(
+                      dialog.authorId === userId ? dialog.recipientId : dialog.authorId,
+                      dialog.authorNickname === nickname
+                        ? dialog.recipientNickname
+                        : dialog.authorNickname
+                    )
+                  }
+                >
+                  <h1>
+                    {dialog.authorNickname === nickname
+                      ? dialog.recipientNickname
+                      : dialog.authorNickname}
+                  </h1>
+                  <p>{`message: ${dialog.lastMessageText} (from ${new Date(
+                    Number(dialog.lastMessageDate)
+                  )})`}</p>
+                  <span>{`unread: ${dialog.unreadMessages}`}</span>
+                </div>
+              );
+            })
+          : null}
       </List>
     </div>
   );
