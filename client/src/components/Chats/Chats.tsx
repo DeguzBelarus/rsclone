@@ -1,5 +1,6 @@
 import {
   alpha,
+  Button,
   ClickAwayListener,
   IconButton,
   Paper,
@@ -16,7 +17,7 @@ import {
   setChats,
 } from 'app/mainSlice';
 import Avatar from 'components/Avatar';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import DeleteIcon from '@mui/icons-material/HighlightOffRounded';
 import CollapseIcon from '@mui/icons-material/ExpandCircleDown';
 
@@ -41,6 +42,7 @@ export const Chats = ({}: ChatsProps) => {
   const { palette } = useTheme();
 
   const [collapsed, setCollapsed] = useState(false);
+  const [windowCollapsed, setWindowCollapsed] = useState(false);
 
   const mobile = useMediaQuery('(max-width: 600px)');
 
@@ -57,35 +59,44 @@ export const Chats = ({}: ChatsProps) => {
   const handleSetActiveChat = (id?: number) => {
     if (id) {
       if (id === activeChatId) {
-        setCollapsed((current) => !current);
+        setWindowCollapsed((current) => !current);
       } else {
         dispatch(setActiveChatId(id));
-        setCollapsed(false);
+        setWindowCollapsed(false);
       }
     } else {
       dispatch(setActiveChatId(null));
     }
   };
 
+  useEffect(() => {
+    setCollapsed(false);
+    setWindowCollapsed(false);
+  }, [activeChatId]);
+
+  useEffect(() => {
+    if (!collapsed) setWindowCollapsed(false);
+  }, [collapsed]);
+
   return isAuthorized && chats.length > 0 ? (
-    <div className={styles.wrapper}>
+    <div className={combineClasses(styles.wrapper, [styles.collapsed, collapsed])}>
       {activeChat && (
         <Paper
-          className={combineClasses(styles.window, [styles.collapsed, collapsed])}
+          className={combineClasses(styles.window, [styles.windowCollapsed, windowCollapsed])}
           elevation={6}
         >
-          <Tooltip title={language(collapsed ? lng.expand : lng.collapse)}>
+          <Tooltip title={language(windowCollapsed ? lng.expand : lng.collapse)}>
             <h4
               className={styles.heading}
-              onClick={() => setCollapsed((current) => !current)}
+              onClick={() => setWindowCollapsed((current) => !current)}
             >{`${language(lng.chatWith)} ${activeChat?.partnerNickname}`}</h4>
           </Tooltip>
           <div className={styles.windowButtons}>
-            <Tooltip title={language(collapsed ? lng.expand : lng.collapse)}>
+            <Tooltip title={language(windowCollapsed ? lng.expand : lng.collapse)}>
               <IconButton
-                className={styles.collapse}
+                className={styles.collapseBtn}
                 color="success"
-                onClick={() => setCollapsed((current) => !current)}
+                onClick={() => setWindowCollapsed((current) => !current)}
               >
                 <CollapseIcon fontSize="small" />
               </IconButton>
@@ -97,7 +108,7 @@ export const Chats = ({}: ChatsProps) => {
             </Tooltip>
           </div>
           <ChatWindow
-            collapsed={collapsed}
+            collapsed={windowCollapsed}
             recipientId={activeChat?.partnerId}
             recipientNickname={activeChat?.partnerNickname}
           />
@@ -112,7 +123,12 @@ export const Chats = ({}: ChatsProps) => {
             color: palette.text.secondary,
           }}
         >
-          {language(lng.chats)}
+          <Tooltip title={language(collapsed ? lng.expand : lng.collapse)}>
+            <Button variant="text" size="small" onClick={() => setCollapsed((current) => !current)}>
+              {language(lng.chats)}
+              <CollapseIcon className={styles.collapseBtn} fontSize="small" sx={{ ml: 1 }} />
+            </Button>
+          </Tooltip>
         </h4>
         <ul className={styles.people}>
           {chats.map(({ partnerId, partnerNickname, partnerAvatar }) => (
