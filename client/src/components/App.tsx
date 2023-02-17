@@ -120,7 +120,7 @@ export const App: FC<Props> = ({ socket }): JSX.Element => {
       socket.off('userDeletedPost');
       socket.off('userSendMessage');
     };
-  }, [userId, guestUserData, allPosts]);
+  }, [userId, guestUserData, allPosts, token]);
 
   useEffect(() => {
     // connection socket events
