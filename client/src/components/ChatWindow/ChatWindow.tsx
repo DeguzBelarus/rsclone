@@ -10,6 +10,7 @@ import {
   getUserNickname,
   sendMessageAsync,
   getOneUserInfoAsync,
+  setCurrentDialogMessages,
 } from 'app/mainSlice';
 import Avatar from 'components/Avatar';
 import { CommentInput } from 'components/CommentInput/CommentInput';
@@ -18,6 +19,8 @@ import useLanguage from 'hooks/useLanguage';
 import { lng } from 'hooks/useLanguage/types';
 import combineClasses from 'lib/combineClasses';
 import React, { useEffect, useRef, useState } from 'react';
+import { Socket } from 'socket.io-client';
+import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import {
   IDeleteMessageRequest,
   IGetDialogMessagesRequest,
@@ -34,6 +37,7 @@ interface ChatWindowProps {
   recipientNickname?: string;
   collapsed?: boolean;
   onCancel?: () => void;
+  socket: Socket<DefaultEventsMap, DefaultEventsMap>;
 }
 
 export const ChatWindow = ({
@@ -41,6 +45,7 @@ export const ChatWindow = ({
   recipientNickname,
   collapsed,
   onCancel,
+  socket,
 }: ChatWindowProps) => {
   const { palette } = useTheme();
   const language = useLanguage();
@@ -55,7 +60,7 @@ export const ChatWindow = ({
   const [isUserDataUpdated, setIsUserDataUpdated] = useState(false);
   const messagesRef = useRef<HTMLUListElement>(null);
 
-  const handleSend = (messageText: string) => {
+  const handleSend = async (messageText: string) => {
     if (!token || !authorId || !authorNickname || !recipientId || !recipientNickname) return;
     const request: ISendMessageRequest = {
       lang,
@@ -68,7 +73,8 @@ export const ChatWindow = ({
         messageText,
       },
     };
-    dispatch(sendMessageAsync(request));
+    await dispatch(sendMessageAsync(request));
+    socket.emit('userSendMessage', { authorId, recipientId, authorNickname, recipientNickname });
   };
 
   const handleDelete = async (messageId?: number, ownerId?: number, recipientId?: number) => {
@@ -103,6 +109,8 @@ export const ChatWindow = ({
 
     if (!isUserDataUpdated && authorId && messages) {
       if (token && authorId) {
+        console.log('here');
+
         const request: IGetOneUserRequestData = {
           token,
           requestData: {
@@ -122,6 +130,12 @@ export const ChatWindow = ({
       messagesDiv.scrollTo({ top: messagesDiv.scrollHeight });
     }
   }, [messages, isLoading, messagesRef]);
+
+  useEffect(() => {
+    return () => {
+      setCurrentDialogMessages([]);
+    };
+  }, []);
   return (
     <div className={combineClasses(styles.wrapper, [styles.collapsed, collapsed])}>
       <div className={styles.messages}>

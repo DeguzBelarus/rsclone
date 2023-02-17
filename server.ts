@@ -98,6 +98,17 @@ io.on("connection", (socket) => {
   socket.on("userDeletePost", (userData) => {
     socket.broadcast.emit("userDeletedPost", userData)
   })
+
+  // messages socket events
+  // sending message socket event
+  socket.on("userSendMessage", (messageData) => {
+    const targetUsersOnline = usersOnline.filter((user) => user.nickname === messageData.recipientNickname);
+    console.log(targetUsersOnline);
+
+    targetUsersOnline.forEach((targetUser) => {
+      io.to(targetUser.socketId).emit("userSendMessage", messageData);
+    });
+  })
 });
 
 (async function () {

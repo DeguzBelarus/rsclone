@@ -24,7 +24,7 @@ import { Header } from './Header/Header';
 import { Alert } from './Alert/Alert';
 import { Footer } from './Footer/Footer';
 import { createTheme, ThemeProvider } from '@mui/material';
-import { IUserDataPostEvent } from 'types/types';
+import { IUserDataMessageEvent, IUserDataPostEvent } from 'types/types';
 import { Chats } from './Chats/Chats';
 import { setAppTitle } from 'lib/changeMetadata';
 
@@ -103,9 +103,22 @@ export const App: FC<Props> = ({ socket }): JSX.Element => {
       postsDataRefresh(data);
     });
 
+    // receive message socket event
+    socket.on('userSendMessage', (data: IUserDataMessageEvent) => {
+      if (token && userId) {
+        dispatch(
+          getOneUserInfoAsync({
+            token,
+            requestData: { lang: currentLanguageFromStore, id: userId },
+          })
+        );
+      }
+    });
+
     return () => {
       socket.off('userAddedPost');
       socket.off('userDeletedPost');
+      socket.off('userSendMessage');
     };
   }, [userId, guestUserData, allPosts]);
 
@@ -136,7 +149,7 @@ export const App: FC<Props> = ({ socket }): JSX.Element => {
       </main>
       <Alert />
       <Footer />
-      <Chats />
+      <Chats socket={socket} />
     </ThemeProvider>
   );
 };
