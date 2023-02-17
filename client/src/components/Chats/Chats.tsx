@@ -19,11 +19,7 @@ import { lng } from 'hooks/useLanguage/types';
 import useLanguage from 'hooks/useLanguage';
 import { getLocalStorageData, setLocalStorageData } from 'app/storage';
 
-interface ChatsProps {
-  someprop?: string;
-}
-
-export const Chats = ({}: ChatsProps) => {
+export const Chats = () => {
   const isAuthorized = useAppSelector(getIsAuthorized);
   const chats = useAppSelector(getChats);
   const activeChatId = useAppSelector(getActiveChatId);
@@ -97,8 +93,8 @@ export const Chats = ({}: ChatsProps) => {
               </IconButton>
             </Tooltip>
             <Tooltip title={language(lng.close)}>
-              <IconButton color="warning">
-                <DeleteIcon fontSize="small" onClick={() => handleSetActiveChat(undefined)} />
+              <IconButton color="warning" onClick={() => handleSetActiveChat(undefined)}>
+                <DeleteIcon fontSize="small" />
               </IconButton>
             </Tooltip>
           </div>
