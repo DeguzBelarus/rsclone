@@ -16,7 +16,7 @@ import { PostDate } from 'components/PostDate/PostDate';
 import useLanguage from 'hooks/useLanguage';
 import { lng } from 'hooks/useLanguage/types';
 import combineClasses from 'lib/combineClasses';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   IDeleteMessageRequest,
   IGetDialogMessagesRequest,
@@ -25,6 +25,7 @@ import {
 } from 'types/types';
 import styles from './ChatWindow.module.scss';
 import DeleteIcon from '@mui/icons-material/DeleteForever';
+import { Spinner } from 'components/Spinner/Spinner';
 
 interface ChatWindowProps {
   recipientId?: number;
@@ -41,6 +42,8 @@ export const ChatWindow = ({ recipientId, recipientNickname, collapsed }: ChatWi
   const authorId = useAppSelector(getUserId);
   const authorNickname = useAppSelector(getUserNickname);
   const messages: IMessageModel[] | null = useAppSelector(getCurrentDialogMessages);
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSend = (messageText: string) => {
     if (!token || !authorId || !authorNickname || !recipientId || !recipientNickname) return;
@@ -75,6 +78,7 @@ export const ChatWindow = ({ recipientId, recipientNickname, collapsed }: ChatWi
 
   useEffect(() => {
     if (!token || !authorId || !recipientId) return;
+    setIsLoading(true);
     const request: IGetDialogMessagesRequest = {
       lang,
       token,
@@ -84,10 +88,12 @@ export const ChatWindow = ({ recipientId, recipientNickname, collapsed }: ChatWi
     dispatch(getDialogMessagesAsync(request));
   }, [recipientId, authorId, dispatch, lang, token]);
 
+  useEffect(() => setIsLoading(false), [messages]);
+
   return (
     <div className={combineClasses(styles.wrapper, [styles.collapsed, collapsed])}>
       <div className={styles.messages}>
-        {messages && (
+        {messages && !isLoading ? (
           <ul className={styles.messages}>
             {messages.map(({ id, messageText, userId, authorNickname, authorAvatarSrc, date }) => {
               const self = userId === authorId;
@@ -129,6 +135,8 @@ export const ChatWindow = ({ recipientId, recipientNickname, collapsed }: ChatWi
               );
             })}
           </ul>
+        ) : (
+          <Spinner size={42} />
         )}
       </div>
       <CommentInput
