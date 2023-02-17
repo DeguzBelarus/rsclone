@@ -1,10 +1,12 @@
+@import '../../styles/_variables.scss';
+
 .wrapper {
   position: fixed;
-  right: clamp(1rem, 4vw, 2rem);
+  right: 2rem;
   bottom: calc(var(--footer-height) + 6rem);
   display: flex;
   align-items: flex-end;
-  gap: 0;
+  gap: 2em 1em;
 
   .side {
     display: flex;
@@ -72,6 +74,7 @@
 
     .heading {
       text-align: center;
+      margin-top: 1rem;
     }
 
     .windowButtons {
@@ -85,6 +88,36 @@
     }
   }
 }
+
+@media screen and(max-width: $mobile-breakpoint) {
+  .wrapper {
+    flex-direction: column;
+    right: 0rem;
+    bottom: calc(var(--footer-height) + 5rem);    
+
+    .side {
+      flex-direction: row;
+      margin-right: 1.5rem;
+      gap: 0.5em;
+
+      .heading {
+        line-height: 1;
+        writing-mode: vertical-rl;
+        text-orientation: sideways;
+        transform: rotate(180deg);
+      }
+
+      .people {
+        flex-direction: row;
+      }
+    }
+    
+    .window {
+      max-height: calc(min(500px, 60vh));
+    }
+  }
+}
+
 
 @keyframes window-animation {
   to {

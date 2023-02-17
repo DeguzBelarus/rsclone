@@ -62,6 +62,8 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.cancel]: 'Cancel',
     [lng.save]: 'Save',
     [lng.close]: 'Close',
+    [lng.collapse]: 'Collapse',
+    [lng.expand]: 'Expand',
     [lng.clear]: 'Clear',
 
     [lng.searchPlaceholder]: 'Search users...',
@@ -185,6 +187,8 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.confirm]: 'Подтвердить',
     [lng.cancel]: 'Отменить',
     [lng.close]: 'Закрыть',
+    [lng.collapse]: 'Свернуть',
+    [lng.expand]: 'Развернуть',
     [lng.save]: 'Сохранить',
     [lng.clear]: 'Очистить',
 

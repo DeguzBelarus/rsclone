@@ -1,4 +1,12 @@
-import { alpha, ClickAwayListener, IconButton, Paper, Tooltip, useTheme } from '@mui/material';
+import {
+  alpha,
+  ClickAwayListener,
+  IconButton,
+  Paper,
+  Tooltip,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import {
   getActiveChatId,
@@ -34,6 +42,8 @@ export const Chats = ({}: ChatsProps) => {
 
   const [collapsed, setCollapsed] = useState(false);
 
+  const mobile = useMediaQuery('(max-width: 600px)');
+
   const handleDeleteChat = (userId?: number) => {
     const chatIndex = chats.findIndex(({ partnerId }) => partnerId === userId);
     const newChats = [...chats];
@@ -46,94 +56,96 @@ export const Chats = ({}: ChatsProps) => {
 
   const handleSetActiveChat = (id?: number) => {
     if (id) {
-      dispatch(setActiveChatId(id));
-      setCollapsed(false);
+      if (id === activeChatId) {
+        setCollapsed((current) => !current);
+      } else {
+        dispatch(setActiveChatId(id));
+        setCollapsed(false);
+      }
     } else {
       dispatch(setActiveChatId(null));
     }
   };
 
   return isAuthorized && chats.length > 0 ? (
-    <ClickAwayListener onClickAway={() => setCollapsed(true)}>
-      <div className={styles.wrapper}>
-        {activeChat && (
-          <Paper
-            className={combineClasses(styles.window, [styles.collapsed, collapsed])}
-            elevation={6}
-          >
-            <h4 className={styles.heading}>{`${language(lng.chatWith)} ${
-              activeChat?.partnerNickname
-            }`}</h4>
-            <div className={styles.windowButtons}>
-              <Tooltip title={language(lng.close)}>
-                <IconButton
-                  className={styles.collapse}
-                  color="success"
-                  onClick={() => setCollapsed((current) => !current)}
-                >
-                  <CollapseIcon fontSize="small" />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title={language(lng.close)}>
-                <IconButton color="warning">
-                  <DeleteIcon fontSize="small" onClick={() => handleSetActiveChat(undefined)} />
-                </IconButton>
-              </Tooltip>
-            </div>
-            <ChatWindow
-              collapsed={collapsed}
-              recipientId={activeChat?.partnerId}
-              recipientNickname={activeChat?.partnerNickname}
-            />
-          </Paper>
-        )}
+    <div className={styles.wrapper}>
+      {activeChat && (
+        <Paper
+          className={combineClasses(styles.window, [styles.collapsed, collapsed])}
+          elevation={6}
+        >
+          <h4 className={styles.heading}>{`${language(lng.chatWith)} ${
+            activeChat?.partnerNickname
+          }`}</h4>
+          <div className={styles.windowButtons}>
+            <Tooltip title={language(collapsed ? lng.expand : lng.collapse)}>
+              <IconButton
+                className={styles.collapse}
+                color="success"
+                onClick={() => setCollapsed((current) => !current)}
+              >
+                <CollapseIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title={language(lng.close)}>
+              <IconButton color="warning">
+                <DeleteIcon fontSize="small" onClick={() => handleSetActiveChat(undefined)} />
+              </IconButton>
+            </Tooltip>
+          </div>
+          <ChatWindow
+            collapsed={collapsed}
+            recipientId={activeChat?.partnerId}
+            recipientNickname={activeChat?.partnerNickname}
+          />
+        </Paper>
+      )}
 
-        <div className={styles.side}>
-          <h4
-            className={styles.heading}
-            style={{
-              backgroundColor: alpha(palette.background.paper, 0.7),
-              color: palette.text.secondary,
-            }}
-          >
-            {language(lng.chats)}
-          </h4>
-          <ul className={styles.people}>
-            {chats.map(({ partnerId, partnerNickname, partnerAvatar }) => (
-              <li key={partnerId}>
-                <Tooltip
-                  title={`${language(lng.chatWith)} ${partnerNickname}`}
-                  placement="left"
-                  style={{ width: 'max-content' }}
+      <div className={styles.side}>
+        <h4
+          className={styles.heading}
+          style={{
+            backgroundColor: alpha(palette.background.paper, 0.7),
+            color: palette.text.secondary,
+          }}
+        >
+          {language(lng.chats)}
+        </h4>
+        <ul className={styles.people}>
+          {chats.map(({ partnerId, partnerNickname, partnerAvatar }) => (
+            <li key={partnerId}>
+              <Tooltip
+                title={`${language(lng.chatWith)} ${partnerNickname}`}
+                placement={mobile ? 'bottom' : 'left'}
+                style={{ width: 'max-content' }}
+              >
+                <div
+                  className={combineClasses(styles.person, [
+                    styles.active,
+                    partnerId === activeChat?.partnerId,
+                  ])}
                 >
-                  <div
-                    className={combineClasses(styles.person, [
-                      styles.active,
-                      partnerId === activeChat?.partnerId,
-                    ])}
+                  <Avatar
+                    className={styles.avatar}
+                    size="clamp(2.5rem, 10vw, 4rem)"
+                    user={partnerId}
+                    avatarSrc={partnerAvatar}
+                    onClick={() => handleSetActiveChat(partnerId)}
+                  />
+                  <IconButton
+                    className={styles.delete}
+                    color="warning"
+                    onClick={() => handleDeleteChat(partnerId)}
                   >
-                    <Avatar
-                      className={styles.avatar}
-                      size="clamp(2.5rem, 10vw, 4rem)"
-                      user={partnerId}
-                      avatarSrc={partnerAvatar}
-                      onClick={() => handleSetActiveChat(partnerId)}
-                    />
-                    <IconButton
-                      className={styles.delete}
-                      color="warning"
-                      onClick={() => handleDeleteChat(partnerId)}
-                    >
-                      <DeleteIcon fontSize="small" />
-                    </IconButton>
-                  </div>
-                </Tooltip>
-              </li>
-            ))}
-          </ul>
-        </div>
+                    <DeleteIcon fontSize="small" />
+                  </IconButton>
+                </div>
+              </Tooltip>
+            </li>
+          ))}
+        </ul>
       </div>
-    </ClickAwayListener>
+    </div>
   ) : (
     <></>
   );
