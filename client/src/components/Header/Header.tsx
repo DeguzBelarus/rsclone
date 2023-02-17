@@ -22,6 +22,7 @@ import {
   getUserRole,
   setAllPosts,
   setAvatarSrc,
+  setChats,
   setCurrentColorTheme,
   setGuestUserData,
   setIsAuthorized,
@@ -106,6 +107,7 @@ export const Header: FC<Props> = ({ socket }) => {
     dispatch(setUserLastName(null));
     dispatch(setAvatarSrc(null));
     dispatch(setGuestUserData(null));
+    dispatch(setChats([]));
 
     socket.emit('userOffline', userName);
     navigate('/login');

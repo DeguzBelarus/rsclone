@@ -17,6 +17,7 @@ import { ChatWindow } from 'components/ChatWindow/ChatWindow';
 import combineClasses from 'lib/combineClasses';
 import { lng } from 'hooks/useLanguage/types';
 import useLanguage from 'hooks/useLanguage';
+import { getLocalStorageData, setLocalStorageData } from 'app/storage';
 
 interface ChatsProps {
   someprop?: string;
@@ -32,7 +33,7 @@ export const Chats = ({}: ChatsProps) => {
   const dispatch = useAppDispatch();
   const { palette } = useTheme();
 
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(getLocalStorageData()?.chatsCollapsed === true);
   const [windowCollapsed, setWindowCollapsed] = useState(false);
 
   const mobile = useMediaQuery('(max-width: 600px)');
@@ -61,12 +62,15 @@ export const Chats = ({}: ChatsProps) => {
   };
 
   useEffect(() => {
-    setCollapsed(false);
-    setWindowCollapsed(false);
+    if (activeChatId !== null) {
+      setCollapsed(false);
+      setWindowCollapsed(false);
+    }
   }, [activeChatId]);
 
   useEffect(() => {
     if (!collapsed) setWindowCollapsed(false);
+    setLocalStorageData({ chatsCollapsed: collapsed });
   }, [collapsed]);
 
   return isAuthorized && chats.length > 0 ? (

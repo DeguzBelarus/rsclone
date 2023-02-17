@@ -144,6 +144,8 @@ export interface ILocalStorageSaveData {
   token?: string;
   currentLanguage?: CurrentLanguageType;
   currentTheme?: CurrentColorTheme;
+  activeChats?: OpenChats;
+  chatsCollapsed?: boolean;
 }
 
 export interface AlertMessage {

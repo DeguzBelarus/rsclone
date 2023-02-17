@@ -17,6 +17,7 @@ import {
   getGuestUserData,
   getAllPosts,
   getAllPostsAsync,
+  setChats,
 } from 'app/mainSlice';
 import { getLocalStorageData } from 'app/storage';
 import { Header } from './Header/Header';
@@ -72,7 +73,7 @@ export const App: FC<Props> = ({ socket }): JSX.Element => {
   };
 
   useEffect(() => {
-    const { token, currentLanguage, currentTheme } = getLocalStorageData();
+    const { token, currentLanguage, currentTheme, activeChats } = getLocalStorageData();
 
     if (token) {
       dispatch(authCheckUserAsync({ token, lang: currentLanguageFromStore }));
@@ -82,6 +83,9 @@ export const App: FC<Props> = ({ socket }): JSX.Element => {
     }
     if (currentTheme) {
       dispatch(setCurrentColorTheme(currentTheme));
+    }
+    if (activeChats) {
+      dispatch(setChats(activeChats));
     }
   }, [dispatch]);
 
