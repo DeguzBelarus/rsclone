@@ -37,11 +37,10 @@ export const MessagesPage = () => {
       <h2>{language(lng.messagesHeading)}</h2>
       <List>
         {dialogs.map(({ authorNickname, recipientId, recipientNickname, unreadMessages }) => {
-          const nickname = recipientId === userId ? authorNickname : recipientNickname;
           return (
             <ListItem key={recipientId} disablePadding>
               <ListItemButton onClick={() => handleStartChat(recipientId, recipientNickname)}>
-                <ListItemText primary={`${nickname} (${unreadMessages})`} />
+                <ListItemText primary={`${recipientNickname} (${unreadMessages})`} />
               </ListItemButton>
             </ListItem>
           );

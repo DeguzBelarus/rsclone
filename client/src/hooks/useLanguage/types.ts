@@ -60,6 +60,8 @@ export enum lng {
   confirm,
   cancel,
   close,
+  collapse,
+  expand,
   save,
   clear,
 

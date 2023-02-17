@@ -97,7 +97,7 @@ export const Comments = ({ postId, data, onChange }: CommentsProps) => {
 
   return (
     <div className={styles.wrapper}>
-      <h2>{language(lng.commentsHeading)}</h2>
+      <h2 id="comments">{language(lng.commentsHeading)}</h2>
       <div className={styles.add}>
         <CommentInput
           value=""
