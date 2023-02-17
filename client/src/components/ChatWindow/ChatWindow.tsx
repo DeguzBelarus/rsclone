@@ -87,6 +87,7 @@ export const ChatWindow = ({
       recipientId,
     };
     const result = await dispatch(deleteMessageAsync(request));
+    socket.emit('userDeleteMessage', { authorId, recipientId, authorNickname, recipientNickname });
     if (result.meta.requestStatus === 'fulfilled') {
       console.log(result);
     }

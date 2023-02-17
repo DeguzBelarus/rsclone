@@ -103,10 +103,15 @@ io.on("connection", (socket) => {
   // sending message socket event
   socket.on("userSendMessage", (messageData) => {
     const targetUsersOnline = usersOnline.filter((user) => user.nickname === messageData.recipientNickname);
-    console.log(targetUsersOnline);
-
     targetUsersOnline.forEach((targetUser) => {
       io.to(targetUser.socketId).emit("userSendMessage", messageData);
+    });
+  })
+  // deletion message socket event
+  socket.on("userDeleteMessage", (messageData) => {
+    const targetUsersOnline = usersOnline.filter((user) => user.nickname === messageData.recipientNickname);
+    targetUsersOnline.forEach((targetUser) => {
+      io.to(targetUser.socketId).emit("userDeleteMessage", messageData);
     });
   })
 });

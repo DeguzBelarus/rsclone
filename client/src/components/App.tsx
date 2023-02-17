@@ -143,11 +143,16 @@ export const App: FC<Props> = ({ socket }): JSX.Element => {
     socket.on('userSendMessage', (data: IUserDataMessageEvent) => {
       messagesDataRefresh(data);
     });
+    // receive message socket event
+    socket.on('userDeleteMessage', (data: IUserDataMessageEvent) => {
+      messagesDataRefresh(data);
+    });
 
     return () => {
       socket.off('userAddedPost');
       socket.off('userDeletedPost');
       socket.off('userSendMessage');
+      socket.off('userDeleteMessage');
     };
   }, [userId, guestUserData, allPosts, token, currentDialogMessages]);
 
