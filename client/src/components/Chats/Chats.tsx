@@ -1,13 +1,4 @@
-import {
-  alpha,
-  Button,
-  ClickAwayListener,
-  IconButton,
-  Paper,
-  Tooltip,
-  useMediaQuery,
-  useTheme,
-} from '@mui/material';
+import { alpha, Button, IconButton, Paper, Tooltip, useMediaQuery, useTheme } from '@mui/material';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import {
   getActiveChatId,
