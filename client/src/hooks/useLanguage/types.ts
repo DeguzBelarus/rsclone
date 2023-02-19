@@ -126,6 +126,7 @@ export enum lng {
 
   chats,
   chatWith,
+  chatWrote,
   chatsInputEmpty,
 }
 

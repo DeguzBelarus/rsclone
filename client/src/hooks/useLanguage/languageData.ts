@@ -128,6 +128,7 @@ const LANGUAGE_DATA: LangaugeData = {
 
     [lng.chats]: 'Chats',
     [lng.chatWith]: 'Chat with',
+    [lng.chatWrote]: 'wrote',
     [lng.chatsInputEmpty]: 'Message',
   },
 
@@ -260,6 +261,7 @@ const LANGUAGE_DATA: LangaugeData = {
 
     [lng.chats]: 'Чаты',
     [lng.chatWith]: 'Чат с',
+    [lng.chatWrote]: 'написал(a)',
     [lng.chatsInputEmpty]: 'Сообщение',
   },
 };
