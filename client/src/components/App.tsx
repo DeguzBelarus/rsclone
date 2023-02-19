@@ -18,13 +18,15 @@ import {
   getAllPosts,
   getAllPostsAsync,
   setChats,
+  getDialogMessagesAsync,
+  getCurrentDialogMessages,
 } from 'app/mainSlice';
 import { getLocalStorageData } from 'app/storage';
 import { Header } from './Header/Header';
 import { Alert } from './Alert/Alert';
 import { Footer } from './Footer/Footer';
 import { createTheme, ThemeProvider } from '@mui/material';
-import { IUserDataPostEvent } from 'types/types';
+import { IGetDialogMessagesRequest, IUserDataMessageEvent, IUserDataPostEvent } from 'types/types';
 import { Chats } from './Chats/Chats';
 import { setAppTitle } from 'lib/changeMetadata';
 
@@ -40,6 +42,7 @@ export const App: FC<Props> = ({ socket }): JSX.Element => {
 
   const currentLanguageFromStore = useAppSelector(getCurrentLanguage);
   const userId = useAppSelector(getUserId);
+  const currentDialogMessages = useAppSelector(getCurrentDialogMessages);
   const token = useAppSelector(getToken);
   const guestUserData = useAppSelector(getGuestUserData);
   const allPosts = useAppSelector(getAllPosts);
@@ -69,6 +72,39 @@ export const App: FC<Props> = ({ socket }): JSX.Element => {
       if (allPosts) {
         dispatch(getAllPostsAsync({ lang: currentLanguageFromStore }));
       }
+    }
+  };
+
+  const messagesDataRefresh = async (data: IUserDataMessageEvent) => {
+    if (token && userId) {
+      if (currentDialogMessages?.length) {
+        if (
+          currentDialogMessages.some((message) => {
+            if (
+              message.authorNickname === data.authorNickname ||
+              message.recipientNickname === data.authorNickname
+            ) {
+              return true;
+            }
+            return false;
+          })
+        ) {
+          const request: IGetDialogMessagesRequest = {
+            token,
+            lang: currentLanguageFromStore,
+            userId,
+            interlocutorId: data.authorId,
+          };
+          await dispatch(getDialogMessagesAsync(request));
+        }
+      }
+
+      await dispatch(
+        getOneUserInfoAsync({
+          token,
+          requestData: { lang: currentLanguageFromStore, id: userId },
+        })
+      );
     }
   };
 
@@ -103,11 +139,22 @@ export const App: FC<Props> = ({ socket }): JSX.Element => {
       postsDataRefresh(data);
     });
 
+    // receive message socket event
+    socket.on('userSendMessage', (data: IUserDataMessageEvent) => {
+      messagesDataRefresh(data);
+    });
+    // receive message socket event
+    socket.on('userDeleteMessage', (data: IUserDataMessageEvent) => {
+      messagesDataRefresh(data);
+    });
+
     return () => {
       socket.off('userAddedPost');
       socket.off('userDeletedPost');
+      socket.off('userSendMessage');
+      socket.off('userDeleteMessage');
     };
-  }, [userId, guestUserData, allPosts]);
+  }, [userId, guestUserData, allPosts, token, currentDialogMessages]);
 
   useEffect(() => {
     // connection socket events
@@ -136,7 +183,7 @@ export const App: FC<Props> = ({ socket }): JSX.Element => {
       </main>
       <Alert />
       <Footer />
-      <Chats />
+      <Chats socket={socket} />
     </ThemeProvider>
   );
 };

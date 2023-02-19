@@ -161,7 +161,7 @@ class MessageController {
           );
         }
 
-        const dialogMessages = await Message.findAll({
+        let dialogMessages = await Message.findAll({
           where: {
             [Op.or]: [
               { [Op.and]: [{ userId: userId, recipientId: interlocutorId }] },
@@ -179,6 +179,16 @@ class MessageController {
             }
           })
         }
+
+        dialogMessages = dialogMessages.sort((prevMessage, nextMessage) => {
+          if (Number(prevMessage.dataValues.date) > Number(nextMessage.dataValues.date)) {
+            return 1;
+          }
+          if (Number(prevMessage.dataValues.date) < Number(nextMessage.dataValues.date)) {
+            return -1;
+          }
+          return 0;
+        })
 
         return response.json({
           messages: dialogMessages,

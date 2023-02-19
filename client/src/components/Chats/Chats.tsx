@@ -8,9 +8,11 @@ import {
   setChats,
 } from 'app/mainSlice';
 import Avatar from 'components/Avatar';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, FC } from 'react';
 import DeleteIcon from '@mui/icons-material/HighlightOffRounded';
 import CollapseIcon from '@mui/icons-material/ExpandCircleDown';
+import { Socket } from 'socket.io-client';
+import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 
 import styles from './Chats.module.scss';
 import { ChatWindow } from 'components/ChatWindow/ChatWindow';
@@ -19,7 +21,11 @@ import { lng } from 'hooks/useLanguage/types';
 import useLanguage from 'hooks/useLanguage';
 import { getLocalStorageData, setLocalStorageData } from 'app/storage';
 
-export const Chats = () => {
+interface Props {
+  socket: Socket<DefaultEventsMap, DefaultEventsMap>;
+}
+
+export const Chats: FC<Props> = ({ socket }) => {
   const isAuthorized = useAppSelector(getIsAuthorized);
   const chats = useAppSelector(getChats);
   const activeChatId = useAppSelector(getActiveChatId);
@@ -99,6 +105,7 @@ export const Chats = () => {
             </Tooltip>
           </div>
           <ChatWindow
+            socket={socket}
             collapsed={windowCollapsed}
             recipientId={activeChat?.partnerId}
             recipientNickname={activeChat?.partnerNickname}

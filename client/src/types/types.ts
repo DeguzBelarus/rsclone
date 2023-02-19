@@ -358,3 +358,10 @@ export interface IUserDataPostEvent {
   userNickname: string;
   userId: number;
 }
+
+export interface IUserDataMessageEvent {
+  authorId: number;
+  recipientId: number;
+  authorNickname: string;
+  recipientNickname: string;
+}

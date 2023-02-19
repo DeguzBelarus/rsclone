@@ -9,6 +9,8 @@ import {
   getUserId,
   getUserNickname,
   sendMessageAsync,
+  getOneUserInfoAsync,
+  setCurrentDialogMessages,
 } from 'app/mainSlice';
 import Avatar from 'components/Avatar';
 import { CommentInput } from 'components/CommentInput/CommentInput';
@@ -17,9 +19,12 @@ import useLanguage from 'hooks/useLanguage';
 import { lng } from 'hooks/useLanguage/types';
 import combineClasses from 'lib/combineClasses';
 import React, { useEffect, useRef, useState } from 'react';
+import { Socket } from 'socket.io-client';
+import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import {
   IDeleteMessageRequest,
   IGetDialogMessagesRequest,
+  IGetOneUserRequestData,
   IMessageModel,
   ISendMessageRequest,
 } from 'types/types';
@@ -32,6 +37,7 @@ interface ChatWindowProps {
   recipientNickname?: string;
   collapsed?: boolean;
   onCancel?: () => void;
+  socket: Socket<DefaultEventsMap, DefaultEventsMap>;
 }
 
 export const ChatWindow = ({
@@ -39,6 +45,7 @@ export const ChatWindow = ({
   recipientNickname,
   collapsed,
   onCancel,
+  socket,
 }: ChatWindowProps) => {
   const { palette } = useTheme();
   const language = useLanguage();
@@ -50,9 +57,10 @@ export const ChatWindow = ({
   const messages: IMessageModel[] | null = useAppSelector(getCurrentDialogMessages);
 
   const [isLoading, setIsLoading] = useState(false);
+  const [isUserDataUpdated, setIsUserDataUpdated] = useState(false);
   const messagesRef = useRef<HTMLUListElement>(null);
 
-  const handleSend = (messageText: string) => {
+  const handleSend = async (messageText: string) => {
     if (!token || !authorId || !authorNickname || !recipientId || !recipientNickname) return;
     const request: ISendMessageRequest = {
       lang,
@@ -65,7 +73,8 @@ export const ChatWindow = ({
         messageText,
       },
     };
-    dispatch(sendMessageAsync(request));
+    await dispatch(sendMessageAsync(request));
+    socket.emit('userSendMessage', { authorId, recipientId, authorNickname, recipientNickname });
   };
 
   const handleDelete = async (messageId?: number, ownerId?: number, recipientId?: number) => {
@@ -78,6 +87,7 @@ export const ChatWindow = ({
       recipientId,
     };
     const result = await dispatch(deleteMessageAsync(request));
+    socket.emit('userDeleteMessage', { authorId, recipientId, authorNickname, recipientNickname });
     if (result.meta.requestStatus === 'fulfilled') {
       console.log(result);
     }
@@ -97,6 +107,20 @@ export const ChatWindow = ({
 
   useEffect(() => {
     setIsLoading(false);
+
+    if (!isUserDataUpdated && authorId && messages?.length) {
+      if (token && authorId) {
+        const request: IGetOneUserRequestData = {
+          token,
+          requestData: {
+            id: authorId,
+            lang,
+          },
+        };
+        dispatch(getOneUserInfoAsync(request));
+        setIsUserDataUpdated(true);
+      }
+    }
   }, [messages]);
 
   useEffect(() => {
@@ -106,6 +130,11 @@ export const ChatWindow = ({
     }
   }, [messages, isLoading, messagesRef]);
 
+  useEffect(() => {
+    return () => {
+      dispatch(setCurrentDialogMessages([]));
+    };
+  }, []);
   return (
     <div className={combineClasses(styles.wrapper, [styles.collapsed, collapsed])}>
       <div className={styles.messages}>

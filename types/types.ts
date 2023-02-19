@@ -83,11 +83,20 @@ export interface IServerToClientEvents {
   onlineUsersUpdate: (onlineUsers: Array<string>) => void;
   userAddedPost: (userData: IUserDataPostEvent) => void;
   userDeletedPost: (userData: IUserDataPostEvent) => void;
+  userSendMessage: (userData: IUserDataMessageEvent) => void;
+  userDeleteMessage: (userData: IUserDataMessageEvent) => void;
 }
 
 export interface IUserDataPostEvent {
   userNickname: string;
   userId: number;
+}
+
+export interface IUserDataMessageEvent {
+  authorId: number;
+  recipientId: number;
+  authorNickname: string;
+  recipientNickname: string;
 }
 
 export interface IClientToServerEvents {
@@ -96,6 +105,8 @@ export interface IClientToServerEvents {
   nicknameUpdated: (userNickname: string) => void;
   userAddPost: (userData: IUserDataPostEvent) => void;
   userDeletePost: (userData: IUserDataPostEvent) => void;
+  userSendMessage: (userData: IUserDataMessageEvent) => void;
+  userDeleteMessage: (userData: IUserDataMessageEvent) => void;
 }
 
 export interface IInterServerEvents {

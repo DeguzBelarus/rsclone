@@ -966,7 +966,7 @@ export const mainSlice = createSlice({
     setDialogs(state: WritableDraft<MainState>, { payload }: PayloadAction<Array<IUserDialog>>) {
       state.dialogs = payload;
     },
-    setCurrentDialog(
+    setCurrentDialogMessages(
       state: WritableDraft<MainState>,
       { payload }: PayloadAction<Nullable<Array<IMessageModel>>>
     ) {
@@ -1663,7 +1663,7 @@ export const {
     setPosts,
     setCurrentPost,
     setAllPosts,
-    setCurrentDialog,
+    setCurrentDialogMessages,
     setDialogs,
     setUnreadMessagesCount,
     setChats,

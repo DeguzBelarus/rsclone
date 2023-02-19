@@ -68,7 +68,7 @@ export const MessagesPage = () => {
                           <MessageIcon fontSize="small" />
                           {`${language(lng.messagesLastMsg)}: ${lastMessageText}`}
                         </span>
-                        <span className={styles.unread}>
+                        <span className={unreadMessages ? styles.unreadContained : styles.unread}>
                           <UnreadIcon fontSize="small" />
                           {`${language(lng.messagesUnread)}: ${unreadMessages}`}
                         </span>

@@ -98,6 +98,22 @@ io.on("connection", (socket) => {
   socket.on("userDeletePost", (userData) => {
     socket.broadcast.emit("userDeletedPost", userData)
   })
+
+  // messages socket events
+  // sending message socket event
+  socket.on("userSendMessage", (messageData) => {
+    const targetUsersOnline = usersOnline.filter((user) => user.nickname === messageData.recipientNickname);
+    targetUsersOnline.forEach((targetUser) => {
+      io.to(targetUser.socketId).emit("userSendMessage", messageData);
+    });
+  })
+  // deletion message socket event
+  socket.on("userDeleteMessage", (messageData) => {
+    const targetUsersOnline = usersOnline.filter((user) => user.nickname === messageData.recipientNickname);
+    targetUsersOnline.forEach((targetUser) => {
+      io.to(targetUser.socketId).emit("userDeleteMessage", messageData);
+    });
+  })
 });
 
 (async function () {
