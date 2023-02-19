@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { Socket } from 'socket.io-client';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
@@ -9,7 +9,6 @@ import {
   setCurrentLanguage,
   setUsersOnline,
   getCurrentLanguage,
-  getCurrentColorTheme,
   setCurrentColorTheme,
   getUserId,
   getOneUserInfoAsync,
@@ -25,10 +24,11 @@ import { getLocalStorageData } from 'app/storage';
 import { Header } from './Header/Header';
 import { Alert } from './Alert/Alert';
 import { Footer } from './Footer/Footer';
-import { createTheme, ThemeProvider } from '@mui/material';
+import { ThemeProvider } from '@mui/material';
 import { IGetDialogMessagesRequest, IUserDataMessageEvent, IUserDataPostEvent } from 'types/types';
 import { Chats } from './Chats/Chats';
 import { setAppTitle } from 'lib/changeMetadata';
+import useThemeChanger from 'hooks/useThemeChanger';
 
 interface Props {
   socket: Socket<DefaultEventsMap, DefaultEventsMap>;
@@ -37,8 +37,7 @@ interface Props {
 export const App: FC<Props> = ({ socket }): JSX.Element => {
   const dispatch = useAppDispatch();
   const routes = useRoutes(socket);
-  const { currentTheme: currentThemeSaved } = getLocalStorageData();
-  const [theme, setTheme] = useState(createTheme({ palette: { mode: currentThemeSaved } }));
+  const theme = useThemeChanger();
 
   const currentLanguageFromStore = useAppSelector(getCurrentLanguage);
   const userId = useAppSelector(getUserId);
@@ -46,7 +45,6 @@ export const App: FC<Props> = ({ socket }): JSX.Element => {
   const token = useAppSelector(getToken);
   const guestUserData = useAppSelector(getGuestUserData);
   const allPosts = useAppSelector(getAllPosts);
-  const currentTheme = useAppSelector(getCurrentColorTheme);
 
   const postsDataRefresh = (data: IUserDataPostEvent) => {
     if (userId && token) {
@@ -124,10 +122,6 @@ export const App: FC<Props> = ({ socket }): JSX.Element => {
       dispatch(setChats(activeChats));
     }
   }, [dispatch]);
-
-  useEffect(() => {
-    setTheme(createTheme({ palette: { mode: currentTheme } }));
-  }, [currentTheme]);
 
   useEffect(() => {
     // create post socket event
