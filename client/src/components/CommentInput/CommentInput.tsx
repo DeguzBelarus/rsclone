@@ -5,6 +5,7 @@ import { IconButton, TextField, Tooltip } from '@mui/material';
 import { Send as SendIcon, Clear as ClearIcon } from '@mui/icons-material';
 import useValidateInput from 'hooks/useValidateInput';
 import { EmojiButton } from 'components/EmojiButton/EmojiButton';
+import { current } from '@reduxjs/toolkit';
 
 interface CommentInputProps {
   value: string;
@@ -56,6 +57,19 @@ export const CommentInput = ({
     resetInput();
   };
 
+  const handleEmojiAdded = (emoji: string) => {
+    const input = inputRef.current;
+    if (input) {
+      const start = input.selectionStart || value.length;
+      const end = input.selectionEnd || value.length;
+      setTouched(true);
+
+      setValue((current) => {
+        return `${current.slice(0, start)}${emoji}${current.slice(end)}`;
+      });
+    }
+  };
+
   useEffect(() => setValue(initialValue), [initialValue]);
 
   useEffect(() => {
@@ -89,14 +103,14 @@ export const CommentInput = ({
           <>
             <Tooltip title={language(lng.commentPublish)}>
               <span>
-                <IconButton disabled={error} color="inherit" onClick={handleSubmit}>
+                <IconButton disabled={error} onClick={handleSubmit}>
                   <SendIcon />
                 </IconButton>
               </span>
             </Tooltip>
-            <EmojiButton />
+            <EmojiButton onEmojiAdded={handleEmojiAdded} />
             <Tooltip title={language(lng.clear)}>
-              <IconButton color="inherit" onClick={handleReset}>
+              <IconButton onClick={handleReset}>
                 <ClearIcon />
               </IconButton>
             </Tooltip>
