@@ -4,6 +4,7 @@ import { lng } from 'hooks/useLanguage/types';
 import { IconButton, TextField, Tooltip } from '@mui/material';
 import { Send as SendIcon, Clear as ClearIcon } from '@mui/icons-material';
 import useValidateInput from 'hooks/useValidateInput';
+import { EmojiButton } from 'components/EmojiButton/EmojiButton';
 
 interface CommentInputProps {
   value: string;
@@ -93,6 +94,7 @@ export const CommentInput = ({
                 </IconButton>
               </span>
             </Tooltip>
+            <EmojiButton />
             <Tooltip title={language(lng.clear)}>
               <IconButton color="inherit" onClick={handleReset}>
                 <ClearIcon />
