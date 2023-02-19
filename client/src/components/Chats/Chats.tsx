@@ -1,8 +1,18 @@
-import { alpha, Button, IconButton, Paper, Tooltip, useMediaQuery, useTheme } from '@mui/material';
+import {
+  alpha,
+  Badge,
+  Button,
+  IconButton,
+  Paper,
+  Tooltip,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import {
   getActiveChatId,
   getChats,
+  getDialogs,
   getIsAuthorized,
   setActiveChatId,
   setChats,
@@ -30,6 +40,7 @@ export const Chats: FC<Props> = ({ socket }) => {
   const chats = useAppSelector(getChats);
   const activeChatId = useAppSelector(getActiveChatId);
   const activeChat = chats.find(({ partnerId }) => partnerId === activeChatId);
+  const dialogs = useAppSelector(getDialogs);
 
   const language = useLanguage();
   const dispatch = useAppDispatch();
@@ -61,6 +72,13 @@ export const Chats: FC<Props> = ({ socket }) => {
     } else {
       dispatch(setActiveChatId(null));
     }
+  };
+
+  const getUnreadCount = (partnerId?: number) => {
+    const dialog = dialogs.find(
+      ({ authorId, recipientId }) => partnerId === authorId || partnerId == recipientId
+    );
+    return dialog?.unreadMessages || 0;
   };
 
   useEffect(() => {
@@ -143,13 +161,24 @@ export const Chats: FC<Props> = ({ socket }) => {
                     partnerId === activeChat?.partnerId,
                   ])}
                 >
-                  <Avatar
-                    className={styles.avatar}
-                    size="clamp(2.5rem, 10vw, 4rem)"
-                    user={partnerId}
-                    avatarSrc={partnerAvatar}
-                    onClick={() => handleSetActiveChat(partnerId)}
-                  />
+                  <Badge
+                    badgeContent={getUnreadCount(partnerId)}
+                    color="warning"
+                    sx={{
+                      '& .MuiBadge-badge': {
+                        right: '90%',
+                        top: '20%',
+                      },
+                    }}
+                  >
+                    <Avatar
+                      className={styles.avatar}
+                      size="clamp(2.5rem, 10vw, 4rem)"
+                      user={partnerId}
+                      avatarSrc={partnerAvatar}
+                      onClick={() => handleSetActiveChat(partnerId)}
+                    />
+                  </Badge>
                   <IconButton
                     className={styles.delete}
                     color="warning"
