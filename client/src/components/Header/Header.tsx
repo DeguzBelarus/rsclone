@@ -258,7 +258,7 @@ export const Header: FC<Props> = ({ socket }) => {
           sx={{
             display: 'block',
             bgcolor: role === USER_ROLE_ADMIN ? palette.warning.main : undefined,
-            color: palette.warning.contrastText,
+            color: role === USER_ROLE_ADMIN ? palette.warning.contrastText : undefined,
             borderRadius: { xs: '50%', sm: '2em' },
             padding: '6px',
             '&:hover': {
