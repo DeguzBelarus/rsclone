@@ -1,0 +1,61 @@
+.wrapper {
+  position: relative;
+
+  padding-top: 1.5rem;
+
+  .bottomLine {
+    position: relative;
+    height: 2px;
+
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+    }
+
+    &::before {
+      top: 1px;
+      background-color: var(--color);
+    }
+
+    &::after {
+      background-color: var(--focused-color);
+      transform: scale(0);
+      transition: transform 0.2s;
+    }
+  }
+
+  .label {
+    position: absolute;
+    top: 1.5rem;
+    transition: all 0.2s;
+    line-height: 1.4;
+    color: var(--color);
+    user-select: none;
+    cursor: text;
+  }
+
+  &.focused,
+  &.empty {
+    .label {
+      transform: translateY(-140%);
+      color: var(--focused-color);
+      font-size: 0.785em;
+    }
+  }
+
+  &:not(&.focused):hover {
+    .bottomLine {
+      &::before {
+        background-color: var(--hover-color);
+      }
+    }
+  }
+
+  &.focused {
+    .bottomLine::after {
+      transform: scale(1);
+    }
+  }
+}

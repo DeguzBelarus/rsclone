@@ -34,6 +34,7 @@ import { MediaContainer } from 'components/MediaContainer/MediaContainer';
 import { useNavigate } from 'react-router-dom';
 import { RecorderButton } from 'components/RecorderButton/RecorderButton';
 import { Recorder } from 'components/Recorder/Recorder';
+import { RichEditor } from 'components/RichEditor/RichEditor';
 
 export interface EditPostModalProps {
   open: boolean;
@@ -178,14 +179,17 @@ export const EditPostModal = ({
       <DialogTitle>{language(id ? lng.editPostTitle : lng.newPostTitle)}</DialogTitle>
       <DialogContent className={styles.content}>
         <TextField
+          variant="standard"
           value={titleValue}
           label={language(lng.postTitle)}
           error={titleError}
           onChange={validateTitle}
           helperText={titleError ? language(lng.postTitleHint) : ' '}
         />
+        <RichEditor label={language(lng.postBody)} />
         <TextField
           multiline
+          variant="standard"
           minRows={3}
           maxRows={8}
           value={bodyValue}

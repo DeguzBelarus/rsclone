@@ -1,0 +1,9 @@
+.DraftEditor-root {
+  height: calc(min(120px, 30vh));
+  overflow-y: auto;
+
+  .DraftEditor-editorContainer,
+  .public-DraftEditor-content {
+    height: 100%;
+  }
+}
