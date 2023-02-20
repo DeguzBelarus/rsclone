@@ -5,7 +5,6 @@ import { IconButton, TextField, Tooltip } from '@mui/material';
 import { Send as SendIcon, Clear as ClearIcon } from '@mui/icons-material';
 import useValidateInput from 'hooks/useValidateInput';
 import { EmojiButton } from 'components/EmojiButton/EmojiButton';
-import { current } from '@reduxjs/toolkit';
 
 interface CommentInputProps {
   value: string;

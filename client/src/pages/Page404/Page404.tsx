@@ -1,7 +1,7 @@
 import { Button } from '@mui/material';
 import useLanguage from 'hooks/useLanguage';
 import { lng } from 'hooks/useLanguage/types';
-import React, { FC } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import styles from './Page404.module.scss';
