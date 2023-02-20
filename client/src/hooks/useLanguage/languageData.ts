@@ -130,6 +130,13 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.chatWith]: 'Chat with',
     [lng.chatWrote]: 'wrote',
     [lng.chatsInputEmpty]: 'Message',
+
+    [lng.formatBold]: 'Bold',
+    [lng.formatItalic]: 'Italic',
+    [lng.formatUnderline]: 'Underline',
+    [lng.formatTitle]: 'Heading',
+    [lng.formatHighlight]: 'Highlight',
+    [lng.formatAddLink]: 'Add link',
   },
 
   ru: {
@@ -263,6 +270,13 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.chatWith]: 'Чат с',
     [lng.chatWrote]: 'написал(a)',
     [lng.chatsInputEmpty]: 'Сообщение',
+
+    [lng.formatBold]: 'Жирный',
+    [lng.formatItalic]: 'Курсив',
+    [lng.formatUnderline]: 'Подчеркивание',
+    [lng.formatTitle]: 'Заголовок',
+    [lng.formatHighlight]: 'Выделить',
+    [lng.formatAddLink]: 'Добавить ссылку',
   },
 };
 

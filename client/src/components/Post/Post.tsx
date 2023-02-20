@@ -39,6 +39,7 @@ import styles from './Post.module.scss';
 import Avatar from 'components/Avatar';
 import { USER_ROLE_ADMIN } from 'consts';
 import CommentsIcon from '@mui/icons-material/SpeakerNotes';
+import { RichEditor } from 'components/RichEditor/RichEditor';
 
 interface PostProps {
   data: IPostModel;
@@ -124,7 +125,8 @@ export const Post = ({ data, single, ownHighlight, onDelete, onEdit, socket }: P
           <PostDate style={{ opacity: 0.7 }} date={date} editDate={editDate} />
         </div>
         <div className={styles.body}>
-          <pre>{text}</pre>
+          <RichEditor readOnly initialValue={text} />
+          {/* <pre>{text}</pre> */}
         </div>
       </CardContent>
       <CardActions disableSpacing>

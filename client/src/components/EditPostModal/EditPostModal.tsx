@@ -57,6 +57,7 @@ export const EditPostModal = ({
 }: EditPostModalProps) => {
   const [titleValue, setTitleValue] = useState(postHeading || '');
   const [bodyValue, setBodyValue] = useState(postText || '');
+  const [bodyRaw, setBodyRaw] = useState('');
   const [titleError, setTitleError] = useState(false);
   const [bodyError, setBodyError] = useState(false);
   const [mediaValue, setMediaValue] = useState<Blob>();
@@ -80,7 +81,14 @@ export const EditPostModal = ({
     setTouched
   );
 
-  const validateBody = useValidateInput(POST_BODY_PATTERN, setBodyValue, setBodyError, setTouched);
+  const validateBody = (value: string) => value.trim() !== '';
+
+  const handlePostBodyChange = (value: string, raw: string) => {
+    setBodyValue(value);
+    setBodyRaw(raw);
+    setBodyError(!validateBody(value));
+    setTouched(true);
+  };
 
   const handleClose = () => {
     if (mediaLoading) return;
@@ -98,7 +106,7 @@ export const EditPostModal = ({
     const requestData = new FormData();
     requestData.append('lang', lang);
     requestData.append('postHeading', titleValue);
-    requestData.append('postText', bodyValue);
+    requestData.append('postText', bodyRaw);
     if (mediaValue) requestData.append('media', mediaValue);
 
     const result = await dispatch(createPostAsync({ ownId, token, requestData }));
@@ -113,7 +121,7 @@ export const EditPostModal = ({
       token,
       requestData: {
         postHeading: titleValue,
-        postText: bodyValue,
+        postText: bodyRaw,
       },
     };
     const result = await dispatch(updatePostAsync(postData));
@@ -128,7 +136,7 @@ export const EditPostModal = ({
 
     if (result) {
       handleClose();
-      if (onSuccess) onSuccess(titleValue, bodyValue);
+      if (onSuccess) onSuccess(titleValue, bodyRaw);
       const path = window.location.pathname;
       if (path === '/posts') {
         dispatch(getAllPostsAsync({ lang }));
@@ -156,7 +164,6 @@ export const EditPostModal = ({
   useEffect(() => {
     if (open) {
       setTitleValue(postHeading || '');
-      setBodyValue(postText || '');
     }
     setTitleError(false);
     setBodyError(false);
@@ -186,16 +193,11 @@ export const EditPostModal = ({
           onChange={validateTitle}
           helperText={titleError ? language(lng.postTitleHint) : ' '}
         />
-        <RichEditor label={language(lng.postBody)} />
-        <TextField
-          multiline
-          variant="standard"
-          minRows={3}
-          maxRows={8}
-          value={bodyValue}
+        <RichEditor
           label={language(lng.postBody)}
           error={bodyError}
-          onChange={validateBody}
+          initialValue={postText}
+          onChange={handlePostBodyChange}
           helperText={bodyError ? language(lng.postBodyHint) : ' '}
         />
         {id === undefined && (

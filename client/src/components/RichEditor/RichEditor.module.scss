@@ -1,7 +1,44 @@
 .wrapper {
   position: relative;
-
   padding-top: 1.5rem;
+
+  .controls {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    .divider {
+      display: block;
+      width: 2px;
+      margin-inline: 0.3em;
+      height: 1.8em;
+    }
+  }
+
+  .label {
+    --top-offset: 3.6rem;
+    position: absolute;
+    top: var(--top-offset);
+    transition: all 0.2s;
+    line-height: 1.4;
+    color: var(--color);
+    user-select: none;
+    cursor: text;
+  }
+
+  &.focused,
+  &.empty {
+    .label {
+      transform: translateY(calc(-1 * var(--top-offset)));
+      font-size: 0.785em;
+      color: var(--focused-color);
+    }
+  }
+
+  &.empty:not(&.focused) {
+    .label {
+      color: var(--color);
+    }
+  }
 
   .bottomLine {
     position: relative;
@@ -26,36 +63,37 @@
     }
   }
 
-  .label {
-    position: absolute;
-    top: 1.5rem;
-    transition: all 0.2s;
-    line-height: 1.4;
+  .helperText {
+    margin-top: 0.5em;
+    font-size: 0.785em;
     color: var(--color);
-    user-select: none;
-    cursor: text;
   }
 
-  &.focused,
-  &.empty {
+  &:hover .bottomLine::before {
+    top: 0;
+    background-color: var(--hover-color);
+  }
+
+  &.focused .bottomLine::after {
+    transform: scale(1);
+  }
+
+  &.error {
     .label {
-      transform: translateY(-140%);
-      color: var(--focused-color);
-      font-size: 0.785em;
+      color: var(--error-color);
     }
-  }
-
-  &:not(&.focused):hover {
     .bottomLine {
+      &::after,
       &::before {
-        background-color: var(--hover-color);
+        background-color: var(--error-color);
       }
     }
+    .helperText {
+      color: var(--error-color);
+    }
   }
 
-  &.focused {
-    .bottomLine::after {
-      transform: scale(1);
-    }
+  &.readonly {
+    padding-top: 0;
   }
 }

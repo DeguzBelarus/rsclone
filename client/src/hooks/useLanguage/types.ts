@@ -128,6 +128,13 @@ export enum lng {
   chatWith,
   chatWrote,
   chatsInputEmpty,
+
+  formatBold,
+  formatItalic,
+  formatUnderline,
+  formatTitle,
+  formatHighlight,
+  formatAddLink,
 }
 
 export type LangaugeData = {
