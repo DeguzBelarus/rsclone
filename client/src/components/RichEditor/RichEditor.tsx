@@ -104,13 +104,14 @@ export const RichEditor = ({
     },
   };
 
-  const handleChange = (state: EditorState) => {
+  const handleChange = async (state: EditorState) => {
     setEditorState(state);
     if (onChange) {
       const raw = convertToRaw(editorState.getCurrentContent());
       const value = raw.blocks
         .map((block) => (!block.text.trim() && '\n') || block.text)
         .join('\n');
+      const str = JSON.stringify(raw);
       onChange(value, JSON.stringify(raw));
     }
   };
