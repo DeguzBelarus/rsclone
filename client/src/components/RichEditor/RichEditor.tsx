@@ -7,6 +7,7 @@ import {
   convertToRaw,
   convertFromRaw,
   ContentState,
+  getDefaultKeyBinding,
 } from 'draft-js';
 
 import styles from './RichEditor.module.scss';
@@ -30,16 +31,11 @@ interface EditorButtonProps {
   icon: React.ReactNode;
   title: string;
   editorState: EditorState;
-  onStateChange: (state: EditorState) => void;
+  toggleStyle: (style: string) => void;
 }
 
-const EditorButton = ({ style, icon, title, editorState, onStateChange }: EditorButtonProps) => {
+const EditorButton = ({ style, icon, title, editorState, toggleStyle }: EditorButtonProps) => {
   const [isStyle, setIsStyle] = useState(false);
-
-  const toggleStyle = () => {
-    const state = EditorState.forceSelection(editorState, editorState.getSelection());
-    onStateChange(RichUtils.toggleInlineStyle(state, style));
-  };
 
   useEffect(() => {
     const inlineStyle = editorState.getCurrentInlineStyle();
@@ -48,7 +44,11 @@ const EditorButton = ({ style, icon, title, editorState, onStateChange }: Editor
 
   return (
     <Tooltip title={title}>
-      <IconButton size="small" color={isStyle ? 'primary' : 'default'} onClick={toggleStyle}>
+      <IconButton
+        size="small"
+        color={isStyle ? 'primary' : 'default'}
+        onClick={() => toggleStyle(style)}
+      >
         {icon}
       </IconButton>
     </Tooltip>
@@ -56,14 +56,19 @@ const EditorButton = ({ style, icon, title, editorState, onStateChange }: Editor
 };
 
 const editorButtons = [
-  { style: 'BOLD', icon: <FormatBoldIcon />, title: lng.formatBold },
-  { style: 'ITALIC', icon: <FormatItalicIcon />, title: lng.formatItalic },
-  { style: 'UNDERLINE', icon: <FormatUnderlinedIcon />, title: lng.formatUnderline },
+  { style: 'BOLD', icon: <FormatBoldIcon />, title: lng.formatBold, shortcut: 'Ctrl+B' },
+  { style: 'ITALIC', icon: <FormatItalicIcon />, title: lng.formatItalic, shortcut: 'Ctrl+I' },
+  {
+    style: 'UNDERLINE',
+    icon: <FormatUnderlinedIcon />,
+    title: lng.formatUnderline,
+    shortcut: 'Ctrl+U',
+  },
   { style: 'DIVIDER' },
-  { style: 'HEADING', icon: <TitleIcon />, title: lng.formatTitle },
-  { style: 'HIGHLIGHT', icon: <BrushIcon />, title: lng.formatHighlight },
+  { style: 'HEADING', icon: <TitleIcon />, title: lng.formatTitle, shortcut: 'Ctrl+H' },
+  { style: 'HIGHLIGHT', icon: <BrushIcon />, title: lng.formatHighlight, shortcut: 'Ctrl+M' },
   { style: 'DIVIDER' },
-  { style: 'LINK', icon: <AddLinkIcon />, title: lng.formatAddLink },
+  { style: 'LINK', icon: <AddLinkIcon />, title: lng.formatAddLink, shortcut: 'Ctrl+K' },
 ];
 
 interface RichEditorProps {
@@ -106,6 +111,11 @@ export const RichEditor = ({
     },
   };
 
+  const toggleStyle = (style: string) => {
+    const state = EditorState.forceSelection(editorState, editorState.getSelection());
+    setEditorState(RichUtils.toggleInlineStyle(state, style));
+  };
+
   const handleChange = async (state: EditorState) => {
     setEditorState(state);
     if (onChange) {
@@ -118,6 +128,10 @@ export const RichEditor = ({
   };
 
   const handleKeyCommand = (command: string, editorState: EditorState) => {
+    if (['HEADING', 'HIGHLIGHT'].includes(command)) {
+      toggleStyle(command);
+      return 'handled';
+    }
     const newState = RichUtils.handleKeyCommand(editorState, command);
     if (newState) {
       setEditorState(newState);
@@ -125,6 +139,15 @@ export const RichEditor = ({
     }
     return 'not-handled';
   };
+
+  function handleKeyBindings(event: React.KeyboardEvent<object>): string | null {
+    if (event.ctrlKey) {
+      if (event.key === 'h') return 'HEADING';
+      if (event.key === 'm') return 'HIGHLIGHT';
+      if (event.key === 'k') return 'LINK';
+    }
+    return getDefaultKeyBinding(event);
+  }
 
   useEffect(() => {
     const wrapper = wrapperRef.current;
@@ -164,7 +187,7 @@ export const RichEditor = ({
     >
       {!readOnly && (
         <div className={styles.controls}>
-          {editorButtons.map(({ style, icon, title }, index) =>
+          {editorButtons.map(({ style, icon, title, shortcut }, index) =>
             style === 'DIVIDER' ? (
               <span
                 key={index}
@@ -176,9 +199,9 @@ export const RichEditor = ({
                 key={style}
                 style={style}
                 icon={icon}
-                title={language(title || lng.formatBold)}
+                title={`${language(title || lng.formatBold)} (${shortcut})`}
                 editorState={editorState}
-                onStateChange={setEditorState}
+                toggleStyle={toggleStyle}
               />
             )
           )}
@@ -190,6 +213,7 @@ export const RichEditor = ({
         editorState={editorState}
         onChange={handleChange}
         handleKeyCommand={handleKeyCommand}
+        keyBindingFn={handleKeyBindings}
         readOnly={readOnly}
         onFocus={() => setEditorFocused(true)}
         onBlur={() => setEditorFocused(false)}
