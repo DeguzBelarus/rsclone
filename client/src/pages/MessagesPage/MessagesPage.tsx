@@ -1,4 +1,11 @@
-import { List, ListItemAvatar, ListItemButton, ListItemText, Tooltip } from '@mui/material';
+import {
+  List,
+  ListItemAvatar,
+  ListItemButton,
+  ListItemText,
+  Tooltip,
+  useTheme,
+} from '@mui/material';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { getChats, getDialogs, getUserId, setActiveChatId, setChats } from 'app/mainSlice';
 import Avatar from 'components/Avatar';
@@ -13,6 +20,7 @@ import styles from './MessagesPage.module.scss';
 
 export const MessagesPage = () => {
   const language = useLanguage();
+  const { palette } = useTheme();
   const dispatch = useAppDispatch();
   const dialogs: IUserDialog[] = useAppSelector(getDialogs);
   const userId = useAppSelector(getUserId);
@@ -68,7 +76,10 @@ export const MessagesPage = () => {
                           <MessageIcon fontSize="small" />
                           {`${language(lng.messagesLastMsg)}: ${lastMessageText}`}
                         </span>
-                        <span className={unreadMessages ? styles.unreadContained : styles.unread}>
+                        <span
+                          className={styles.unread}
+                          style={{ color: unreadMessages ? palette.success.light : undefined }}
+                        >
                           <UnreadIcon fontSize="small" />
                           {`${language(lng.messagesUnread)}: ${unreadMessages}`}
                         </span>

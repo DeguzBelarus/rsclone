@@ -26,7 +26,7 @@ export const EmojiButton = ({ onEmojiAdded }: EmojiButtonProps) => {
     setMenuAnchor(undefined);
   };
 
-  const handleEmojiClick = (emojiData: EmojiClickData, event: MouseEvent) => {
+  const handleEmojiClick = (emojiData: EmojiClickData) => {
     handleMenuClose();
     if (onEmojiAdded) onEmojiAdded(emojiData.emoji);
   };

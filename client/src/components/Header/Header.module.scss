@@ -5,7 +5,7 @@
 
   .toolbar {
     display: grid;
-    grid-template-columns: 1fr auto auto auto;
+    grid-template-columns: 1fr repeat(3, auto);
     gap: 0.3rem;
     .userButton {
       display: flex;
@@ -21,30 +21,34 @@
     }
   }
 
-  &.focused {
-    .logo {
-      @media screen and (max-width: 900px) {
-        visibility: hidden;
-        width: 0;  
+  &.authorized {
+    .toolbar {
+      grid-template-columns: auto 1fr repeat(6, auto);
+      @media screen and (max-width: $mobile-breakpoint) {
+        & {
+          grid-template-columns: auto 1fr repeat(3, auto);
+        }
       }
     }
-    .language, .userButton, .darkMode {
-      @media screen and (max-width: $mobile-breakpoint) {
+  }
+  &.focused {
+    @media screen and (max-width: 900px) {
+      .toolbar {
+        grid-template-columns: 1fr repeat(6, auto);
+      }
+      .logo {
+        display: none;
+      }
+    }
+    @media screen and (max-width: $mobile-breakpoint) {
+      .toolbar {
+        grid-template-columns: 1fr;
+      }
+      .language,
+      .userButton,
+      .darkMode {
         display: none;
       }
     }
   }
-
-  &.authorized {
-    .toolbar {
-      grid-template-columns: auto 1fr auto auto auto auto auto auto;
-      @media screen and (max-width: $mobile-breakpoint) {
-        & {
-         grid-template-columns: auto 1fr auto auto auto;
-        }     
-      }
-    }
-  }
-
-
 }

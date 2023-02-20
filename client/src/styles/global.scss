@@ -19,6 +19,11 @@ html {
   position: relative;
 }
 
+body {
+  overflow-x: hidden;
+  overflow-y: visible;
+}
+
 main {
   position: relative;
   width: 100%;
@@ -28,8 +33,7 @@ main {
   padding: 2rem 1rem 0 1rem;
   display: grid;
   grid-template-rows: 1fr auto;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden;
   transition: background-color 0.5s linear;
 
   & > div {
@@ -54,24 +58,21 @@ main {
 
 // Chrome scrollbars
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 4px;
 }
 
 ::-webkit-scrollbar-track {
-  background-color: #f1f1f1;
-  &:active {
-    background-color: #e1e1e1;
-  }
+  background-color: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: #bbb;
+  background-color: #aaa9;
   border-radius: 6px;
 
   &:hover {
-    background: #999;
+    background-color: #999;
   }
   &:active {
-    background-color: #777;
+    background-color: #bbb;
   }
 }

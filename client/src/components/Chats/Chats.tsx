@@ -1,8 +1,18 @@
-import { alpha, Button, IconButton, Paper, Tooltip, useMediaQuery, useTheme } from '@mui/material';
+import {
+  alpha,
+  Badge,
+  Button,
+  IconButton,
+  Paper,
+  Tooltip,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import {
   getActiveChatId,
   getChats,
+  getDialogs,
   getIsAuthorized,
   setActiveChatId,
   setChats,
@@ -20,6 +30,7 @@ import combineClasses from 'lib/combineClasses';
 import { lng } from 'hooks/useLanguage/types';
 import useLanguage from 'hooks/useLanguage';
 import { getLocalStorageData, setLocalStorageData } from 'app/storage';
+import truncateString from 'lib/truncateString';
 
 interface Props {
   socket: Socket<DefaultEventsMap, DefaultEventsMap>;
@@ -30,6 +41,7 @@ export const Chats: FC<Props> = ({ socket }) => {
   const chats = useAppSelector(getChats);
   const activeChatId = useAppSelector(getActiveChatId);
   const activeChat = chats.find(({ partnerId }) => partnerId === activeChatId);
+  const dialogs = useAppSelector(getDialogs);
 
   const language = useLanguage();
   const dispatch = useAppDispatch();
@@ -61,6 +73,22 @@ export const Chats: FC<Props> = ({ socket }) => {
     } else {
       dispatch(setActiveChatId(null));
     }
+  };
+
+  const findDialog = (partnerId?: number) => {
+    return dialogs.find(
+      ({ authorId, recipientId }) => partnerId === authorId || partnerId == recipientId
+    );
+  };
+
+  const getUnreadCount = (partnerId?: number) => {
+    const dialog = findDialog(partnerId);
+    return dialog?.unreadMessages || 0;
+  };
+
+  const getUnreadMessage = (partnerId?: number) => {
+    const dialog = findDialog(partnerId);
+    return dialog?.unreadMessages ? dialog.lastMessageText : '';
   };
 
   useEffect(() => {
@@ -130,37 +158,54 @@ export const Chats: FC<Props> = ({ socket }) => {
           </Tooltip>
         </h4>
         <ul className={styles.people}>
-          {chats.map(({ partnerId, partnerNickname, partnerAvatar }) => (
-            <li key={partnerId}>
-              <Tooltip
-                title={`${language(lng.chatWith)} ${partnerNickname}`}
-                placement={mobile ? 'bottom' : 'left'}
-                style={{ width: 'max-content' }}
-              >
-                <div
-                  className={combineClasses(styles.person, [
-                    styles.active,
-                    partnerId === activeChat?.partnerId,
-                  ])}
+          {chats.map(({ partnerId, partnerNickname, partnerAvatar }) => {
+            const lastMessage = getUnreadMessage(partnerId);
+            const toolTipTitle = lastMessage
+              ? `${partnerNickname} ${language(lng.chatWrote)}: \n ${truncateString(lastMessage)}`
+              : `${language(lng.chatWith)} ${partnerNickname}`;
+            return (
+              <li key={partnerId}>
+                <Tooltip
+                  title={toolTipTitle}
+                  placement={mobile ? 'bottom' : 'left'}
+                  style={{ width: 'max-content' }}
                 >
-                  <Avatar
-                    className={styles.avatar}
-                    size="clamp(2.5rem, 10vw, 4rem)"
-                    user={partnerId}
-                    avatarSrc={partnerAvatar}
-                    onClick={() => handleSetActiveChat(partnerId)}
-                  />
-                  <IconButton
-                    className={styles.delete}
-                    color="warning"
-                    onClick={() => handleDeleteChat(partnerId)}
+                  <div
+                    className={combineClasses(styles.person, [
+                      styles.active,
+                      partnerId === activeChat?.partnerId,
+                    ])}
                   >
-                    <DeleteIcon fontSize="small" />
-                  </IconButton>
-                </div>
-              </Tooltip>
-            </li>
-          ))}
+                    <Badge
+                      badgeContent={getUnreadCount(partnerId)}
+                      color="warning"
+                      sx={{
+                        '& .MuiBadge-badge': {
+                          right: '90%',
+                          top: '20%',
+                        },
+                      }}
+                    >
+                      <Avatar
+                        className={styles.avatar}
+                        size="clamp(2.5rem, 10vw, 4rem)"
+                        user={partnerId}
+                        avatarSrc={partnerAvatar}
+                        onClick={() => handleSetActiveChat(partnerId)}
+                      />
+                    </Badge>
+                    <IconButton
+                      className={styles.delete}
+                      color="warning"
+                      onClick={() => handleDeleteChat(partnerId)}
+                    >
+                      <DeleteIcon fontSize="small" />
+                    </IconButton>
+                  </div>
+                </Tooltip>
+              </li>
+            );
+          })}
         </ul>
       </div>
     </div>
