@@ -126,7 +126,6 @@ export const Post = ({ data, single, ownHighlight, onDelete, onEdit, socket }: P
         </div>
         <div className={styles.body}>
           <RichEditor readOnly initialValue={text} />
-          {/* <pre>{text}</pre> */}
         </div>
       </CardContent>
       <CardActions disableSpacing>

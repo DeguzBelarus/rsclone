@@ -23,6 +23,8 @@ import AddLinkIcon from '@mui/icons-material/AddLink';
 import { lng } from 'hooks/useLanguage/types';
 import useLanguage from 'hooks/useLanguage';
 
+import { decompressFromUTF16 } from 'async-lz-string';
+
 interface EditorButtonProps {
   style: string;
   icon: React.ReactNode;
@@ -111,7 +113,6 @@ export const RichEditor = ({
       const value = raw.blocks
         .map((block) => (!block.text.trim() && '\n') || block.text)
         .join('\n');
-      const str = JSON.stringify(raw);
       onChange(value, JSON.stringify(raw));
     }
   };
@@ -136,14 +137,17 @@ export const RichEditor = ({
   }, [palette, wrapperRef]);
 
   useEffect(() => {
-    if (!initialValue) return;
-    try {
-      const state = JSON.parse(initialValue);
-      setEditorState(EditorState.createWithContent(convertFromRaw(state)));
-    } catch (error) {
-      const contentState = ContentState.createFromText(initialValue);
-      setEditorState(EditorState.createWithContent(contentState));
-    }
+    const changeValue = async () => {
+      if (!initialValue) return;
+      try {
+        const state = JSON.parse(await decompressFromUTF16(initialValue));
+        setEditorState(EditorState.createWithContent(convertFromRaw(state)));
+      } catch (error) {
+        const contentState = ContentState.createFromText(initialValue);
+        setEditorState(EditorState.createWithContent(contentState));
+      }
+    };
+    changeValue();
   }, [initialValue]);
 
   return (

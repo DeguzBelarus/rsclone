@@ -18,7 +18,7 @@ import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 
 import styles from './EditPostModal.module.scss';
 import useValidateInput from 'hooks/useValidateInput';
-import { POST_BODY_PATTERN, POST_TITLE_PATTERN } from 'consts';
+import { POST_TITLE_PATTERN } from 'consts';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import {
   createPostAsync,
@@ -35,6 +35,7 @@ import { useNavigate } from 'react-router-dom';
 import { RecorderButton } from 'components/RecorderButton/RecorderButton';
 import { Recorder } from 'components/Recorder/Recorder';
 import { RichEditor } from 'components/RichEditor/RichEditor';
+import { compressToUTF16 } from 'async-lz-string';
 
 export interface EditPostModalProps {
   open: boolean;
@@ -102,11 +103,11 @@ export const EditPostModal = ({
     setTouched(true);
   };
 
-  const createPost = async (ownId: number, token: string): Promise<boolean> => {
+  const createPost = async (ownId: number, token: string, postText: string): Promise<boolean> => {
     const requestData = new FormData();
     requestData.append('lang', lang);
     requestData.append('postHeading', titleValue);
-    requestData.append('postText', bodyRaw);
+    requestData.append('postText', postText);
     if (mediaValue) requestData.append('media', mediaValue);
 
     const result = await dispatch(createPostAsync({ ownId, token, requestData }));
@@ -114,14 +115,14 @@ export const EditPostModal = ({
     return result && result.meta.requestStatus === 'fulfilled';
   };
 
-  const editPost = async (id: number, token: string): Promise<boolean> => {
+  const editPost = async (id: number, token: string, postText: string): Promise<boolean> => {
     const postData: IUpdatePostRequest = {
       lang,
       postId: id,
       token,
       requestData: {
         postHeading: titleValue,
-        postText: bodyRaw,
+        postText,
       },
     };
     const result = await dispatch(updatePostAsync(postData));
@@ -131,12 +132,16 @@ export const EditPostModal = ({
   const handleSave = async () => {
     const isValid = touched && validateTitle(titleValue) && validateBody(bodyValue);
     if (!isValid || !token || userId === null) return;
+    const postText = await compressToUTF16(bodyRaw);
 
-    const result = id === undefined ? await createPost(userId, token) : await editPost(id, token);
+    const result =
+      id === undefined
+        ? await createPost(userId, token, postText)
+        : await editPost(id, token, postText);
 
     if (result) {
       handleClose();
-      if (onSuccess) onSuccess(titleValue, bodyRaw);
+      if (onSuccess) onSuccess(titleValue, postText);
       const path = window.location.pathname;
       if (path === '/posts') {
         dispatch(getAllPostsAsync({ lang }));
