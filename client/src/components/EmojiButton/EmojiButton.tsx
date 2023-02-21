@@ -8,10 +8,11 @@ import { CustomMenu } from '../CustomMenu/CustomMenu';
 import './EmojiButton.scss';
 
 interface EmojiButtonProps {
+  small?: boolean;
   onEmojiAdded?: (emoji: string) => void;
 }
 
-export const EmojiButton = ({ onEmojiAdded }: EmojiButtonProps) => {
+export const EmojiButton = ({ small, onEmojiAdded }: EmojiButtonProps) => {
   const language = useLanguage();
   const theme = useTheme();
 
@@ -28,13 +29,13 @@ export const EmojiButton = ({ onEmojiAdded }: EmojiButtonProps) => {
 
   const handleEmojiClick = (emojiData: EmojiClickData) => {
     handleMenuClose();
-    if (onEmojiAdded) onEmojiAdded(emojiData.emoji);
+    if (onEmojiAdded) setTimeout(() => onEmojiAdded(emojiData.emoji));
   };
   return (
     <>
       <Tooltip title={language(lng.emoji)}>
         <span>
-          <IconButton component="label" onClick={handleMenuOpen}>
+          <IconButton size={small ? 'small' : 'medium'} onClick={handleMenuOpen}>
             <MoodIcon />
           </IconButton>
         </span>

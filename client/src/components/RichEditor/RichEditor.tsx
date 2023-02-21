@@ -8,6 +8,8 @@ import {
   convertFromRaw,
   ContentState,
   getDefaultKeyBinding,
+  Modifier,
+  SelectionState,
 } from 'draft-js';
 
 import styles from './RichEditor.module.scss';
@@ -26,6 +28,7 @@ import BrushIcon from '@mui/icons-material/Brush';
 import AddLinkIcon from '@mui/icons-material/AddLink';
 import OrderedListIcon from '@mui/icons-material/FormatListNumbered';
 import UnorderedListIcon from '@mui/icons-material/FormatListBulleted';
+import { EmojiButton } from 'components/EmojiButton/EmojiButton';
 
 interface EditorButtonProps {
   style: string;
@@ -92,20 +95,21 @@ const editorButtons = [
   {
     style: 'ordered-list-item',
     icon: <OrderedListIcon />,
-    title: lng.formatTitle,
+    title: lng.formatNumberedList,
     shortcut: 'Ctrl+O',
     block: true,
   },
   {
     style: 'unordered-list-item',
     icon: <UnorderedListIcon />,
-    title: lng.formatTitle,
-    shortcut: 'Ctrl+U',
+    title: lng.formatBulletedList,
+    shortcut: 'Ctrl+L',
     block: true,
   },
   { style: 'DIVIDER' },
   { style: 'LINK', icon: <AddLinkIcon />, title: lng.formatAddLink, shortcut: 'Ctrl+K' },
   { style: 'DIVIDER' },
+  { style: 'EMOJI' },
 ];
 
 interface RichEditorProps {
@@ -167,8 +171,12 @@ export const RichEditor = ({
   };
 
   const handleKeyCommand = (command: string, editorState: EditorState) => {
-    if (['HEADING', 'HIGHLIGHT', 'LINK'].includes(command)) {
-      toggleStyle(command);
+    if (
+      ['header-two', 'ordered-list-item', 'unordered-list-item', 'HIGHLIGHT', 'LINK'].includes(
+        command
+      )
+    ) {
+      toggleStyle(command, command !== 'HIGHLIGHT');
       return 'handled';
     }
     const newState = RichUtils.handleKeyCommand(editorState, command);
@@ -179,14 +187,31 @@ export const RichEditor = ({
     return 'not-handled';
   };
 
-  function handleKeyBindings(event: React.KeyboardEvent<object>): string | null {
+  const handleKeyBindings = (event: React.KeyboardEvent<object>): string | null => {
     if (event.ctrlKey) {
-      if (event.key === 'h') return 'HEADING';
+      if (event.key === 'h') return 'header-two';
       if (event.key === 'm') return 'HIGHLIGHT';
       if (event.key === 'k') return 'LINK';
+      if (event.key === 'o') return 'ordered-list-item';
+      if (event.key === 'l') return 'unordered-list-item';
     }
     return getDefaultKeyBinding(event);
-  }
+  };
+
+  const handleEmojiAdded = (emoji: string) => {
+    const selection = editorState.getSelection();
+    const content = editorState.getCurrentContent();
+    const anchorKey = selection.getAnchorKey();
+    const currentBlockKey = content.getBlockForKey(anchorKey).getKey();
+    const anchorOffset = selection.getAnchorOffset();
+    const state = EditorState.createWithContent(Modifier.replaceText(content, selection, emoji));
+
+    const updatedSelection = SelectionState.createEmpty(currentBlockKey).merge({
+      anchorOffset,
+      focusOffset: anchorOffset + emoji.length,
+    });
+    setEditorState(EditorState.forceSelection(state, updatedSelection));
+  };
 
   useEffect(() => {
     const wrapper = wrapperRef.current;
@@ -227,7 +252,9 @@ export const RichEditor = ({
       {!readOnly && (
         <div className={styles.controls}>
           {editorButtons.map(({ style, block, icon, title, shortcut }, index) =>
-            style === 'DIVIDER' ? (
+            style === 'EMOJI' ? (
+              <EmojiButton key={style} small onEmojiAdded={handleEmojiAdded} />
+            ) : style === 'DIVIDER' ? (
               <span
                 key={index}
                 className={styles.divider}
