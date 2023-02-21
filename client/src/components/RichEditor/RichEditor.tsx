@@ -10,11 +10,13 @@ import {
   getDefaultKeyBinding,
   Modifier,
   SelectionState,
+  ContentBlock,
 } from 'draft-js';
 
 import styles from './RichEditor.module.scss';
 import './RichEditor.scss';
 import { IconButton, Tooltip, useTheme } from '@mui/material';
+import { EmojiButton } from 'components/EmojiButton/EmojiButton';
 import combineClasses from 'lib/combineClasses';
 import { lng } from 'hooks/useLanguage/types';
 import useLanguage from 'hooks/useLanguage';
@@ -28,7 +30,7 @@ import BrushIcon from '@mui/icons-material/Brush';
 import AddLinkIcon from '@mui/icons-material/AddLink';
 import OrderedListIcon from '@mui/icons-material/FormatListNumbered';
 import UnorderedListIcon from '@mui/icons-material/FormatListBulleted';
-import { EmojiButton } from 'components/EmojiButton/EmojiButton';
+import CodeIcon from '@mui/icons-material/Code';
 
 interface EditorButtonProps {
   style: string;
@@ -106,7 +108,14 @@ const editorButtons = [
     shortcut: 'Ctrl+L',
     block: true,
   },
-  { style: 'DIVIDER' },
+  {
+    style: 'code-block',
+    icon: <CodeIcon />,
+    title: lng.formatCode,
+    shortcut: 'Ctrl+P',
+    block: true,
+  },
+  // { style: 'DIVIDER' },
   { style: 'LINK', icon: <AddLinkIcon />, title: lng.formatAddLink, shortcut: 'Ctrl+K' },
   { style: 'DIVIDER' },
   { style: 'EMOJI' },
@@ -148,7 +157,7 @@ export const RichEditor = ({
       backgroundColor: 'yellow',
     },
     UNDERLINE: {
-      borderBottom: `3px solid ${palette.success.light}`,
+      boxShadow: `inset 0 -0.15em ${palette.success.light}`,
     },
   };
 
@@ -172,9 +181,14 @@ export const RichEditor = ({
 
   const handleKeyCommand = (command: string, editorState: EditorState) => {
     if (
-      ['header-two', 'ordered-list-item', 'unordered-list-item', 'HIGHLIGHT', 'LINK'].includes(
-        command
-      )
+      [
+        'header-two',
+        'ordered-list-item',
+        'unordered-list-item',
+        'code-block',
+        'HIGHLIGHT',
+        'LINK',
+      ].includes(command)
     ) {
       toggleStyle(command, command !== 'HIGHLIGHT');
       return 'handled';
@@ -194,8 +208,17 @@ export const RichEditor = ({
       if (event.key === 'k') return 'LINK';
       if (event.key === 'o') return 'ordered-list-item';
       if (event.key === 'l') return 'unordered-list-item';
+      if (event.key === 'p') return 'code-block';
     }
     return getDefaultKeyBinding(event);
+  };
+
+  const handleBlockStyle = (block: ContentBlock): string => {
+    const type = block.getType();
+    if (type === 'code-block') {
+      return styles.code;
+    }
+    return '';
   };
 
   const handleEmojiAdded = (emoji: string) => {
@@ -220,6 +243,7 @@ export const RichEditor = ({
       wrapper.style.setProperty('--hover-color', palette.text.primary);
       wrapper.style.setProperty('--focused-color', palette.primary.main);
       wrapper.style.setProperty('--error-color', palette.error.main);
+      wrapper.style.setProperty('--code-color', palette.action.hover);
     }
   }, [palette, wrapperRef]);
 
@@ -281,6 +305,7 @@ export const RichEditor = ({
         onChange={handleChange}
         handleKeyCommand={handleKeyCommand}
         keyBindingFn={handleKeyBindings}
+        blockStyleFn={handleBlockStyle}
         readOnly={readOnly}
         onFocus={() => setEditorFocused(true)}
         onBlur={() => setEditorFocused(false)}

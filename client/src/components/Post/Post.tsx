@@ -105,7 +105,7 @@ export const Post = ({ data, single, ownHighlight, onDelete, onEdit, socket }: P
           ownHighlight && isOwnPost ? alpha(theme.palette.info.main, 0.1) : undefined,
       }}
     >
-      <CardContent sx={{ padding: '0' }}>
+      <CardContent className={styles.content}>
         <div className={styles.media}>
           <MediaContainer src={mediaURL} audioMargin />
         </div>
@@ -164,7 +164,7 @@ export const Post = ({ data, single, ownHighlight, onDelete, onEdit, socket }: P
             </IconButton>
           </Tooltip>
         )}
-        {data.comments && (
+        {single && data.comments && (
           <Tooltip title={language(lng.commentsHeading)}>
             <IconButton component="a" href="#comments" sx={{ marginLeft: 'auto' }}>
               <Badge badgeContent={data.comments.length} color="warning">

@@ -1,10 +1,14 @@
+$mobile-breakpoint: 500px;
+
 .wrapper {
   position: relative;
   padding-top: 1.5rem;
 
   .controls {
-    display: flex;
-    align-items: center;
+    display: grid;
+    grid-template-columns: repeat(12, auto);
+    justify-content: start;
+    justify-items: center;
     flex-wrap: nowrap;
     .divider {
       display: block;
@@ -108,6 +112,36 @@
     li {
       list-style: outside decimal;
       margin-left: 1em;
+    }
+  }
+
+  .code {
+    background-color: var(--code-color);
+    line-height: 1.5;
+    padding: 0 1em;
+    & * {
+      font-family: monospace;
+    }
+
+    &:first-of-type {
+      margin-top: 1em;
+      padding-top: 1em;
+      border-radius: 0.5em 0.5em 0 0;
+    }
+    &:last-of-type {
+      margin-bottom: 1em;
+      padding-bottom: 1em;
+      border-radius: 0 0 0.5em 0.5em;
+    }
+  }
+
+  @media screen and (max-width: $mobile-breakpoint) {
+    .controls {
+      grid-template-columns: repeat(6, auto);
+    }
+
+    .label {
+      --top-offset: 6em;
     }
   }
 }

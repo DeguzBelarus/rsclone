@@ -132,10 +132,11 @@ export enum lng {
   formatBold,
   formatItalic,
   formatUnderline,
+  formatHighlight,
   formatTitle,
   formatBulletedList,
   formatNumberedList,
-  formatHighlight,
+  formatCode,
   formatAddLink,
 }
 
