@@ -11,6 +11,7 @@ import {
   Modifier,
   SelectionState,
   ContentBlock,
+  DefaultDraftBlockRenderMap,
 } from 'draft-js';
 
 import styles from './RichEditor.module.scss';
@@ -21,6 +22,7 @@ import combineClasses from 'lib/combineClasses';
 import { lng } from 'hooks/useLanguage/types';
 import useLanguage from 'hooks/useLanguage';
 import { decompressFromUTF16 } from 'async-lz-string';
+import * as Immutable from 'immutable';
 
 import FormatBoldIcon from '@mui/icons-material/FormatBold';
 import FormatItalicIcon from '@mui/icons-material/FormatItalic';
@@ -161,6 +163,14 @@ export const RichEditor = ({
     },
   };
 
+  const blockRenderMap = DefaultDraftBlockRenderMap.merge(
+    Immutable.Map({
+      unstyled: {
+        element: 'p',
+      },
+    })
+  );
+
   const toggleStyle = (style: string, block = false) => {
     const state = EditorState.forceSelection(editorState, editorState.getSelection());
     setEditorState(
@@ -171,7 +181,7 @@ export const RichEditor = ({
   const handleChange = async (state: EditorState) => {
     setEditorState(state);
     if (onChange) {
-      const raw = convertToRaw(editorState.getCurrentContent());
+      const raw = convertToRaw(state.getCurrentContent());
       const value = raw.blocks
         .map((block) => (!block.text.trim() && '\n') || block.text)
         .join('\n');
@@ -239,7 +249,7 @@ export const RichEditor = ({
   useEffect(() => {
     const wrapper = wrapperRef.current;
     if (wrapper) {
-      wrapper.style.setProperty('--color', palette.text.disabled);
+      wrapper.style.setProperty('--color', palette.text.secondary);
       wrapper.style.setProperty('--hover-color', palette.text.primary);
       wrapper.style.setProperty('--focused-color', palette.primary.main);
       wrapper.style.setProperty('--error-color', palette.error.main);
@@ -301,6 +311,7 @@ export const RichEditor = ({
       <Editor
         ref={editorRef}
         customStyleMap={styleMap}
+        blockRenderMap={blockRenderMap}
         editorState={editorState}
         onChange={handleChange}
         handleKeyCommand={handleKeyCommand}
