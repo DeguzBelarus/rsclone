@@ -106,7 +106,6 @@ $mobile-breakpoint: 500px;
       list-style: outside disc;
       margin-left: 1em;
     }
-    margin-bottom: 1em;
   }
 
   ol {
@@ -114,15 +113,10 @@ $mobile-breakpoint: 500px;
       list-style: outside decimal;
       margin-left: 1em;
     }
-    margin-bottom: 1em;
   }
 
   h2 {
     margin-bottom: 0.5em;
-  }
-
-  p {
-    margin-bottom: 1em;
   }
 
   .code {
@@ -142,6 +136,12 @@ $mobile-breakpoint: 500px;
       padding-bottom: 1em;
       border-radius: 0 0 0.5em 0.5em;
     }
+  }
+
+  .paragraph,
+  ul,
+  ol {
+    margin-bottom: 1em;
   }
 
   @media screen and (max-width: $mobile-breakpoint) {

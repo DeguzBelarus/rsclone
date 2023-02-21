@@ -3,7 +3,6 @@ import {
   Editor,
   EditorState,
   RichUtils,
-  DraftStyleMap,
   convertToRaw,
   convertFromRaw,
   ContentState,
@@ -11,33 +10,24 @@ import {
   Modifier,
   SelectionState,
   ContentBlock,
-  DefaultDraftBlockRenderMap,
 } from 'draft-js';
-
-import styles from './RichEditor.module.scss';
-import './RichEditor.scss';
-import { IconButton, Tooltip, useTheme } from '@mui/material';
+import { decompressFromUTF16 } from 'async-lz-string';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import { useTheme } from '@mui/material/styles';
 import { EmojiButton } from 'components/EmojiButton/EmojiButton';
 import combineClasses from 'lib/combineClasses';
 import { lng } from 'hooks/useLanguage/types';
 import useLanguage from 'hooks/useLanguage';
-import { decompressFromUTF16 } from 'async-lz-string';
-import * as Immutable from 'immutable';
 
-import FormatBoldIcon from '@mui/icons-material/FormatBold';
-import FormatItalicIcon from '@mui/icons-material/FormatItalic';
-import FormatUnderlinedIcon from '@mui/icons-material/FormatUnderlined';
-import TitleIcon from '@mui/icons-material/Title';
-import BrushIcon from '@mui/icons-material/Brush';
-import AddLinkIcon from '@mui/icons-material/AddLink';
-import OrderedListIcon from '@mui/icons-material/FormatListNumbered';
-import UnorderedListIcon from '@mui/icons-material/FormatListBulleted';
-import CodeIcon from '@mui/icons-material/Code';
+import { editorActions } from './RichEditor.consts';
+import styles from './RichEditor.module.scss';
+import './RichEditor.scss';
 
 interface EditorButtonProps {
   style: string;
   block?: boolean;
-  icon: React.ReactNode;
+  icon?: React.ComponentType;
   title: string;
   editorState: EditorState;
   toggleStyle: (style: string, block?: boolean) => void;
@@ -46,7 +36,7 @@ interface EditorButtonProps {
 const EditorButton = ({
   style,
   block,
-  icon,
+  icon: Icon,
   title,
   editorState,
   toggleStyle,
@@ -63,7 +53,7 @@ const EditorButton = ({
       const inlineStyle = editorState.getCurrentInlineStyle();
       setIsStyle(inlineStyle.has(style));
     }
-  }, [editorState]);
+  }, [editorState, style, block]);
 
   return (
     <Tooltip title={title}>
@@ -72,56 +62,11 @@ const EditorButton = ({
         color={isStyle ? 'primary' : 'default'}
         onClick={() => toggleStyle(style, block)}
       >
-        {icon}
+        {Icon && <Icon />}
       </IconButton>
     </Tooltip>
   );
 };
-
-const editorButtons = [
-  { style: 'BOLD', icon: <FormatBoldIcon />, title: lng.formatBold, shortcut: 'Ctrl+B' },
-  { style: 'ITALIC', icon: <FormatItalicIcon />, title: lng.formatItalic, shortcut: 'Ctrl+I' },
-  {
-    style: 'UNDERLINE',
-    icon: <FormatUnderlinedIcon />,
-    title: lng.formatUnderline,
-    shortcut: 'Ctrl+U',
-  },
-  { style: 'HIGHLIGHT', icon: <BrushIcon />, title: lng.formatHighlight, shortcut: 'Ctrl+M' },
-  { style: 'DIVIDER' },
-  {
-    style: 'header-two',
-    icon: <TitleIcon />,
-    title: lng.formatTitle,
-    shortcut: 'Ctrl+H',
-    block: true,
-  },
-  {
-    style: 'ordered-list-item',
-    icon: <OrderedListIcon />,
-    title: lng.formatNumberedList,
-    shortcut: 'Ctrl+O',
-    block: true,
-  },
-  {
-    style: 'unordered-list-item',
-    icon: <UnorderedListIcon />,
-    title: lng.formatBulletedList,
-    shortcut: 'Ctrl+L',
-    block: true,
-  },
-  {
-    style: 'code-block',
-    icon: <CodeIcon />,
-    title: lng.formatCode,
-    shortcut: 'Ctrl+P',
-    block: true,
-  },
-  // { style: 'DIVIDER' },
-  { style: 'LINK', icon: <AddLinkIcon />, title: lng.formatAddLink, shortcut: 'Ctrl+K' },
-  { style: 'DIVIDER' },
-  { style: 'EMOJI' },
-];
 
 interface RichEditorProps {
   label?: string;
@@ -149,11 +94,7 @@ export const RichEditor = ({
   const wrapperRef = useRef<HTMLDivElement>(null);
   const isEmpty = editorState.getCurrentContent().hasText();
 
-  const styleMap: DraftStyleMap = {
-    HEADING: {
-      fontWeight: 'bold',
-      fontSize: '1.5em',
-    },
+  const customStyleMap = {
     HIGHLIGHT: {
       color: 'black',
       backgroundColor: 'yellow',
@@ -162,14 +103,6 @@ export const RichEditor = ({
       boxShadow: `inset 0 -0.15em ${palette.success.light}`,
     },
   };
-
-  const blockRenderMap = DefaultDraftBlockRenderMap.merge(
-    Immutable.Map({
-      unstyled: {
-        element: 'p',
-      },
-    })
-  );
 
   const toggleStyle = (style: string, block = false) => {
     const state = EditorState.forceSelection(editorState, editorState.getSelection());
@@ -190,17 +123,9 @@ export const RichEditor = ({
   };
 
   const handleKeyCommand = (command: string, editorState: EditorState) => {
-    if (
-      [
-        'header-two',
-        'ordered-list-item',
-        'unordered-list-item',
-        'code-block',
-        'HIGHLIGHT',
-        'LINK',
-      ].includes(command)
-    ) {
-      toggleStyle(command, command !== 'HIGHLIGHT');
+    const currentStyle = editorActions.find(({ style }) => style === command);
+    if (currentStyle) {
+      toggleStyle(command, currentStyle.block);
       return 'handled';
     }
     const newState = RichUtils.handleKeyCommand(editorState, command);
@@ -213,22 +138,20 @@ export const RichEditor = ({
 
   const handleKeyBindings = (event: React.KeyboardEvent<object>): string | null => {
     if (event.ctrlKey) {
-      if (event.key === 'h') return 'header-two';
-      if (event.key === 'm') return 'HIGHLIGHT';
-      if (event.key === 'k') return 'LINK';
-      if (event.key === 'o') return 'ordered-list-item';
-      if (event.key === 'l') return 'unordered-list-item';
-      if (event.key === 'p') return 'code-block';
+      const currentShortcut = `Ctrl+${event.key.toUpperCase()}`;
+      const currentStyle = editorActions.find(({ shortcut }) => shortcut === currentShortcut);
+      if (currentStyle) return currentStyle.style;
     }
     return getDefaultKeyBinding(event);
   };
 
   const handleBlockStyle = (block: ContentBlock): string => {
     const type = block.getType();
-    if (type === 'code-block') {
-      return styles.code;
-    }
-    return '';
+    const blockStyles: { [key: string]: string } = {
+      'code-block': styles.code,
+      unstyled: styles.paragraph,
+    };
+    return blockStyles[type] || '';
   };
 
   const handleEmojiAdded = (emoji: string) => {
@@ -238,7 +161,6 @@ export const RichEditor = ({
     const currentBlockKey = content.getBlockForKey(anchorKey).getKey();
     const anchorOffset = selection.getAnchorOffset();
     const state = EditorState.createWithContent(Modifier.replaceText(content, selection, emoji));
-
     const updatedSelection = SelectionState.createEmpty(currentBlockKey).merge({
       anchorOffset,
       focusOffset: anchorOffset + emoji.length,
@@ -285,7 +207,7 @@ export const RichEditor = ({
     >
       {!readOnly && (
         <div className={styles.controls}>
-          {editorButtons.map(({ style, block, icon, title, shortcut }, index) =>
+          {editorActions.map(({ style, block, icon, title, shortcut }, index) =>
             style === 'EMOJI' ? (
               <EmojiButton key={style} small onEmojiAdded={handleEmojiAdded} />
             ) : style === 'DIVIDER' ? (
@@ -310,9 +232,8 @@ export const RichEditor = ({
       )}
       <Editor
         ref={editorRef}
-        customStyleMap={styleMap}
-        blockRenderMap={blockRenderMap}
         editorState={editorState}
+        customStyleMap={customStyleMap}
         onChange={handleChange}
         handleKeyCommand={handleKeyCommand}
         keyBindingFn={handleKeyBindings}
