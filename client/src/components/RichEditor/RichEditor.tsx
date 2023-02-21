@@ -14,6 +14,9 @@ import styles from './RichEditor.module.scss';
 import './RichEditor.scss';
 import { IconButton, Tooltip, useTheme } from '@mui/material';
 import combineClasses from 'lib/combineClasses';
+import { lng } from 'hooks/useLanguage/types';
+import useLanguage from 'hooks/useLanguage';
+import { decompressFromUTF16 } from 'async-lz-string';
 
 import FormatBoldIcon from '@mui/icons-material/FormatBold';
 import FormatItalicIcon from '@mui/icons-material/FormatItalic';
@@ -21,25 +24,38 @@ import FormatUnderlinedIcon from '@mui/icons-material/FormatUnderlined';
 import TitleIcon from '@mui/icons-material/Title';
 import BrushIcon from '@mui/icons-material/Brush';
 import AddLinkIcon from '@mui/icons-material/AddLink';
-import { lng } from 'hooks/useLanguage/types';
-import useLanguage from 'hooks/useLanguage';
-
-import { decompressFromUTF16 } from 'async-lz-string';
+import OrderedListIcon from '@mui/icons-material/FormatListNumbered';
+import UnorderedListIcon from '@mui/icons-material/FormatListBulleted';
 
 interface EditorButtonProps {
   style: string;
+  block?: boolean;
   icon: React.ReactNode;
   title: string;
   editorState: EditorState;
-  toggleStyle: (style: string) => void;
+  toggleStyle: (style: string, block?: boolean) => void;
 }
 
-const EditorButton = ({ style, icon, title, editorState, toggleStyle }: EditorButtonProps) => {
+const EditorButton = ({
+  style,
+  block,
+  icon,
+  title,
+  editorState,
+  toggleStyle,
+}: EditorButtonProps) => {
   const [isStyle, setIsStyle] = useState(false);
 
   useEffect(() => {
-    const inlineStyle = editorState.getCurrentInlineStyle();
-    setIsStyle(inlineStyle.has(style));
+    if (block) {
+      const currentSelection = editorState.getSelection();
+      const currentKey = currentSelection.getStartKey();
+      const currentBlock = editorState.getCurrentContent().getBlockForKey(currentKey);
+      setIsStyle(currentBlock.getType() === style);
+    } else {
+      const inlineStyle = editorState.getCurrentInlineStyle();
+      setIsStyle(inlineStyle.has(style));
+    }
   }, [editorState]);
 
   return (
@@ -47,7 +63,7 @@ const EditorButton = ({ style, icon, title, editorState, toggleStyle }: EditorBu
       <IconButton
         size="small"
         color={isStyle ? 'primary' : 'default'}
-        onClick={() => toggleStyle(style)}
+        onClick={() => toggleStyle(style, block)}
       >
         {icon}
       </IconButton>
@@ -64,11 +80,32 @@ const editorButtons = [
     title: lng.formatUnderline,
     shortcut: 'Ctrl+U',
   },
-  { style: 'DIVIDER' },
-  { style: 'HEADING', icon: <TitleIcon />, title: lng.formatTitle, shortcut: 'Ctrl+H' },
   { style: 'HIGHLIGHT', icon: <BrushIcon />, title: lng.formatHighlight, shortcut: 'Ctrl+M' },
   { style: 'DIVIDER' },
+  {
+    style: 'header-two',
+    icon: <TitleIcon />,
+    title: lng.formatTitle,
+    shortcut: 'Ctrl+H',
+    block: true,
+  },
+  {
+    style: 'ordered-list-item',
+    icon: <OrderedListIcon />,
+    title: lng.formatTitle,
+    shortcut: 'Ctrl+O',
+    block: true,
+  },
+  {
+    style: 'unordered-list-item',
+    icon: <UnorderedListIcon />,
+    title: lng.formatTitle,
+    shortcut: 'Ctrl+U',
+    block: true,
+  },
+  { style: 'DIVIDER' },
   { style: 'LINK', icon: <AddLinkIcon />, title: lng.formatAddLink, shortcut: 'Ctrl+K' },
+  { style: 'DIVIDER' },
 ];
 
 interface RichEditorProps {
@@ -111,9 +148,11 @@ export const RichEditor = ({
     },
   };
 
-  const toggleStyle = (style: string) => {
+  const toggleStyle = (style: string, block = false) => {
     const state = EditorState.forceSelection(editorState, editorState.getSelection());
-    setEditorState(RichUtils.toggleInlineStyle(state, style));
+    setEditorState(
+      block ? RichUtils.toggleBlockType(state, style) : RichUtils.toggleInlineStyle(state, style)
+    );
   };
 
   const handleChange = async (state: EditorState) => {
@@ -128,7 +167,7 @@ export const RichEditor = ({
   };
 
   const handleKeyCommand = (command: string, editorState: EditorState) => {
-    if (['HEADING', 'HIGHLIGHT'].includes(command)) {
+    if (['HEADING', 'HIGHLIGHT', 'LINK'].includes(command)) {
       toggleStyle(command);
       return 'handled';
     }
@@ -187,7 +226,7 @@ export const RichEditor = ({
     >
       {!readOnly && (
         <div className={styles.controls}>
-          {editorButtons.map(({ style, icon, title, shortcut }, index) =>
+          {editorButtons.map(({ style, block, icon, title, shortcut }, index) =>
             style === 'DIVIDER' ? (
               <span
                 key={index}
@@ -198,6 +237,7 @@ export const RichEditor = ({
               <EditorButton
                 key={style}
                 style={style}
+                block={block}
                 icon={icon}
                 title={`${language(title || lng.formatBold)} (${shortcut})`}
                 editorState={editorState}

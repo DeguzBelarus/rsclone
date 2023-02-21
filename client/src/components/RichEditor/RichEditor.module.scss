@@ -96,4 +96,18 @@
   &.readonly {
     padding-top: 0;
   }
+
+  ul {
+    li {
+      list-style: outside disc;
+      margin-left: 1em;
+    }
+  }
+
+  ol {
+    li {
+      list-style: outside decimal;
+      margin-left: 1em;
+    }
+  }
 }
