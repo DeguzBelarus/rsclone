@@ -1,7 +1,9 @@
 import React from 'react';
 import { EditorState, ContentState, ContentBlock, CompositeDecorator } from 'draft-js';
+import LinkIcon from '@mui/icons-material/Link';
 
 import styles from './RichEditor.module.scss';
+import { Tooltip } from '@mui/material';
 
 function findLinkEntities(
   contentBlock: ContentBlock,
@@ -21,11 +23,14 @@ interface RichLinkProps {
 }
 
 const RichLink = ({ contentState, entityKey, children }: RichLinkProps) => {
-  const { url, readOnly } = contentState.getEntity(entityKey).getData();
+  const { url } = contentState.getEntity(entityKey).getData();
   return (
-    <a href={url} className={styles.link} style={{ color: readOnly ? 'blue' : 'green' }}>
-      {children}
-    </a>
+    <Tooltip className={styles.linkTip} title={url}>
+      <a href={url} className={styles.link}>
+        {children}
+        <LinkIcon className={styles.icon} fontSize="small" />
+      </a>
+    </Tooltip>
   );
 };
 

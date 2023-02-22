@@ -157,6 +157,7 @@ export const RichEditor = ({
       wrapper.style.setProperty('--focused-color', palette.primary.main);
       wrapper.style.setProperty('--error-color', palette.error.main);
       wrapper.style.setProperty('--code-color', palette.action.hover);
+      wrapper.style.setProperty('--link-color', palette.primary.main);
     }
   }, [palette, wrapperRef]);
 
