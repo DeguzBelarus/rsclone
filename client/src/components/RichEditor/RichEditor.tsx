@@ -10,7 +10,6 @@ import {
   Modifier,
   SelectionState,
   ContentBlock,
-  Entity,
 } from 'draft-js';
 import { decompressFromUTF16 } from 'async-lz-string';
 import { useTheme } from '@mui/material/styles';
