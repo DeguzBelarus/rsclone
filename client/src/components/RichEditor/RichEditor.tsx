@@ -10,11 +10,8 @@ import {
   Modifier,
   SelectionState,
   ContentBlock,
-  CompositeDecorator,
 } from 'draft-js';
 import { decompressFromUTF16 } from 'async-lz-string';
-import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
 import { useTheme } from '@mui/material/styles';
 import { EmojiButton } from 'components/EmojiButton/EmojiButton';
 import combineClasses from 'lib/combineClasses';
@@ -25,90 +22,8 @@ import { editorActions } from './RichEditor.consts';
 import styles from './RichEditor.module.scss';
 import './RichEditor.scss';
 import { ConfirmModal } from 'components/ConfirmModal/ConfirmModal';
-
-interface EditorButtonProps {
-  style: string;
-  block?: boolean;
-  icon?: React.ComponentType;
-  title: string;
-  editorState: EditorState;
-  toggleStyle: (style: string, block?: boolean) => void;
-  onClick?: () => void;
-}
-
-const EditorButton = ({
-  style,
-  block,
-  icon: Icon,
-  title,
-  editorState,
-  toggleStyle,
-  onClick,
-}: EditorButtonProps) => {
-  const [isStyle, setIsStyle] = useState(false);
-  const [disabled, setDisabled] = useState(false);
-
-  useEffect(() => {
-    const selection = editorState.getSelection();
-    if (block) {
-      const currentKey = selection.getStartKey();
-      const currentBlock = editorState.getCurrentContent().getBlockForKey(currentKey);
-      setIsStyle(currentBlock.getType() === style);
-    } else {
-      const inlineStyle = editorState.getCurrentInlineStyle();
-      setIsStyle(inlineStyle.has(style));
-    }
-    setDisabled(style === 'LINK' && selection.isCollapsed());
-  }, [editorState, style, block]);
-
-  return (
-    <Tooltip title={title}>
-      <span>
-        <IconButton
-          size="small"
-          color={isStyle ? 'primary' : 'default'}
-          disabled={disabled}
-          onClick={() => (onClick ? onClick() : toggleStyle(style, block))}
-        >
-          {Icon && <Icon />}
-        </IconButton>
-      </span>
-    </Tooltip>
-  );
-};
-
-function findLinkEntities(
-  contentBlock: ContentBlock,
-  callback: (start: number, end: number) => void,
-  contentState: ContentState
-) {
-  contentBlock.findEntityRanges((character) => {
-    const entityKey = character.getEntity();
-    return entityKey !== null && contentState.getEntity(entityKey).getType() === 'LINK';
-  }, callback);
-}
-
-interface LinkProps {
-  contentState: ContentState;
-  entityKey: string;
-  children?: React.ReactNode;
-}
-
-const Link = ({ contentState, entityKey, children }: LinkProps) => {
-  const { url } = contentState.getEntity(entityKey).getData();
-  return (
-    <a href={url} className={styles.link}>
-      {children}
-    </a>
-  );
-};
-
-const decorator = new CompositeDecorator([
-  {
-    strategy: findLinkEntities,
-    component: Link,
-  },
-]);
+import { RichEditorButton } from './RichEditorButton';
+import { LinkEditorState } from './RichLink';
 
 interface RichEditorProps {
   label?: string;
@@ -129,10 +44,7 @@ export const RichEditor = ({
 }: RichEditorProps) => {
   const { palette } = useTheme();
   const language = useLanguage();
-
-  const createEmptyState = () => EditorState.createEmpty(decorator);
-
-  const [editorState, setEditorState] = useState(createEmptyState());
+  const [editorState, setEditorState] = useState(LinkEditorState.createEmpty());
   const [editorFocused, setEditorFocused] = useState(false);
   const [linkModalOpen, setLinkModalOpen] = useState(false);
   const [linkAddress, setLinkAddress] = useState('');
@@ -168,49 +80,12 @@ export const RichEditor = ({
     }
   };
 
-  const getCurrentLinkAddress = (): string => {
-    const content = editorState.getCurrentContent();
-    const selection = editorState.getSelection();
-    const block = content.getBlockForKey(selection.getStartKey());
-    let selectedEntityURL: string | null = null;
-    const entityURLs: Array<string | null> = [];
-    block.findEntityRanges(
-      (character) => {
-        try {
-          const entityKey = character.getEntity();
-          const entity = content.getEntity(entityKey);
-          const entityData = entity.getData();
-          const entityType = entity.getType();
-          if (entityType === 'LINK') {
-            selectedEntityURL = entityData?.url || null;
-            return true;
-          }
-        } catch {
-          return false;
-        }
-        return false;
-      },
-      (start: number, end: number) => {
-        if (selectedEntityURL) entityURLs.push(selectedEntityURL);
-      }
-    );
-    if (entityURLs[0]) return entityURLs[0];
-    const windowSelection = window.getSelection();
-    if (!selection.isCollapsed() && windowSelection) {
-      return windowSelection.toString();
-    }
-    return '';
-  };
-
   useEffect(() => {
-    setLinkAddress(getCurrentLinkAddress());
-  }, [editorState, getCurrentLinkAddress]);
+    setLinkAddress(LinkEditorState.getCurrentLinkAddress(editorState));
+  }, [editorState]);
 
   const handleLinkClick = () => {
-    const content = editorState.getCurrentContent();
-    const selection = editorState.getSelection();
-    // const block = content.getBlockForKey(selection.getAnchorKey());
-    if (!selection.isCollapsed()) setLinkModalOpen(true);
+    if (linkAddress !== '') setLinkModalOpen(true);
   };
 
   const handleKeyCommand = (command: string, editorState: EditorState) => {
@@ -253,10 +128,7 @@ export const RichEditor = ({
     const anchorKey = selection.getAnchorKey();
     const currentBlockKey = content.getBlockForKey(anchorKey).getKey();
     const anchorOffset = selection.getAnchorOffset();
-    const state = EditorState.createWithContent(
-      Modifier.replaceText(content, selection, emoji),
-      decorator
-    );
+    const state = LinkEditorState.create(Modifier.replaceText(content, selection, emoji));
     const updatedSelection = SelectionState.createEmpty(currentBlockKey).merge({
       anchorOffset,
       focusOffset: anchorOffset + emoji.length,
@@ -271,7 +143,7 @@ export const RichEditor = ({
       url = `https:\/\/${url}`;
     }
     const contentState = editorState.getCurrentContent();
-    const contentStateWithEntity = contentState.createEntity('LINK', 'MUTABLE', { url });
+    const contentStateWithEntity = contentState.createEntity('LINK', 'MUTABLE', { url, readOnly });
     const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
     const newEditorState = EditorState.set(editorState, { currentContent: contentStateWithEntity });
     setEditorState(RichUtils.toggleLink(newEditorState, newEditorState.getSelection(), entityKey));
@@ -293,10 +165,10 @@ export const RichEditor = ({
       if (!initialValue) return;
       try {
         const state = JSON.parse(await decompressFromUTF16(initialValue));
-        setEditorState(EditorState.createWithContent(convertFromRaw(state), decorator));
+        setEditorState(LinkEditorState.create(convertFromRaw(state)));
       } catch (error) {
         const contentState = ContentState.createFromText(initialValue);
-        setEditorState(EditorState.createWithContent(contentState, decorator));
+        setEditorState(LinkEditorState.create(contentState));
       }
     };
     changeValue();
@@ -327,7 +199,7 @@ export const RichEditor = ({
                   style={{ backgroundColor: palette.divider }}
                 ></span>
               ) : (
-                <EditorButton
+                <RichEditorButton
                   key={style}
                   style={style}
                   block={block}
@@ -335,6 +207,7 @@ export const RichEditor = ({
                   title={`${language(title || lng.formatBold)} (${shortcut})`}
                   editorState={editorState}
                   toggleStyle={toggleStyle}
+                  isDisabled={style === 'LINK' ? () => linkAddress === '' : undefined}
                   onClick={style === 'LINK' ? handleLinkClick : undefined}
                 />
               )
