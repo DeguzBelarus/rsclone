@@ -120,6 +120,7 @@ $mobile-breakpoint: 500px;
   }
 
   .code {
+    --border-radius: 0.5em;
     background-color: var(--code-color);
     line-height: 1.5;
     padding: 0 1em;
@@ -129,12 +130,15 @@ $mobile-breakpoint: 500px;
 
     &:first-of-type {
       padding-top: 1em;
-      border-radius: 0.5em 0.5em 0 0;
+      border-radius: var(--border-radius) var(--border-radius) 0 0;
     }
     &:last-of-type {
       margin-bottom: 1em;
       padding-bottom: 1em;
-      border-radius: 0 0 0.5em 0.5em;
+      border-radius: 0 0 var(--border-radius) var(--border-radius);
+    }
+    &:only-child {
+      border-radius: var(--border-radius);
     }
   }
 
@@ -142,6 +146,15 @@ $mobile-breakpoint: 500px;
   ul,
   ol {
     margin-bottom: 1em;
+  }
+
+  .link {
+    opacity: 0.7;
+    font-style: italic;
+    &:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
   }
 
   @media screen and (max-width: $mobile-breakpoint) {
