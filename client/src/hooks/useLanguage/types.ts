@@ -138,6 +138,10 @@ export enum lng {
   formatNumberedList,
   formatCode,
   formatAddLink,
+  formatModifyLink,
+  formatEditLinkTitle,
+  formatEditLinkMsg,
+  formatLinkAddress,
 }
 
 export type LangaugeData = {

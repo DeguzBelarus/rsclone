@@ -214,7 +214,11 @@ export const RichEditor = ({
                   style={style}
                   block={block}
                   icon={icon}
-                  title={`${language(title || lng.formatBold)} (${shortcut})`}
+                  title={`${language(
+                    style === 'LINK' && linkInfo.entity
+                      ? lng.formatModifyLink
+                      : title || lng.formatBold
+                  )} (${shortcut})`}
                   editorState={editorState}
                   toggleStyle={toggleStyle}
                   isDisabled={style === 'LINK' ? () => !linkInfo.url : undefined}
@@ -225,13 +229,13 @@ export const RichEditor = ({
           </div>
           <ConfirmModal
             open={linkModalOpen}
-            title="Edit link"
-            inputLabel="Link address"
+            title={language(lng.formatEditLinkTitle)}
+            inputLabel={language(lng.formatLinkAddress)}
             inputInitial={linkInfo.url}
             onClose={() => setLinkModalOpen(false)}
             onSuccess={handleAddLink}
           >
-            Please provide link address:
+            {language(lng.formatEditLinkMsg)}
           </ConfirmModal>
         </>
       )}

@@ -140,6 +140,10 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.formatCode]: 'Code',
     [lng.formatHighlight]: 'Highlight',
     [lng.formatAddLink]: 'Add link',
+    [lng.formatModifyLink]: 'Modify link',
+    [lng.formatEditLinkTitle]: 'Edit Link',
+    [lng.formatEditLinkMsg]: 'Please provide hyperlink address:',
+    [lng.formatLinkAddress]: 'Address',
   },
 
   ru: {
@@ -283,6 +287,10 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.formatCode]: 'Код',
     [lng.formatHighlight]: 'Выделить цветом',
     [lng.formatAddLink]: 'Добавить ссылку',
+    [lng.formatModifyLink]: 'Изменить ссылку',
+    [lng.formatEditLinkTitle]: 'Редактировать ссылку',
+    [lng.formatEditLinkMsg]: 'Введите адрес гиперссылки:',
+    [lng.formatLinkAddress]: 'Адрес',
   },
 };
 
