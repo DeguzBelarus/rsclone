@@ -66,6 +66,8 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.collapse]: 'Collapse',
     [lng.expand]: 'Expand',
     [lng.clear]: 'Clear',
+    [lng.fullScreen]: 'Fullscreen mode',
+    [lng.fullScreenExit]: 'Exit fullscreen mode',
 
     [lng.searchPlaceholder]: 'Search users...',
     [lng.searchWelcome]: 'Start typing to look for users...',
@@ -212,6 +214,8 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.expand]: 'Развернуть',
     [lng.save]: 'Сохранить',
     [lng.clear]: 'Очистить',
+    [lng.fullScreen]: 'Во весь экран',
+    [lng.fullScreenExit]: 'Покинуть полноэкранный режим',
 
     [lng.searchPlaceholder]: 'Поиск',
     [lng.searchWelcome]: 'Начните ввод, чтобы начать поиск пользователей',

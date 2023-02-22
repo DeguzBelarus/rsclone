@@ -65,6 +65,8 @@ export enum lng {
   expand,
   save,
   clear,
+  fullScreen,
+  fullScreenExit,
 
   searchPlaceholder,
   searchWelcome,

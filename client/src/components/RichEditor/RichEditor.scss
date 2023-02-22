@@ -1,5 +1,5 @@
 .DraftEditor-root {
-  height: calc(min(300px, 30vh));
+  min-height: calc(min(300px, 30vh));
   overflow-y: auto;
 
   .DraftEditor-editorContainer,
@@ -9,5 +9,5 @@
 }
 
 .readonly-wrapper .DraftEditor-root {
-  height: auto;
+  min-height: auto;
 }

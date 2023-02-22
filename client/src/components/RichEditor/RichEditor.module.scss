@@ -2,6 +2,8 @@ $mobile-breakpoint: 500px;
 
 .wrapper {
   position: relative;
+  display: grid;
+  grid-template-rows: auto 1fr;
   padding-top: 1.5rem;
 
   .controls {
@@ -178,6 +180,16 @@ $mobile-breakpoint: 500px;
 
     .label {
       --top-offset: 6em;
+    }
+  }
+
+  .DraftEditor-root {
+    // min-height: calc(min(300px, 30vh));
+    overflow-y: auto;
+
+    .DraftEditor-editorContainer,
+    .public-DraftEditor-content {
+      height: 100%;
     }
   }
 }

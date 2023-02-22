@@ -10,7 +10,12 @@ import {
   Tooltip,
   IconButton,
   Chip,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
+import FullscreenIcon from '@mui/icons-material/Fullscreen';
+import CloseFullscreenIcon from '@mui/icons-material/CloseFullscreen';
+
 import useLanguage from 'hooks/useLanguage';
 import { lng } from 'hooks/useLanguage/types';
 import { Socket } from 'socket.io-client';
@@ -28,7 +33,7 @@ import {
   getUserId,
   updatePostAsync,
 } from 'app/mainSlice';
-import { IUpdatePostRequest } from '../../types/types';
+import { FullScreenMode, IUpdatePostRequest } from '../../types/types';
 import { AddAPhoto } from '@mui/icons-material';
 import { MediaContainer } from 'components/MediaContainer/MediaContainer';
 import { useNavigate } from 'react-router-dom';
@@ -36,6 +41,7 @@ import { RecorderButton } from 'components/RecorderButton/RecorderButton';
 import { Recorder } from 'components/Recorder/Recorder';
 import { RichEditor } from 'components/RichEditor/RichEditor';
 import { compressToUTF16 } from 'async-lz-string';
+import { getLocalStorageData, setLocalStorageData } from 'app/storage';
 
 export interface EditPostModalProps {
   open: boolean;
@@ -66,14 +72,21 @@ export const EditPostModal = ({
   const [touched, setTouched] = useState(false);
   const [recording, setRecording] = useState<'video' | 'audio'>();
   const [mediaLoading, setMediaLoading] = useState(false);
+  const [fullScreen, setFullScreen] = useState<FullScreenMode>(
+    getLocalStorageData()?.fullScreenPostEdit || 'auto'
+  );
 
   const language = useLanguage();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const theme = useTheme();
+  const mobile = useMediaQuery(theme.breakpoints.down('sm'));
   const lang = useAppSelector(getCurrentLanguage);
   const token = useAppSelector(getToken);
   const userId = useAppSelector(getUserId);
   const userNickname = useAppSelector(getUserId);
+
+  const isFullScreen = fullScreen === 'fullscreen' || (fullScreen === 'auto' && mobile);
 
   const validateTitle = useValidateInput(
     POST_TITLE_PATTERN,
@@ -166,6 +179,12 @@ export const EditPostModal = ({
   const handleRecorderLoadingStart = useCallback(() => setMediaLoading(true), []);
   const handleRecorderLoadingEnd = useCallback(() => setMediaLoading(false), []);
 
+  const handleFullScreenClick = () => {
+    const fullScreen = isFullScreen ? 'window' : 'fullscreen';
+    setFullScreen(fullScreen);
+    setLocalStorageData({ fullScreenPostEdit: fullScreen });
+  };
+
   useEffect(() => {
     if (open) {
       setTitleValue(postHeading || '');
@@ -181,14 +200,26 @@ export const EditPostModal = ({
     <Dialog
       className={styles.dialog}
       open={open}
-      disableScrollLock
+      disableScrollLock={!isFullScreen}
       scroll="paper"
+      fullScreen={isFullScreen}
       onClose={(_, reason) => {
         if (reason === 'escapeKeyDown') handleClose();
       }}
       PaperProps={{ sx: { minWidth: { xs: '90vw', sm: 'min(80vw, 600px)' } } }}
     >
-      <DialogTitle>{language(id ? lng.editPostTitle : lng.newPostTitle)}</DialogTitle>
+      <DialogTitle className={styles.title}>
+        {language(id ? lng.editPostTitle : lng.newPostTitle)}
+        <Tooltip title={language(isFullScreen ? lng.fullScreenExit : lng.fullScreen)}>
+          <IconButton size="small" onClick={handleFullScreenClick}>
+            {isFullScreen ? (
+              <CloseFullscreenIcon fontSize="small" />
+            ) : (
+              <FullscreenIcon fontSize="small" />
+            )}
+          </IconButton>
+        </Tooltip>
+      </DialogTitle>
       <DialogContent className={styles.content}>
         <TextField
           variant="standard"
