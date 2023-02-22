@@ -6,8 +6,8 @@
   }
   .content {
     display: grid;
-    grid-template-rows: auto 1fr auto auto;
-    gap: 0.5rem;
+    align-items: start;
+    align-content: start;
 
     .media {
       display: flex;

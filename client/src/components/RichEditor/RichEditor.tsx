@@ -239,18 +239,20 @@ export const RichEditor = ({
           </ConfirmModal>
         </>
       )}
-      <Editor
-        ref={editorRef}
-        editorState={editorState}
-        customStyleMap={customStyleMap}
-        onChange={handleChange}
-        handleKeyCommand={handleKeyCommand}
-        keyBindingFn={handleKeyBindings}
-        blockStyleFn={handleBlockStyle}
-        readOnly={readOnly}
-        onFocus={() => setEditorFocused(true)}
-        onBlur={() => setEditorFocused(false)}
-      />
+      <div className={styles.editor}>
+        <Editor
+          ref={editorRef}
+          editorState={editorState}
+          customStyleMap={customStyleMap}
+          onChange={handleChange}
+          handleKeyCommand={handleKeyCommand}
+          keyBindingFn={handleKeyBindings}
+          blockStyleFn={handleBlockStyle}
+          readOnly={readOnly}
+          onFocus={() => setEditorFocused(true)}
+          onBlur={() => setEditorFocused(false)}
+        />
+      </div>
       {!readOnly && (
         <>
           <div className={styles.label} onClick={() => editorRef.current?.focus()}>
