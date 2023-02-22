@@ -1,5 +1,5 @@
-import React from 'react';
-import { EditorState, ContentState, ContentBlock, CompositeDecorator } from 'draft-js';
+import React, { useEffect, useState } from 'react';
+import { EditorState, ContentState, ContentBlock, CompositeDecorator, Entity } from 'draft-js';
 import LinkIcon from '@mui/icons-material/Link';
 
 import styles from './RichEditor.module.scss';
@@ -23,14 +23,17 @@ interface RichLinkProps {
 }
 
 const RichLink = ({ contentState, entityKey, children }: RichLinkProps) => {
-  const { url } = contentState.getEntity(entityKey).getData();
+  const [url, setUrl] = useState('');
+  useEffect(() => {
+    const { url: newUrl } = contentState.getEntity(entityKey).getData();
+    console.log(newUrl);
+    setUrl(newUrl || '');
+  }, [contentState, entityKey]);
   return (
-    <Tooltip className={styles.linkTip} title={url}>
-      <a href={url} className={styles.link}>
-        {children}
-        <LinkIcon className={styles.icon} fontSize="small" />
-      </a>
-    </Tooltip>
+    <a href={url} className={styles.link}>
+      {children}
+      <LinkIcon className={styles.icon} fontSize="small" />
+    </a>
   );
 };
 
@@ -41,6 +44,12 @@ const linkDecorator = new CompositeDecorator([
   },
 ]);
 
+export interface RichLinkInfo {
+  url?: string;
+  entityKey?: string;
+  entity?: Entity;
+}
+
 export const LinkEditorState = {
   createEmpty(): EditorState {
     return EditorState.createEmpty(linkDecorator);
@@ -50,37 +59,35 @@ export const LinkEditorState = {
     return EditorState.createWithContent(content, linkDecorator);
   },
 
-  getCurrentLinkAddress(editorState: EditorState): string {
+  getLinkInfo(editorState: EditorState): RichLinkInfo {
+    const getLinkEntity = (content: ContentState, block: ContentBlock, offset: number) => {
+      const key = block.getEntityAt(offset);
+      if (key) {
+        const entity = content.getEntity(key);
+        if (entity && entity.getType() === 'LINK') return { entity, key };
+      }
+      return {};
+    };
     const content = editorState.getCurrentContent();
     const selection = editorState.getSelection();
-    const block = content.getBlockForKey(selection.getStartKey());
-    let selectedEntityURL: string | null = null;
-    const entityURLs: Array<string | null> = [];
-    block.findEntityRanges(
-      (character) => {
-        try {
-          const entityKey = character.getEntity();
-          const entity = content.getEntity(entityKey);
-          const entityData = entity.getData();
-          const entityType = entity.getType();
-          if (entityType === 'LINK') {
-            selectedEntityURL = entityData?.url || null;
-            return true;
-          }
-        } catch {
-          return false;
-        }
-        return false;
-      },
-      (start: number, end: number) => {
-        if (selectedEntityURL) entityURLs.push(selectedEntityURL);
-      }
-    );
-    if (entityURLs[0]) return entityURLs[0];
-    const windowSelection = window.getSelection();
-    if (!selection.isCollapsed() && windowSelection) {
-      return windowSelection.toString();
+    const startBlock = content.getBlockForKey(selection.getStartKey());
+    const startOffset = selection.getStartOffset();
+    const endBlock = content.getBlockForKey(selection.getEndKey());
+    const endOffset = selection.getEndOffset();
+
+    const linkStartEntity = getLinkEntity(content, startBlock, startOffset);
+    const linkEndEntity = getLinkEntity(content, endBlock, endOffset);
+    const linkEntity = linkStartEntity.entity ? linkStartEntity : linkEndEntity;
+
+    if (linkEntity.entity) {
+      const { url } = linkEntity.entity.getData();
+      if (url) return { url, entity: linkEntity.entity, entityKey: linkEntity.key };
     }
-    return '';
+
+    if (!selection.isCollapsed() && startBlock === endBlock) {
+      return { url: startBlock.getText().slice(startOffset, endOffset) };
+    }
+
+    return {};
   },
 };

@@ -10,6 +10,7 @@ import {
   Modifier,
   SelectionState,
   ContentBlock,
+  Entity,
 } from 'draft-js';
 import { decompressFromUTF16 } from 'async-lz-string';
 import { useTheme } from '@mui/material/styles';
@@ -23,7 +24,7 @@ import styles from './RichEditor.module.scss';
 import './RichEditor.scss';
 import { ConfirmModal } from 'components/ConfirmModal/ConfirmModal';
 import { RichEditorButton } from './RichEditorButton';
-import { LinkEditorState } from './RichLink';
+import { LinkEditorState, RichLinkInfo } from './RichLink';
 
 interface RichEditorProps {
   label?: string;
@@ -47,7 +48,7 @@ export const RichEditor = ({
   const [editorState, setEditorState] = useState(LinkEditorState.createEmpty());
   const [editorFocused, setEditorFocused] = useState(false);
   const [linkModalOpen, setLinkModalOpen] = useState(false);
-  const [linkAddress, setLinkAddress] = useState('');
+  const [linkInfo, setLinkInfo] = useState<RichLinkInfo>({});
   const editorRef: React.LegacyRef<Editor> = useRef(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const isEmpty = editorState.getCurrentContent().hasText();
@@ -80,12 +81,8 @@ export const RichEditor = ({
     }
   };
 
-  useEffect(() => {
-    setLinkAddress(LinkEditorState.getCurrentLinkAddress(editorState));
-  }, [editorState]);
-
   const handleLinkClick = () => {
-    if (linkAddress !== '') setLinkModalOpen(true);
+    if (linkInfo?.url) setLinkModalOpen(true);
   };
 
   const handleKeyCommand = (command: string, editorState: EditorState) => {
@@ -126,10 +123,11 @@ export const RichEditor = ({
     const selection = editorState.getSelection();
     const content = editorState.getCurrentContent();
     const anchorKey = selection.getAnchorKey();
-    const currentBlockKey = content.getBlockForKey(anchorKey).getKey();
     const anchorOffset = selection.getAnchorOffset();
-    const state = LinkEditorState.create(Modifier.replaceText(content, selection, emoji));
-    const updatedSelection = SelectionState.createEmpty(currentBlockKey).merge({
+    const state = EditorState.set(editorState, {
+      currentContent: Modifier.replaceText(content, selection, emoji),
+    });
+    const updatedSelection = SelectionState.createEmpty(anchorKey).merge({
       anchorOffset,
       focusOffset: anchorOffset + emoji.length,
     });
@@ -142,11 +140,19 @@ export const RichEditor = ({
     if (!url.startsWith(`http:\/\/`) && !url.startsWith(`https:\/\/`)) {
       url = `https:\/\/${url}`;
     }
-    const contentState = editorState.getCurrentContent();
-    const contentStateWithEntity = contentState.createEntity('LINK', 'MUTABLE', { url, readOnly });
-    const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
-    const newEditorState = EditorState.set(editorState, { currentContent: contentStateWithEntity });
-    setEditorState(RichUtils.toggleLink(newEditorState, newEditorState.getSelection(), entityKey));
+    let state = editorState;
+    let content = state.getCurrentContent();
+
+    if (linkInfo.entity && linkInfo.entityKey) {
+      content = content.replaceEntityData(linkInfo.entityKey, { url });
+      state = EditorState.push(state, content, 'change-block-data');
+      setEditorState(EditorState.forceSelection(state, state.getSelection()));
+    } else {
+      content = content.createEntity('LINK', 'MUTABLE', { url });
+      const entityKey = content.getLastCreatedEntityKey();
+      state = EditorState.push(state, content, 'apply-entity');
+      setEditorState(RichUtils.toggleLink(state, state.getSelection(), entityKey));
+    }
   };
 
   useEffect(() => {
@@ -174,6 +180,10 @@ export const RichEditor = ({
     };
     changeValue();
   }, [initialValue]);
+
+  useEffect(() => {
+    setLinkInfo(LinkEditorState.getLinkInfo(editorState));
+  }, [editorState]);
 
   return (
     <div
@@ -208,7 +218,7 @@ export const RichEditor = ({
                   title={`${language(title || lng.formatBold)} (${shortcut})`}
                   editorState={editorState}
                   toggleStyle={toggleStyle}
-                  isDisabled={style === 'LINK' ? () => linkAddress === '' : undefined}
+                  isDisabled={style === 'LINK' ? () => !linkInfo.url : undefined}
                   onClick={style === 'LINK' ? handleLinkClick : undefined}
                 />
               )
@@ -218,7 +228,7 @@ export const RichEditor = ({
             open={linkModalOpen}
             title="Edit link"
             inputLabel="Link address"
-            inputInitial={linkAddress}
+            inputInitial={linkInfo.url}
             onClose={() => setLinkModalOpen(false)}
             onSuccess={handleAddLink}
           >
