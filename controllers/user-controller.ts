@@ -303,7 +303,7 @@ class UserController {
 
   async getOneUser(request: IRequestModified, response: Response, next: NextFunction) {
     try {
-      if (User && Post && Message) {
+      if (User && Post && Message && Comment) {
         const { userId } = request.params;
         const { lang } = request.query;
         const { requesterId, role } = request;
@@ -311,32 +311,60 @@ class UserController {
         const foundUser = await User.findOne({
           where: { id: Number(userId) },
           include: [
-            { model: Post, as: "posts" },
             { model: Message, as: "dialogs" },
           ],
         });
 
+        const foundPosts = await Post.findAll({
+          where: { userId: Number(userId) },
+          include: [{ model: User, as: "ownerData" },
+          { model: Comment, as: "comments" }]
+        });
+
+        let posts = foundPosts.map((post) => {
+          return {
+            date: post.dataValues.date,
+            editDate: post.dataValues.editDate,
+            id: post.dataValues.id,
+            media: post.dataValues.media,
+            ownerAvatar: post.dataValues.ownerData?.avatar,
+            ownerNickname: post.dataValues.ownerNickname,
+            ownerRole: post.dataValues.ownerRole,
+            postHeading: post.dataValues.postHeading,
+            postText: post.dataValues.postText,
+            userId: post.dataValues.userId,
+            comments: post.dataValues.comments,
+          }
+        })
+
         if (foundUser) {
           const { id, age, city, country, email, firstName, lastName, nickname, role: userRole, avatar
           } = foundUser.dataValues;
-          let { posts, dialogs } = foundUser.dataValues
+          let { dialogs } = foundUser.dataValues
 
           if (posts) {
             posts = posts.sort((prevPost, nextPost) => {
               if (prevPost.id && nextPost.id) {
                 if (prevPost.id > nextPost.id) {
-                  return 1;
+                  return -1;
                 }
                 if (prevPost.id < nextPost.id) {
                   return 1;
                 }
               }
               return 0;
-            }).reverse()
+            })
           };
 
           if (Number(userId) === requesterId) {
-            const incomingMessages = await Message.findAll({ where: { recipientId: userId } }) as unknown as Array<IMessageModel>;
+            let incomingMessages = await Message.findAll({
+              where: { recipientId: userId },
+              include: [{ model: User, as: "ownerData" }]
+            }) as unknown as Array<IMessageModel>;
+            incomingMessages = incomingMessages.map((message) => {
+              message.authorAvatarSrc = message.ownerData?.avatar;
+              return message;
+            })
             const outgoingMessages = dialogs as unknown as Array<IMessageModel>;
             const allMessages = [...incomingMessages, ...outgoingMessages];
             allMessages.sort((prevMessage, nextMessage) => {

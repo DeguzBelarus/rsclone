@@ -159,10 +159,13 @@ class PostController {
 
   async getAllPosts(request: Request, response: Response, next: NextFunction) {
     try {
-      if (Post) {
+      if (Post && User && Comment) {
         const { lang } = request.query;
 
-        const foundPosts = await Post.findAll();
+        const foundPosts = await Post.findAll({
+          include: [{ model: User, as: "ownerData" },
+          { model: Comment, as: "comments" }]
+        });
         if (foundPosts) {
           return response.json({
             postsData: foundPosts
@@ -176,8 +179,9 @@ class PostController {
                   media: post.dataValues.media,
                   userId: post.dataValues.userId,
                   ownerNickname: post.dataValues.ownerNickname,
-                  ownerAvatar: post.dataValues.ownerAvatar,
+                  ownerAvatar: post.dataValues.ownerData?.avatar,
                   ownerRole: post.dataValues.ownerRole,
+                  comments: post.dataValues.comments
                 }
               })
               .sort((prevPost, nextPost) => {
@@ -215,29 +219,48 @@ class PostController {
 
   async getOnePost(request: Request, response: Response, next: NextFunction) {
     try {
-      if (Post && Comment) {
+      if (Post && Comment && User) {
         const { id } = request.params;
         const { lang } = request.query;
 
         const foundPost = await Post.findOne({
-          where: { id }, include: [{ model: Comment, as: "comments" }],
+          where: { id }, include: [{ model: User, as: "ownerData" }],
         });
         if (foundPost) {
-          const { id, date, media, postHeading, postText, userId, editDate,
-            ownerNickname, ownerAvatar, ownerRole } = foundPost.dataValues;
-          let { comments } = foundPost.dataValues;
 
-          comments = comments?.sort((prevComment, nextComment) => {
-            if (prevComment.id && nextComment.id) {
-              if (prevComment.id > nextComment.id) {
-                return 1;
+          let { id, date, media, postHeading, postText, userId, editDate,
+            ownerNickname, ownerAvatar, ownerRole, ownerData } = foundPost.dataValues;
+          ownerAvatar = ownerData?.avatar;
+
+          let foundComments = await Comment.findAll({
+            where: { postId: id },
+            include: [{ model: User, as: "ownerData" }]
+          })
+
+          const comments = foundComments?.sort((prevComment, nextComment) => {
+            if (prevComment.dataValues.id && nextComment.dataValues.id) {
+              if (prevComment.dataValues.id > nextComment.dataValues.id) {
+                return -1;
               }
-              if (prevComment.id < nextComment.id) {
+              if (prevComment.dataValues.id < nextComment.dataValues.id) {
                 return 1;
               }
             }
             return 0;
-          }).reverse();
+          }).map((comment) => {
+            return {
+              authorAvatar: comment.dataValues.ownerData?.avatar,
+              authorNickname: comment.dataValues.ownerData?.nickname,
+              authorRole: comment.dataValues.ownerData?.role,
+              commentText: comment.dataValues.commentText,
+              date: comment.dataValues.date,
+              editDate: comment.dataValues.editDate,
+              id: comment.dataValues.id,
+              postId: comment.dataValues.postId,
+              userId: comment.dataValues.userId,
+            }
+          })
+
           return response.json({
             postData: {
               id, date, media, postHeading, postText, userId, editDate, comments,

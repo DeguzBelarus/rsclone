@@ -155,19 +155,19 @@ if (User && Post && Comment && Message) {
     as: "posts",
     foreignKey: "userId",
   });
-  Post.belongsTo(User);
+  Post.belongsTo(User, { as: "ownerData", foreignKey: "userId" });
 
   User.hasMany(Message, {
     as: "dialogs",
     foreignKey: "userId",
   });
-  Message.belongsTo(User);
+  Message.belongsTo(User, { as: "ownerData", foreignKey: "userId" });
 
   User.hasMany(Comment, {
     as: "comments",
     foreignKey: "userId",
   });
-  Comment.belongsTo(User);
+  Comment.belongsTo(User, { as: "ownerData", foreignKey: "userId" });
 
   Post.hasMany(Comment, {
     as: "comments",

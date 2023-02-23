@@ -161,17 +161,18 @@ class MessageController {
           );
         }
 
-        let dialogMessages = await Message.findAll({
+        let foundDialogMessages = await Message.findAll({
           where: {
             [Op.or]: [
               { [Op.and]: [{ userId: userId, recipientId: interlocutorId }] },
               { [Op.and]: [{ userId: interlocutorId, recipientId: userId }] }
             ]
           },
+          include: [{ model: User, as: "ownerData" }]
         });
 
-        if (dialogMessages.length) {
-          dialogMessages.forEach((message) => {
+        if (foundDialogMessages.length) {
+          foundDialogMessages.forEach((message) => {
             if (message.dataValues.recipientId === Number(userId)) {
               message.update({
                 isRead: true,
@@ -180,15 +181,30 @@ class MessageController {
           })
         }
 
-        dialogMessages = dialogMessages.sort((prevMessage, nextMessage) => {
-          if (Number(prevMessage.dataValues.date) > Number(nextMessage.dataValues.date)) {
+        let dialogMessages = foundDialogMessages.map((message) => {
+          return {
+            id: message.dataValues.id,
+            date: message.dataValues.date,
+            messageText: message.dataValues.messageText,
+            authorNickname: message.dataValues.ownerData?.nickname,
+            recipientId: message.dataValues.recipientId,
+            recipientNickname: message.dataValues.recipientNickname,
+            isRead: message.dataValues.isRead,
+            authorAvatarSrc: message.dataValues.ownerData?.avatar,
+            recipientAvatarSrc: message.dataValues.recipientAvatarSrc,
+            userId: message.dataValues.userId,
+          }
+        })
+
+        dialogMessages.sort((prevMessage, nextMessage) => {
+          if (Number(prevMessage.date) > Number(nextMessage.date)) {
             return 1;
           }
-          if (Number(prevMessage.dataValues.date) < Number(nextMessage.dataValues.date)) {
+          if (Number(prevMessage.date) < Number(nextMessage.date)) {
             return -1;
           }
           return 0;
-        })
+        });
 
         return response.json({
           messages: dialogMessages,

@@ -11,6 +11,7 @@ import {
   sendMessageAsync,
   getOneUserInfoAsync,
   setCurrentDialogMessages,
+  getAvatarSrc,
 } from 'app/mainSlice';
 import Avatar from 'components/Avatar';
 import { CommentInput } from 'components/CommentInput/CommentInput';
@@ -56,6 +57,7 @@ export const ChatWindow = ({
   const token = useAppSelector(getToken);
   const authorId = useAppSelector(getUserId);
   const authorNickname = useAppSelector(getUserNickname);
+  const ownAvatarSrc = useAppSelector(getAvatarSrc);
   const messages: IMessageModel[] | null = useAppSelector(getCurrentDialogMessages);
 
   const [isLoading, setIsLoading] = useState(false);
@@ -149,54 +151,65 @@ export const ChatWindow = ({
       <div className={styles.messages}>
         {messages && !isLoading ? (
           <ul className={styles.messages} ref={messagesRef}>
-            {messages.map(({ id, messageText, userId, authorNickname, authorAvatarSrc, date }) => {
-              const self = userId === authorId;
-              return (
-                <li
-                  key={id}
-                  className={combineClasses(styles.message, [styles.self, self])}
-                  style={{
-                    backgroundColor: alpha(
-                      self ? palette.primary.main : palette.secondary.main,
-                      0.1
-                    ),
-                  }}
-                >
-                  {self && (
-                    <Paper className={styles.delete}>
-                      <Tooltip title={language(lng.postDelete)}>
-                        <IconButton
-                          size="small"
-                          color="warning"
-                          onClick={() => handleDelete(id, userId, recipientId)}
-                        >
-                          <DeleteIcon fontSize="small" />
-                        </IconButton>
-                      </Tooltip>
-                    </Paper>
-                  )}
-                  <Avatar user={userId} avatarSrc={authorAvatarSrc} />
-                  <div className={styles.text}>
-                    <div className={styles.name}>
-                      <span className={styles.nickname}> {authorNickname}</span>
-                      <span className={styles.date}>
-                        <PostDate date={date} />
-                      </span>
+            {messages.map(
+              ({
+                id,
+                messageText,
+                userId,
+                authorNickname,
+                authorAvatarSrc,
+                date,
+                recipientAvatarSrc,
+                recipientId,
+              }) => {
+                const self = userId === authorId;
+                return (
+                  <li
+                    key={id}
+                    className={combineClasses(styles.message, [styles.self, self])}
+                    style={{
+                      backgroundColor: alpha(
+                        self ? palette.primary.main : palette.secondary.main,
+                        0.1
+                      ),
+                    }}
+                  >
+                    {self && (
+                      <Paper className={styles.delete}>
+                        <Tooltip title={language(lng.postDelete)}>
+                          <IconButton
+                            size="small"
+                            color="warning"
+                            onClick={() => handleDelete(id, userId, recipientId)}
+                          >
+                            <DeleteIcon fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                      </Paper>
+                    )}
+                    <Avatar user={userId} avatarSrc={self ? ownAvatarSrc : authorAvatarSrc} />
+                    <div className={styles.text}>
+                      <div className={styles.name}>
+                        <span className={styles.nickname}> {authorNickname}</span>
+                        <span className={styles.date}>
+                          <PostDate date={date} />
+                        </span>
+                      </div>
+                      <div className={styles.messageBody}>
+                        {`${
+                          process.env.REACT_APP_CRYPT_KEY
+                            ? cryptoJS.AES.decrypt(
+                                messageText,
+                                process.env.REACT_APP_CRYPT_KEY
+                              ).toString(cryptoJS.enc.Utf8)
+                            : messageText
+                        }`}
+                      </div>
                     </div>
-                    <div className={styles.messageBody}>
-                      {`${
-                        process.env.REACT_APP_CRYPT_KEY
-                          ? cryptoJS.AES.decrypt(
-                              messageText,
-                              process.env.REACT_APP_CRYPT_KEY
-                            ).toString(cryptoJS.enc.Utf8)
-                          : messageText
-                      }`}
-                    </div>
-                  </div>
-                </li>
-              );
-            })}
+                  </li>
+                );
+              }
+            )}
           </ul>
         ) : (
           <Spinner size={42} />
