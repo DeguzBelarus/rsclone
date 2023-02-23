@@ -27,9 +27,11 @@ import {
   IGetOneUserRequestData,
   IMessageModel,
   ISendMessageRequest,
+  Undefinable,
 } from 'types/types';
 import styles from './ChatWindow.module.scss';
 import DeleteIcon from '@mui/icons-material/DeleteForever';
+import cryptoJS from 'crypto-js';
 import { Spinner } from 'components/Spinner/Spinner';
 
 interface ChatWindowProps {
@@ -62,6 +64,13 @@ export const ChatWindow = ({
 
   const handleSend = async (messageText: string) => {
     if (!token || !authorId || !authorNickname || !recipientId || !recipientNickname) return;
+    let cryptedMessage: Undefinable<string>;
+    if (process.env.REACT_APP_CRYPT_KEY) {
+      cryptedMessage = cryptoJS.AES.encrypt(
+        messageText,
+        process.env.REACT_APP_CRYPT_KEY
+      ).toString();
+    }
     const request: ISendMessageRequest = {
       lang,
       token,
@@ -70,7 +79,7 @@ export const ChatWindow = ({
         authorNickname,
         recipientId,
         recipientNickname,
-        messageText,
+        messageText: cryptedMessage || messageText,
       },
     };
     await dispatch(sendMessageAsync(request));
@@ -174,7 +183,16 @@ export const ChatWindow = ({
                         <PostDate date={date} />
                       </span>
                     </div>
-                    <div className={styles.messageBody}>{messageText}</div>
+                    <div className={styles.messageBody}>
+                      {`${
+                        process.env.REACT_APP_CRYPT_KEY
+                          ? cryptoJS.AES.decrypt(
+                              messageText,
+                              process.env.REACT_APP_CRYPT_KEY
+                            ).toString(cryptoJS.enc.Utf8)
+                          : messageText
+                      }`}
+                    </div>
                   </div>
                 </li>
               );
