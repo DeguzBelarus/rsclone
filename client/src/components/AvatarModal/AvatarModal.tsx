@@ -116,7 +116,7 @@ export const AvatarModal = ({ open, onClose, onSuccess }: AvatarModalProps) => {
       onClose={handleClose}
       PaperProps={{ sx: { minWidth: { xs: '90vw', sm: 'min(80vw, 520px)' } } }}
     >
-      <DialogTitle>Choose your avatar</DialogTitle>
+      <DialogTitle>{language(lng.chooseAvatar)}</DialogTitle>
       <DialogContent className={styles.content}>
         <Avatar demo={touched} avatarSrc={avatarSrc} size="clamp(5rem, 30vw, 12rem)" />
         <Button component="label" color="info" startIcon={<AddAPhoto />}>
@@ -127,10 +127,10 @@ export const AvatarModal = ({ open, onClose, onSuccess }: AvatarModalProps) => {
             type="file"
             onChange={handleAvatarUpdate}
           />
-          Upload a photo
+          {language(lng.uploadPhoto)}
         </Button>
         <Divider style={{ alignSelf: 'stretch' }} />
-        <DialogContentText>or choose from the list</DialogContentText>
+        <DialogContentText>{language(lng.chooseDefault)}</DialogContentText>
         <div className={styles.avatarList}>
           {defaultAvatars.map(({ id, src }) => (
             <Avatar

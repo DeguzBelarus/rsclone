@@ -32,8 +32,11 @@ export enum lng {
   settings,
   logout,
 
-  addPhoto,
+  uploadPhoto,
+  changePhoto,
   deletePhoto,
+  chooseAvatar,
+  chooseDefault,
 
   age,
   ageHint,

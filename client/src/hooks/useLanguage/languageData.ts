@@ -33,8 +33,11 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.settings]: 'Settings',
     [lng.logout]: 'Log out',
 
-    [lng.addPhoto]: 'Add photo',
+    [lng.uploadPhoto]: 'Upload a photo',
+    [lng.changePhoto]: 'Change photo',
     [lng.deletePhoto]: 'Delete photo',
+    [lng.chooseAvatar]: 'Choose your avatar photo',
+    [lng.chooseDefault]: 'or select from the list',
 
     [lng.age]: 'Age',
     [lng.ageHint]: 'Age must be between 0 and 99 years',
@@ -181,8 +184,11 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.settings]: 'Настройки',
     [lng.logout]: 'Выйти',
 
-    [lng.addPhoto]: 'Добавить фотографию',
+    [lng.uploadPhoto]: 'Загрузить фото',
+    [lng.changePhoto]: 'Поменять фотографию',
     [lng.deletePhoto]: 'Удалить фотографию',
+    [lng.chooseAvatar]: 'Выбрать фото для аватара',
+    [lng.chooseDefault]: 'или выбрать из списка',
 
     [lng.age]: 'Возраст',
     [lng.ageHint]: 'Возраст должен быть между 0 и 99',

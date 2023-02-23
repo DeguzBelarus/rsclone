@@ -272,7 +272,7 @@ export const UserSettings: FC<Props> = ({ socket }) => {
       <div className={styles.avatar}>
         <Avatar size="min(40vw, 20rem)" />
         <div>
-          <Tooltip title={language(lng.addPhoto)} placement="top">
+          <Tooltip title={language(lng.changePhoto)} placement="top">
             <IconButton color="primary" onClick={() => setAvatarModalOpen(true)}>
               <AddAPhoto />
             </IconButton>
