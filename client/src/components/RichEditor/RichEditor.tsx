@@ -204,7 +204,7 @@ export const RichEditor = ({
           <div className={styles.controls}>
             {editorActions.map(({ style, block, icon, title, shortcut }, index) =>
               style === 'EMOJI' ? (
-                <EmojiButton key={style} small onEmojiAdded={handleEmojiAdded} />
+                <EmojiButton key={style} small toolTipOnTop onEmojiAdded={handleEmojiAdded} />
               ) : style === 'DIVIDER' ? (
                 <span
                   key={index}
