@@ -4,8 +4,7 @@ $mobile-breakpoint: 500px;
   position: relative;
   display: grid;
   grid-template-rows: auto 1fr;
-  height: clamp(400px, 65vh, 900px);
-  max-height: clamp(550px, 85vh, 1200px);
+  min-height: 260px;
   padding-top: 1.5rem;
 
   .controls {
@@ -172,8 +171,7 @@ $mobile-breakpoint: 500px;
 
   &.readonly {
     padding-top: 0;
-    max-height: none;
-    height: auto;
+    min-height: auto;
 
     .link {
       .icon {

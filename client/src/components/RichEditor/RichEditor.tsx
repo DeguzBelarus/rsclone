@@ -26,6 +26,7 @@ import { RichEditorButton } from './RichEditorButton';
 import { LinkEditorState, RichLinkInfo } from './RichLink';
 
 interface RichEditorProps {
+  className?: string;
   label?: string;
   initialValue?: string;
   error?: boolean;
@@ -35,6 +36,7 @@ interface RichEditorProps {
 }
 
 export const RichEditor = ({
+  className,
   label,
   initialValue,
   error,
@@ -188,6 +190,7 @@ export const RichEditor = ({
     <div
       ref={wrapperRef}
       className={combineClasses(
+        className,
         styles.wrapper,
         [styles.focused, editorFocused],
         [styles.error, error],

@@ -96,7 +96,7 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.postNotFound]: 'The post with the id of % was not found.',
 
     [lng.commentWrite]: 'Write your comment here...',
-    [lng.commentPublish]: 'Publish comment',
+    [lng.commentPublish]: 'Send',
     [lng.commentEdit]: 'Edit comment',
     [lng.commentDelete]: 'Delete comment',
     [lng.commentsHeading]: 'Comments',
