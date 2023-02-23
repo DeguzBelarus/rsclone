@@ -11,9 +11,6 @@ export default function useValidateInput(
     setter(value);
     const valid = pattern instanceof RegExp ? pattern.test(value) : !pattern(value);
 
-    // if (pattern instanceof RegExp) {
-    //   error(!pattern.test(value));
-    // } else error(pattern(value));
     error(!valid);
     setTouched(true);
     return valid;

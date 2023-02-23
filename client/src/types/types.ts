@@ -140,12 +140,16 @@ export interface ISearchUsersResponse {
   searchResult: Array<IFoundUserData>;
   message: string;
 }
+
+export type FullScreenMode = 'auto' | 'window' | 'fullscreen';
+
 export interface ILocalStorageSaveData {
   token?: string;
   currentLanguage?: CurrentLanguageType;
   currentTheme?: CurrentColorTheme;
   activeChats?: OpenChats;
   chatsCollapsed?: boolean;
+  fullScreenPostEdit?: FullScreenMode;
 }
 
 export interface AlertMessage {

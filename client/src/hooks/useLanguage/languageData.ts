@@ -66,6 +66,8 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.collapse]: 'Collapse',
     [lng.expand]: 'Expand',
     [lng.clear]: 'Clear',
+    [lng.fullScreen]: 'Fullscreen mode',
+    [lng.fullScreenExit]: 'Exit fullscreen mode',
 
     [lng.searchPlaceholder]: 'Search users...',
     [lng.searchWelcome]: 'Start typing to look for users...',
@@ -130,6 +132,20 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.chatWith]: 'Chat with',
     [lng.chatWrote]: 'wrote',
     [lng.chatsInputEmpty]: 'Message',
+
+    [lng.formatBold]: 'Bold',
+    [lng.formatItalic]: 'Italic',
+    [lng.formatUnderline]: 'Underline',
+    [lng.formatTitle]: 'Heading',
+    [lng.formatBulletedList]: 'Bulleted List',
+    [lng.formatNumberedList]: 'Numbered List',
+    [lng.formatCode]: 'Code',
+    [lng.formatHighlight]: 'Highlight',
+    [lng.formatAddLink]: 'Add link',
+    [lng.formatModifyLink]: 'Modify link',
+    [lng.formatEditLinkTitle]: 'Edit Link',
+    [lng.formatEditLinkMsg]: 'Please provide hyperlink address:',
+    [lng.formatLinkAddress]: 'Address',
   },
 
   ru: {
@@ -198,6 +214,8 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.expand]: 'Развернуть',
     [lng.save]: 'Сохранить',
     [lng.clear]: 'Очистить',
+    [lng.fullScreen]: 'Во весь экран',
+    [lng.fullScreenExit]: 'Покинуть полноэкранный режим',
 
     [lng.searchPlaceholder]: 'Поиск',
     [lng.searchWelcome]: 'Начните ввод, чтобы начать поиск пользователей',
@@ -263,6 +281,20 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.chatWith]: 'Чат с',
     [lng.chatWrote]: 'написал(a)',
     [lng.chatsInputEmpty]: 'Сообщение',
+
+    [lng.formatBold]: 'Жирный',
+    [lng.formatItalic]: 'Курсив',
+    [lng.formatUnderline]: 'Подчеркивание',
+    [lng.formatTitle]: 'Заголовок',
+    [lng.formatBulletedList]: 'Маркированный список',
+    [lng.formatNumberedList]: 'Нумерованный список',
+    [lng.formatCode]: 'Код',
+    [lng.formatHighlight]: 'Выделить цветом',
+    [lng.formatAddLink]: 'Добавить ссылку',
+    [lng.formatModifyLink]: 'Изменить ссылку',
+    [lng.formatEditLinkTitle]: 'Редактировать ссылку',
+    [lng.formatEditLinkMsg]: 'Введите адрес гиперссылки:',
+    [lng.formatLinkAddress]: 'Адрес',
   },
 };
 

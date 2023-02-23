@@ -65,6 +65,8 @@ export enum lng {
   expand,
   save,
   clear,
+  fullScreen,
+  fullScreenExit,
 
   searchPlaceholder,
   searchWelcome,
@@ -128,6 +130,20 @@ export enum lng {
   chatWith,
   chatWrote,
   chatsInputEmpty,
+
+  formatBold,
+  formatItalic,
+  formatUnderline,
+  formatHighlight,
+  formatTitle,
+  formatBulletedList,
+  formatNumberedList,
+  formatCode,
+  formatAddLink,
+  formatModifyLink,
+  formatEditLinkTitle,
+  formatEditLinkMsg,
+  formatLinkAddress,
 }
 
 export type LangaugeData = {

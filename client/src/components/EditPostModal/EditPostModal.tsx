@@ -10,7 +10,12 @@ import {
   Tooltip,
   IconButton,
   Chip,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
+import FullscreenIcon from '@mui/icons-material/Fullscreen';
+import CloseFullscreenIcon from '@mui/icons-material/CloseFullscreen';
+
 import useLanguage from 'hooks/useLanguage';
 import { lng } from 'hooks/useLanguage/types';
 import { Socket } from 'socket.io-client';
@@ -18,7 +23,7 @@ import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 
 import styles from './EditPostModal.module.scss';
 import useValidateInput from 'hooks/useValidateInput';
-import { POST_BODY_PATTERN, POST_TITLE_PATTERN } from 'consts';
+import { POST_TITLE_PATTERN } from 'consts';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import {
   createPostAsync,
@@ -28,12 +33,15 @@ import {
   getUserId,
   updatePostAsync,
 } from 'app/mainSlice';
-import { IUpdatePostRequest } from '../../types/types';
+import { FullScreenMode, IUpdatePostRequest } from '../../types/types';
 import { AddAPhoto } from '@mui/icons-material';
 import { MediaContainer } from 'components/MediaContainer/MediaContainer';
 import { useNavigate } from 'react-router-dom';
 import { RecorderButton } from 'components/RecorderButton/RecorderButton';
 import { Recorder } from 'components/Recorder/Recorder';
+import { RichEditor } from 'components/RichEditor/RichEditor';
+import { compressToUTF16 } from 'async-lz-string';
+import { getLocalStorageData, setLocalStorageData } from 'app/storage';
 
 export interface EditPostModalProps {
   open: boolean;
@@ -56,6 +64,7 @@ export const EditPostModal = ({
 }: EditPostModalProps) => {
   const [titleValue, setTitleValue] = useState(postHeading || '');
   const [bodyValue, setBodyValue] = useState(postText || '');
+  const [bodyRaw, setBodyRaw] = useState('');
   const [titleError, setTitleError] = useState(false);
   const [bodyError, setBodyError] = useState(false);
   const [mediaValue, setMediaValue] = useState<Blob>();
@@ -63,14 +72,21 @@ export const EditPostModal = ({
   const [touched, setTouched] = useState(false);
   const [recording, setRecording] = useState<'video' | 'audio'>();
   const [mediaLoading, setMediaLoading] = useState(false);
+  const [fullScreen, setFullScreen] = useState<FullScreenMode>(
+    getLocalStorageData()?.fullScreenPostEdit || 'auto'
+  );
 
   const language = useLanguage();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const theme = useTheme();
+  const mobile = useMediaQuery(theme.breakpoints.down('sm'));
   const lang = useAppSelector(getCurrentLanguage);
   const token = useAppSelector(getToken);
   const userId = useAppSelector(getUserId);
   const userNickname = useAppSelector(getUserId);
+
+  const isFullScreen = fullScreen === 'fullscreen' || (fullScreen === 'auto' && mobile);
 
   const validateTitle = useValidateInput(
     POST_TITLE_PATTERN,
@@ -79,7 +95,14 @@ export const EditPostModal = ({
     setTouched
   );
 
-  const validateBody = useValidateInput(POST_BODY_PATTERN, setBodyValue, setBodyError, setTouched);
+  const validateBody = (value: string) => value.trim() !== '';
+
+  const handlePostBodyChange = (value: string, raw: string) => {
+    setBodyValue(value);
+    setBodyRaw(raw);
+    setBodyError(!validateBody(value));
+    setTouched(true);
+  };
 
   const handleClose = () => {
     if (mediaLoading) return;
@@ -93,11 +116,11 @@ export const EditPostModal = ({
     setTouched(true);
   };
 
-  const createPost = async (ownId: number, token: string): Promise<boolean> => {
+  const createPost = async (ownId: number, token: string, postText: string): Promise<boolean> => {
     const requestData = new FormData();
     requestData.append('lang', lang);
     requestData.append('postHeading', titleValue);
-    requestData.append('postText', bodyValue);
+    requestData.append('postText', postText);
     if (mediaValue) requestData.append('media', mediaValue);
 
     const result = await dispatch(createPostAsync({ ownId, token, requestData }));
@@ -105,14 +128,14 @@ export const EditPostModal = ({
     return result && result.meta.requestStatus === 'fulfilled';
   };
 
-  const editPost = async (id: number, token: string): Promise<boolean> => {
+  const editPost = async (id: number, token: string, postText: string): Promise<boolean> => {
     const postData: IUpdatePostRequest = {
       lang,
       postId: id,
       token,
       requestData: {
         postHeading: titleValue,
-        postText: bodyValue,
+        postText,
       },
     };
     const result = await dispatch(updatePostAsync(postData));
@@ -122,12 +145,16 @@ export const EditPostModal = ({
   const handleSave = async () => {
     const isValid = touched && validateTitle(titleValue) && validateBody(bodyValue);
     if (!isValid || !token || userId === null) return;
+    const postText = await compressToUTF16(bodyRaw);
 
-    const result = id === undefined ? await createPost(userId, token) : await editPost(id, token);
+    const result =
+      id === undefined
+        ? await createPost(userId, token, postText)
+        : await editPost(id, token, postText);
 
     if (result) {
       handleClose();
-      if (onSuccess) onSuccess(titleValue, bodyValue);
+      if (onSuccess) onSuccess(titleValue, postText);
       const path = window.location.pathname;
       if (path === '/posts') {
         dispatch(getAllPostsAsync({ lang }));
@@ -152,10 +179,15 @@ export const EditPostModal = ({
   const handleRecorderLoadingStart = useCallback(() => setMediaLoading(true), []);
   const handleRecorderLoadingEnd = useCallback(() => setMediaLoading(false), []);
 
+  const handleFullScreenClick = () => {
+    const fullScreen = isFullScreen ? 'window' : 'fullscreen';
+    setFullScreen(fullScreen);
+    setLocalStorageData({ fullScreenPostEdit: fullScreen });
+  };
+
   useEffect(() => {
     if (open) {
       setTitleValue(postHeading || '');
-      setBodyValue(postText || '');
     }
     setTitleError(false);
     setBodyError(false);
@@ -168,30 +200,40 @@ export const EditPostModal = ({
     <Dialog
       className={styles.dialog}
       open={open}
-      disableScrollLock
+      disableScrollLock={!isFullScreen}
       scroll="paper"
+      fullScreen={isFullScreen}
       onClose={(_, reason) => {
         if (reason === 'escapeKeyDown') handleClose();
       }}
       PaperProps={{ sx: { minWidth: { xs: '90vw', sm: 'min(80vw, 600px)' } } }}
     >
-      <DialogTitle>{language(id ? lng.editPostTitle : lng.newPostTitle)}</DialogTitle>
+      <DialogTitle className={styles.title}>
+        {language(id ? lng.editPostTitle : lng.newPostTitle)}
+        <Tooltip title={language(isFullScreen ? lng.fullScreenExit : lng.fullScreen)}>
+          <IconButton size="small" onClick={handleFullScreenClick}>
+            {isFullScreen ? (
+              <CloseFullscreenIcon fontSize="small" />
+            ) : (
+              <FullscreenIcon fontSize="small" />
+            )}
+          </IconButton>
+        </Tooltip>
+      </DialogTitle>
       <DialogContent className={styles.content}>
         <TextField
+          variant="standard"
           value={titleValue}
           label={language(lng.postTitle)}
           error={titleError}
           onChange={validateTitle}
           helperText={titleError ? language(lng.postTitleHint) : ' '}
         />
-        <TextField
-          multiline
-          minRows={3}
-          maxRows={8}
-          value={bodyValue}
+        <RichEditor
           label={language(lng.postBody)}
           error={bodyError}
-          onChange={validateBody}
+          initialValue={postText}
+          onChange={handlePostBodyChange}
           helperText={bodyError ? language(lng.postBodyHint) : ' '}
         />
         {id === undefined && (
