@@ -6,14 +6,24 @@ import { useAppSelector } from 'app/hooks';
 import { getAvatarSrc, getIsAuthorized, getUserId } from 'app/mainSlice';
 
 interface AvatarProps {
+  className?: string;
+  style?: React.CSSProperties;
   size?: number | string;
   user?: number;
   avatarSrc?: string | null;
-  className?: string;
+  demo?: boolean;
   onClick?: () => void;
 }
 
-export default function Avatar({ size = 32, user, avatarSrc, className, onClick }: AvatarProps) {
+export default function Avatar({
+  size = 32,
+  user,
+  avatarSrc,
+  demo,
+  className,
+  style,
+  onClick,
+}: AvatarProps) {
   const isAuthorized = useAppSelector(getIsAuthorized);
   const ownAvatarSrc = useAppSelector(getAvatarSrc);
   const userId = useAppSelector(getUserId);
@@ -21,7 +31,9 @@ export default function Avatar({ size = 32, user, avatarSrc, className, onClick 
   const [src, setSrc] = useState<string>();
 
   useEffect(() => {
-    if (user === undefined) {
+    if (demo) {
+      setSrc(avatarSrc || '');
+    } else if (user === undefined) {
       setSrc(
         isAuthorized
           ? ownAvatarSrc && ownAvatarSrc !== ''
@@ -32,12 +44,13 @@ export default function Avatar({ size = 32, user, avatarSrc, className, onClick 
     } else {
       setSrc(avatarSrc ? `/${user}/avatar/${avatarSrc}` : undefined);
     }
-  }, [user, avatarSrc, ownAvatarSrc, isAuthorized, userId]);
+  }, [user, avatarSrc, ownAvatarSrc, isAuthorized, userId, demo]);
 
   return (
     <MUIAvatar
       className={className}
       src={src}
+      style={style}
       sx={{ width: size, height: size, bgcolor: purple[50], color: purple[300] }}
       onClick={onClick}
     >

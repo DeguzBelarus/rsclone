@@ -56,6 +56,7 @@ import { IDeleteUserRequestData, IUpdateUserRequestData } from 'types/types';
 import { Socket } from 'socket.io-client';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import { ConfirmModal } from 'components/ConfirmModal/ConfirmModal';
+import { AvatarModal } from 'components/AvatarModal/AvatarModal';
 
 interface Props {
   socket: Socket<DefaultEventsMap, DefaultEventsMap>;
@@ -103,6 +104,7 @@ export const UserSettings: FC<Props> = ({ socket }) => {
 
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [roleModalOpen, setRoleModalOpen] = useState(false);
+  const [avatarModalOpen, setAvatarModalOpen] = useState(false);
 
   const validateNickname = useValidateInput(
     NICKNAME_PATTERN,
@@ -193,32 +195,12 @@ export const UserSettings: FC<Props> = ({ socket }) => {
     setTouched(false);
   };
 
-  const avatarUpdate = (event: ChangeEvent<HTMLInputElement>) => {
-    if (!ownId || !token) return;
-    const files = event.target.files;
-
-    if (files && files[0]) {
-      const formData = new FormData();
-      formData.append('lang', currentLanguage);
-      formData.append('id', String(ownId));
-      formData.append('avatar', files[0]);
-
-      const avatarRequestData: IUpdateUserRequestData = {
-        type: 'avatar',
-        ownId,
-        token,
-        requestData: formData,
-      };
-      dispatch(updateUserAsync(avatarRequestData));
-    }
-  };
-
-  const avatarDelete = () => {
+  const avatarUpdate = (avatar?: Blob) => {
     if (!ownId || !token) return;
     const formData = new FormData();
     formData.append('lang', currentLanguage);
     formData.append('id', String(ownId));
-    formData.append('avatar', '');
+    formData.append('avatar', avatar || '');
 
     const avatarRequestData: IUpdateUserRequestData = {
       type: 'avatar',
@@ -291,22 +273,20 @@ export const UserSettings: FC<Props> = ({ socket }) => {
         <Avatar size="min(40vw, 20rem)" />
         <div>
           <Tooltip title={language(lng.addPhoto)} placement="top">
-            <IconButton component="label" color="primary">
-              <input
-                id="avatar-image"
-                accept="image/*"
-                hidden
-                type="file"
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) => avatarUpdate(event)}
-              />
+            <IconButton color="primary" onClick={() => setAvatarModalOpen(true)}>
               <AddAPhoto />
             </IconButton>
           </Tooltip>
+          <AvatarModal
+            open={avatarModalOpen}
+            onClose={() => setAvatarModalOpen(false)}
+            onSuccess={avatarUpdate}
+          />
           <Tooltip title={language(lng.deletePhoto)} placement="top">
             <span>
               <IconButton
                 color="warning"
-                onClick={avatarDelete}
+                onClick={() => avatarUpdate()}
                 disabled={avatarSrc === null || avatarSrc === undefined || avatarSrc === ''}
               >
                 <DeleteForever />
