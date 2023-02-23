@@ -656,8 +656,6 @@ class UserController {
                 }
 
                 if (role) {
-                  console.log(requesterId);
-
                   if (Number(id) !== requesterId) {
                     if (role !== 'ADMIN' && foundUserForUpdating.dataValues.role === 'ADMIN') {
                       return next(
