@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Avatar as MUIAvatar } from '@mui/material';
+import { alpha, Avatar as MUIAvatar, useTheme } from '@mui/material';
 import { Person as PersonIcon } from '@mui/icons-material';
-import { purple } from '@mui/material/colors';
 import { useAppSelector } from 'app/hooks';
 import { getAvatarSrc, getIsAuthorized, getUserId } from 'app/mainSlice';
 
@@ -24,10 +23,10 @@ export default function Avatar({
   style,
   onClick,
 }: AvatarProps) {
+  const { palette } = useTheme();
   const isAuthorized = useAppSelector(getIsAuthorized);
   const ownAvatarSrc = useAppSelector(getAvatarSrc);
   const userId = useAppSelector(getUserId);
-
   const [src, setSrc] = useState<string>();
 
   useEffect(() => {
@@ -51,7 +50,12 @@ export default function Avatar({
       className={className}
       src={src}
       style={style}
-      sx={{ width: size, height: size, bgcolor: purple[50], color: purple[300] }}
+      sx={{
+        width: size,
+        height: size,
+        bgcolor: alpha(palette.secondary.main, 0.15),
+        color: palette.secondary.light,
+      }}
       onClick={onClick}
     >
       {!src && <PersonIcon sx={{ width: '70%', height: '70%' }}></PersonIcon>}
