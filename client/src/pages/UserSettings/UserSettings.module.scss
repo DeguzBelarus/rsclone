@@ -5,10 +5,10 @@
   display: grid;
   gap: 0rem 4rem;
 
-  grid-template-areas: 
-  "settings-avatar"
-  "settings-danger"  
-  "settings-inputs";  
+  grid-template-areas:
+    'settings-avatar'
+    'settings-danger'
+    'settings-inputs';
 
   .avatar {
     grid-area: settings-avatar;
@@ -22,7 +22,7 @@
       font-weight: 600;
       opacity: 0.6;
       text-transform: uppercase;
-    }    
+    }
   }
 
   .danger {
@@ -36,8 +36,8 @@
 
     .dangerTitle {
       text-align: center;
-    }    
-  }  
+    }
+  }
 
   .inputs {
     grid-area: settings-inputs;
@@ -51,9 +51,9 @@
   }
 
   @media screen and (min-width: $mobile-breakpoint) {
-    grid-template-areas: 
-      "settings-avatar settings-inputs"
-      "settings-danger settings-inputs";
+    grid-template-areas:
+      'settings-avatar settings-inputs'
+      'settings-danger settings-inputs';
 
     grid-template-columns: auto 1fr;
   }

@@ -14,11 +14,10 @@
     letter-spacing: var(--letter-spacing);
     width: 0;
     font-family: monospace;
-    animation: 
-      typing 0.2s steps(var(--message-length)) forwards,
+    animation: typing 0.2s steps(var(--message-length)) forwards,
       blinking 1s 1s infinite alternate backwards;
   }
-  
+
   @keyframes typing {
     to {
       width: calc(var(--message-length) * (1ch + var(--letter-spacing)));
@@ -26,7 +25,7 @@
   }
 
   @keyframes blinking {
-    to { 
+    to {
       opacity: 0.3;
     }
   }
