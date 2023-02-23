@@ -12,7 +12,7 @@ import {
   getOneUserInfoAsync,
   setCurrentDialogMessages,
 } from 'app/mainSlice';
-import Avatar from 'components/Avatar';
+import Avatar from 'components/Avatar/Avatar';
 import { CommentInput } from 'components/CommentInput/CommentInput';
 import { PostDate } from 'components/PostDate/PostDate';
 import useLanguage from 'hooks/useLanguage';

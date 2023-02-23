@@ -35,7 +35,7 @@ import {
   setUserLastName,
   setAvatarSrc,
 } from 'app/mainSlice';
-import Avatar from 'components/Avatar';
+import Avatar from 'components/Avatar/Avatar';
 import styles from './UserSettings.module.scss';
 import { Button, IconButton, TextField, Tooltip } from '@mui/material';
 import { AddAPhoto, DeleteForever } from '@mui/icons-material';

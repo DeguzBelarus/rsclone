@@ -33,7 +33,7 @@ import avatarImage15 from 'assets/avatars/15.jpg';
 import avatarImage16 from 'assets/avatars/16.jpg';
 import avatarImage17 from 'assets/avatars/17.jpg';
 import avatarImage18 from 'assets/avatars/18.jpg';
-import Avatar from 'components/Avatar';
+import Avatar from 'components/Avatar/Avatar';
 import combineClasses from 'lib/combineClasses';
 
 const defaultAvatars = [

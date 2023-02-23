@@ -37,7 +37,7 @@ import { Chip, ClickAwayListener, Tooltip } from '@mui/material';
 import FaceIcon from '@mui/icons-material/Face';
 import DotIcon from '@mui/icons-material/FiberManualRecord';
 import MessageIcon from '@mui/icons-material/QuestionAnswerRounded';
-import Avatar from 'components/Avatar';
+import Avatar from 'components/Avatar/Avatar';
 import { lng } from 'hooks/useLanguage/types';
 import { FabButton } from 'components/FabButton/FabButton';
 import { EditPostModal } from 'components/EditPostModal/EditPostModal';

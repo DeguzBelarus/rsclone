@@ -12,13 +12,15 @@ $mobile-breakpoint: 500px;
     grid-template-columns: repeat(12, auto);
     justify-content: start;
     justify-items: center;
+    align-items: center;
     flex-wrap: nowrap;
     .divider {
       display: block;
       width: 2px;
       margin-inline: 0.3em;
-      height: 1.8em;
+      height: 1.5em;
     }
+    margin-bottom: 0.5rem;
   }
 
   .editor {

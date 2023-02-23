@@ -17,7 +17,7 @@ import {
   setActiveChatId,
   setChats,
 } from 'app/mainSlice';
-import Avatar from 'components/Avatar';
+import Avatar from 'components/Avatar/Avatar';
 import React, { useEffect, useState, FC } from 'react';
 import DeleteIcon from '@mui/icons-material/HighlightOffRounded';
 import CollapseIcon from '@mui/icons-material/ExpandCircleDown';

@@ -7,7 +7,7 @@ import { CurrentLanguageType } from 'types/types';
 import LanguageIcon from '@mui/icons-material/Language';
 import useLanguage from 'hooks/useLanguage';
 import { lng } from 'hooks/useLanguage/types';
-import { CustomMenu } from './CustomMenu/CustomMenu';
+import { CustomMenu } from '../CustomMenu/CustomMenu';
 
 interface LanguageSwitchProps {
   className?: string;
