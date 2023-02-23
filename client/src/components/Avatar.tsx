@@ -12,6 +12,7 @@ interface AvatarProps {
   avatarSrc?: string | null;
   demo?: boolean;
   onClick?: () => void;
+  onDoubleClick?: () => void;
 }
 
 export default function Avatar({
@@ -22,6 +23,7 @@ export default function Avatar({
   className,
   style,
   onClick,
+  onDoubleClick,
 }: AvatarProps) {
   const { palette } = useTheme();
   const isAuthorized = useAppSelector(getIsAuthorized);
@@ -57,6 +59,7 @@ export default function Avatar({
         color: palette.secondary.light,
       }}
       onClick={onClick}
+      onDoubleClick={onDoubleClick}
     >
       {!src && <PersonIcon sx={{ width: '70%', height: '70%' }}></PersonIcon>}
     </MUIAvatar>

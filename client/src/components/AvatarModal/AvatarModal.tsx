@@ -72,8 +72,7 @@ export const AvatarModal = ({ open, onClose, onSuccess }: AvatarModalProps) => {
     if (onClose) onClose();
   };
 
-  const handleConfirm = async (event: FormEvent) => {
-    event.preventDefault();
+  const handleConfirm = async () => {
     if (onSuccess && (blob || avatarSrc)) {
       if (blob) {
         onSuccess(blob);
@@ -110,47 +109,52 @@ export const AvatarModal = ({ open, onClose, onSuccess }: AvatarModalProps) => {
   }, [open]);
 
   return (
-    <Dialog open={open} disableScrollLock onClose={handleClose}>
+    <Dialog
+      open={open}
+      disableScrollLock
+      scroll="paper"
+      onClose={handleClose}
+      PaperProps={{ sx: { minWidth: { xs: '90vw', sm: 'min(80vw, 520px)' } } }}
+    >
       <DialogTitle>Choose your avatar</DialogTitle>
-      <form onSubmit={handleConfirm}>
-        <DialogContent className={styles.content}>
-          <Avatar demo={touched} avatarSrc={avatarSrc} size="clamp(5rem, 30vw, 12rem)" />
-          <Button component="label" color="info" startIcon={<AddAPhoto />}>
-            <input
-              id="avatar-image"
-              accept="image/*"
-              hidden
-              type="file"
-              onChange={handleAvatarUpdate}
+      <DialogContent className={styles.content}>
+        <Avatar demo={touched} avatarSrc={avatarSrc} size="clamp(5rem, 30vw, 12rem)" />
+        <Button component="label" color="info" startIcon={<AddAPhoto />}>
+          <input
+            id="avatar-image"
+            accept="image/*"
+            hidden
+            type="file"
+            onChange={handleAvatarUpdate}
+          />
+          Upload a photo
+        </Button>
+        <Divider style={{ alignSelf: 'stretch' }} />
+        <DialogContentText>or choose from the list</DialogContentText>
+        <div className={styles.avatarList}>
+          {defaultAvatars.map(({ id, src }) => (
+            <Avatar
+              key={id}
+              className={combineClasses(styles.avatarItem, [
+                styles.selected,
+                selectedAvatar === id,
+              ])}
+              style={{ outlineColor: palette.primary.main }}
+              demo
+              avatarSrc={src}
+              size="4rem"
+              onClick={() => handleAvatarClick(id, src)}
+              onDoubleClick={handleConfirm}
             />
-            Upload a photo
-          </Button>
-          <Divider style={{ alignSelf: 'stretch' }} />
-          <DialogContentText>or choose from the list</DialogContentText>
-          <div className={styles.avatarList}>
-            {defaultAvatars.map(({ id, src }) => (
-              <Avatar
-                key={id}
-                className={combineClasses(styles.avatarItem, [
-                  styles.selected,
-                  selectedAvatar === id,
-                ])}
-                style={{ outlineColor: palette.primary.main }}
-                demo
-                avatarSrc={src}
-                size="4rem"
-                onClick={() => handleAvatarClick(id, src)}
-              />
-            ))}
-          </div>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>{language(lng.cancel)}</Button>
-          <Button type="submit" disabled={!avatarSrc}>
-            {language(lng.confirm)}
-          </Button>
-        </DialogActions>
-      </form>
+          ))}
+        </div>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleClose}>{language(lng.cancel)}</Button>
+        <Button disabled={!avatarSrc} onClick={handleConfirm}>
+          {language(lng.confirm)}
+        </Button>
+      </DialogActions>
     </Dialog>
   );
 };
