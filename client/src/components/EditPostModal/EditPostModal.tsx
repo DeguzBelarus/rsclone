@@ -230,6 +230,7 @@ export const EditPostModal = ({
           helperText={titleError ? language(lng.postTitleHint) : ' '}
         />
         <RichEditor
+          className={styles.editor}
           label={language(lng.postBody)}
           error={bodyError}
           initialValue={postText}
