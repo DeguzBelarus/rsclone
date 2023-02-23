@@ -9,6 +9,7 @@ interface MediaContainerProps {
   maxHeight?: string;
   contain?: boolean;
   audioMargin?: boolean;
+  autoPlay?: boolean;
 }
 
 export const MediaContainer = ({
@@ -17,6 +18,7 @@ export const MediaContainer = ({
   maxHeight,
   contain,
   audioMargin,
+  autoPlay,
 }: MediaContainerProps) => {
   const contentType = getURLContentType(fileName || src || '');
   return (
@@ -33,8 +35,8 @@ export const MediaContainer = ({
         <video
           className={styles.video}
           controls
-          autoPlay
-          muted
+          autoPlay={autoPlay}
+          muted={autoPlay}
           loop
           style={{ maxHeight: maxHeight, width: '100%', objectFit: contain ? 'contain' : 'cover' }}
         >
