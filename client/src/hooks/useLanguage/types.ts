@@ -61,8 +61,8 @@ export enum lng {
   deleteAccountOtherMsg,
   giveUpAdmin,
   giveUpAdminMsg,
-  downgradeRole,
-  downgradeRoleMsg,
+  upgradeRole,
+  upgradeRoleMsg,
 
   confirm,
   cancel,
