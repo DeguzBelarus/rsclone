@@ -159,10 +159,10 @@ class PostController {
 
   async getAllPosts(request: Request, response: Response, next: NextFunction) {
     try {
-      if (Post) {
+      if (Post && Comment) {
         const { lang } = request.query;
 
-        const foundPosts = await Post.findAll();
+        const foundPosts = await Post.findAll({ include: [{ model: Comment, as: "comments" }] });
         if (foundPosts) {
           return response.json({
             postsData: foundPosts
@@ -178,20 +178,20 @@ class PostController {
                   ownerNickname: post.dataValues.ownerNickname,
                   ownerAvatar: post.dataValues.ownerAvatar,
                   ownerRole: post.dataValues.ownerRole,
+                  comments: post.dataValues.comments,
                 }
               })
               .sort((prevPost, nextPost) => {
                 if (prevPost.id && nextPost.id) {
                   if (prevPost.id > nextPost.id) {
-                    return 1;
+                    return -1;
                   }
                   if (prevPost.id < nextPost.id) {
                     return 1;
                   }
                 }
                 return 0;
-              })
-              .reverse(),
+              }),
             message: lang === 'ru' ?
               "Данные о всех постах успешно получены" :
               "Data on all posts has been successfully received",

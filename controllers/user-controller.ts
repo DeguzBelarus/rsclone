@@ -7,7 +7,7 @@ import jwt from 'jsonwebtoken';
 import formidable from 'formidable';
 
 import { User, Post, Comment, Message } from '../db-models/db-models';
-import { CurrentLanguageType, IUserModel, IRequestModified, FormidableFile, IFoundUserData, ISearchUsersResponse, IMessageModel, IUserDialog } from '../types/types';
+import { CurrentLanguageType, IUserModel, IRequestModified, FormidableFile, IFoundUserData, ISearchUsersResponse, IMessageModel, IUserDialog, IPostModel } from '../types/types';
 import { ApiError } from '../error-handler/error-handler';
 import { Undefinable } from '../client/src/types/types';
 
@@ -316,24 +316,42 @@ class UserController {
           ],
         });
 
-        if (foundUser) {
+        if (foundUser && Comment) {
           const { id, age, city, country, email, firstName, lastName, nickname, role: userRole, avatar
           } = foundUser.dataValues;
-          let { posts, dialogs } = foundUser.dataValues
+          let { dialogs } = foundUser.dataValues
 
-          if (posts) {
-            posts = posts.sort((prevPost, nextPost) => {
-              if (prevPost.id && nextPost.id) {
-                if (prevPost.id > nextPost.id) {
-                  return 1;
+          const foundPosts = await Post.findAll({ where: {userId} ,include: [{ model: Comment, as: "comments" }] });
+          let posts: Array<IPostModel> = [];
+          if (foundPosts) {
+            posts = foundPosts
+              .map((post) => {
+                return {
+                  id: post.dataValues.id,
+                  date: post.dataValues.date,
+                  editDate: post.dataValues.editDate,
+                  postHeading: post.dataValues.postHeading,
+                  postText: post.dataValues.postText,
+                  media: post.dataValues.media,
+                  userId: post.dataValues.userId,
+                  ownerNickname: post.dataValues.ownerNickname,
+                  ownerAvatar: post.dataValues.ownerAvatar,
+                  ownerRole: post.dataValues.ownerRole,
+                  comments: post.dataValues.comments,
                 }
-                if (prevPost.id < nextPost.id) {
-                  return 1;
+              })
+              .sort((prevPost, nextPost) => {
+                if (prevPost.id && nextPost.id) {
+                  if (prevPost.id > nextPost.id) {
+                    return -1;
+                  }
+                  if (prevPost.id < nextPost.id) {
+                    return 1;
+                  }
                 }
-              }
-              return 0;
-            }).reverse()
-          };
+                return 0;
+              });
+          }
 
           if (Number(userId) === requesterId) {
             const incomingMessages = await Message.findAll({ where: { recipientId: userId } }) as unknown as Array<IMessageModel>;
@@ -576,7 +594,7 @@ class UserController {
         let { lang, email, nickname, password, age, country, city, firstName, avatar, lastName, role,
         } = fields as formidable.Fields & IUserModel & { lang: CurrentLanguageType };
 
-        if (User) {
+        if (User && Comment && Post && Message) {
           const foundUserForUpdating = await User.findOne({ where: { id }, });
           if (foundUserForUpdating) {
             if (typeof email !== 'string' &&
@@ -607,9 +625,10 @@ class UserController {
                     );
                   }
 
-                  await foundUserForUpdating.update({
-                    avatar: '',
-                  });
+                  await foundUserForUpdating.update({ avatar: '' });
+                  await Comment.update({ authorAvatar: '' }, { where: { userId: Number(id) } });
+                  await Post.update({ ownerAvatar: '' }, { where: { userId: Number(id) } });
+                  await Message.update({ authorAvatarSrc: '' }, { where: { userId: Number(id) } });
 
                   return response.json({
                     message: lang === 'ru' ?
@@ -643,9 +662,10 @@ class UserController {
                         }
                       })
 
-                    await foundUserForUpdating.update({
-                      avatar: avatarNewFullName,
-                    });
+                    await foundUserForUpdating.update({ avatar: avatarNewFullName });
+                    await Comment.update({ authorAvatar: avatarNewFullName }, { where: { userId: Number(id) } });
+                    await Post.update({ ownerAvatar: avatarNewFullName }, { where: { userId: Number(id) } });
+                    await Message.update({ authorAvatarSrc: avatarNewFullName }, { where: { userId: Number(id) } });
 
                     return response.json({
                       message: lang === 'ru' ?
@@ -656,8 +676,6 @@ class UserController {
                 }
 
                 if (role) {
-                  console.log(requesterId);
-
                   if (Number(id) !== requesterId) {
                     if (role !== 'ADMIN' && foundUserForUpdating.dataValues.role === 'ADMIN') {
                       return next(
@@ -671,9 +689,9 @@ class UserController {
                     }
                   }
 
-                  await foundUserForUpdating.update({
-                    role,
-                  });
+                  await foundUserForUpdating.update({ role });
+                  await Comment.update({ authorRole: role }, { where: { userId: Number(id) } });
+                  await Post.update({ ownerRole: role }, { where: { userId: Number(id) } });
 
                   return response.json({
                     message: lang === 'ru' ?
@@ -987,6 +1005,9 @@ class UserController {
                   firstName,
                   lastName,
                 });
+                await Comment.update({ authorNickname: nickname }, { where: { userId: Number(id) } });
+                await Post.update({ ownerNickname: nickname }, { where: { userId: Number(id) } });
+                await Message.update({ authorNickname: nickname }, { where: { userId: Number(id) } });
               }
               return response.json({
                 message: lang === 'ru' ?
