@@ -9,6 +9,7 @@
     display: flex;
     max-height: 600px;
   }
+
   .heading {
     display: block;
     font-size: 1.5em;
@@ -39,6 +40,7 @@
   }
 
   .body {
+    position: relative;
     padding: 2rem 1rem;
     display: inline-block;
     word-break: break-word;

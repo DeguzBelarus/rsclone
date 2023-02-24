@@ -27,6 +27,7 @@
       border-bottom-left-radius: 0em;
       margin-right: var(--message-margin);
       isolation: isolate;
+      word-break: break-word;
 
       .delete {
         position: absolute;
