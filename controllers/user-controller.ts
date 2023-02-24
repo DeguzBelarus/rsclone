@@ -576,7 +576,7 @@ class UserController {
         let { lang, email, nickname, password, age, country, city, firstName, avatar, lastName, role,
         } = fields as formidable.Fields & IUserModel & { lang: CurrentLanguageType };
 
-        if (User) {
+        if (User && Comment && Post && Message) {
           const foundUserForUpdating = await User.findOne({ where: { id }, });
           if (foundUserForUpdating) {
             if (typeof email !== 'string' &&
@@ -607,9 +607,10 @@ class UserController {
                     );
                   }
 
-                  await foundUserForUpdating.update({
-                    avatar: '',
-                  });
+                  await foundUserForUpdating.update({ avatar: '' });
+                  await Comment.update({ authorAvatar: '' }, { where: { userId: Number(id) } });
+                  await Post.update({ ownerAvatar: '' }, { where: { userId: Number(id) } });
+                  await Message.update({ authorAvatarSrc: '' }, { where: { userId: Number(id) } });
 
                   return response.json({
                     message: lang === 'ru' ?
@@ -643,9 +644,10 @@ class UserController {
                         }
                       })
 
-                    await foundUserForUpdating.update({
-                      avatar: avatarNewFullName,
-                    });
+                    await foundUserForUpdating.update({ avatar: avatarNewFullName });
+                    await Comment.update({ authorAvatar: avatarNewFullName }, { where: { userId: Number(id) } });
+                    await Post.update({ ownerAvatar: avatarNewFullName }, { where: { userId: Number(id) } });
+                    await Message.update({ authorAvatarSrc: avatarNewFullName }, { where: { userId: Number(id) } });
 
                     return response.json({
                       message: lang === 'ru' ?
