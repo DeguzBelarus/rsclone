@@ -4,23 +4,24 @@ import path from 'path';
 import formidable from 'formidable';
 
 import { Post, Comment, User } from '../db-models/db-models';
-import { CurrentLanguageType, IPostModel, FormidableFile, IRequestModified } from '../types/types';
 import { ApiError } from '../error-handler/error-handler';
 import { Undefinable } from '../client/src/types/types';
+import { CurrentLanguageType, IPostModel, FormidableFile, IRequestModified } from '../types/types';
 
 class PostController {
-  async create(request: IRequestModified, response: Response, next: NextFunction): Promise<void | Response> {
+  async create(request: IRequestModified, response: Response,
+    next: NextFunction): Promise<void | Response> {
     try {
       const { requesterId } = request;
       const { id } = request.params;
 
-      if (!fs.existsSync(path.join(__dirname, "..", "temp"))) {
-        fs.mkdirSync(path.join(__dirname, "..", "temp"),
+      if (!fs.existsSync(path.join(__dirname, '..', 'temp'))) {
+        fs.mkdirSync(path.join(__dirname, '..', 'temp'),
           { recursive: true }
         );
         console.log('temp folder has been created');
       }
-      const tempFolderPath = path.join(__dirname, "..", "temp");
+      const tempFolderPath = path.join(__dirname, '..', 'temp');
 
       const form = formidable({ multiples: true, uploadDir: tempFolderPath });
       form.parse(request, async (error: Error, fields: formidable.Fields, files: formidable.Files) => {
@@ -40,7 +41,7 @@ class PostController {
           if (mediaFile) {
             fs.readdirSync(tempFolderPath).forEach((file) => {
               if (file !== '.gitignore') {
-                fs.unlinkSync(path.join(__dirname, "..", "temp", file))
+                fs.unlinkSync(path.join(__dirname, '..', 'temp', file))
               }
             })
           }
@@ -53,7 +54,7 @@ class PostController {
           if (!lang || !postText || !postHeading) {
             return next(
               ApiError.badRequest(
-                lang === "ru" ?
+                lang === 'ru' ?
                   "Недостаточно данных для выполнения операции" :
                   "Not enough data to perform the operation"
               )
@@ -62,7 +63,7 @@ class PostController {
           if (postHeading.length > 200) {
             return next(
               ApiError.badRequest(
-                lang === "ru" ?
+                lang === 'ru' ?
                   "Максимальное количество символов в заголовке поста - 200" :
                   "The maximum number of characters in the title of a post is 200"
               )
@@ -71,7 +72,7 @@ class PostController {
           if (postText.length > 1000) {
             return next(
               ApiError.badRequest(
-                lang === "ru" ?
+                lang === 'ru' ?
                   "Максимальное количество символов в тексте поста - 1000" :
                   "The maximum number of characters in the text of the post is 1000"
               )
@@ -97,18 +98,19 @@ class PostController {
                   ownerRole: foundPostAuthor.dataValues.role,
                 });
 
-                if (!fs.existsSync(path.join(__dirname, "..", "static", `${id}`, "posts"))) {
-                  fs.mkdirSync(path.join(__dirname, "..", "static", `${id}`, "posts"),
+                if (!fs.existsSync(path.join(__dirname, '..', 'static', `${id}`, 'posts'))) {
+                  fs.mkdirSync(path.join(__dirname, '..', 'static', `${id}`, 'posts'),
                     { recursive: true }
                   );
                 }
-                if (fs.existsSync(path.join(__dirname, "..", "static", `${id}`, "posts"))) {
-                  fs.mkdirSync(path.join(__dirname, "..", "static", `${id}`, "posts", String(newPost.dataValues.id)),
+                if (fs.existsSync(path.join(__dirname, '..', 'static', `${id}`, 'posts'))) {
+                  fs.mkdirSync(path.join(__dirname, '..', 'static', `${id}`, 'posts',
+                    String(newPost.dataValues.id)),
                     { recursive: true }
                   );
                 }
                 fs.rename(path.join(tempFolderPath, mediaFile.newFilename), path.join(__dirname,
-                  "..", "static", `${id}`, "posts", String(newPost.dataValues.id), mediaNewFullName),
+                  '..', 'static', `${id}`, 'posts', String(newPost.dataValues.id), mediaNewFullName),
                   (error) => {
                     if (error) {
                       console.log(error);
@@ -142,7 +144,7 @@ class PostController {
           } else {
             return next(
               ApiError.badRequest(
-                lang === "ru" ?
+                lang === 'ru' ?
                   "Автор поста не найден" :
                   "The author of the post was not found"
               )
@@ -162,7 +164,7 @@ class PostController {
       if (Post && Comment) {
         const { lang } = request.query;
 
-        const foundPosts = await Post.findAll({ include: [{ model: Comment, as: "comments" }] });
+        const foundPosts = await Post.findAll({ include: [{ model: Comment, as: 'comments' }] });
         if (foundPosts) {
           return response.json({
             postsData: foundPosts
@@ -220,7 +222,7 @@ class PostController {
         const { lang } = request.query;
 
         const foundPost = await Post.findOne({
-          where: { id }, include: [{ model: Comment, as: "comments" }],
+          where: { id }, include: [{ model: Comment, as: 'comments' }],
         });
         if (foundPost) {
           const { id, date, media, postHeading, postText, userId, editDate,
@@ -264,7 +266,8 @@ class PostController {
     }
   }
 
-  async delete(request: IRequestModified, response: Response, next: NextFunction): Promise<void | Response> {
+  async delete(request: IRequestModified, response: Response,
+    next: NextFunction): Promise<void | Response> {
     try {
       const { requesterId, role } = request;
       const { id } = request.params;
@@ -307,11 +310,11 @@ class PostController {
 
           await Post.destroy({ where: { id } });
 
-          if (fs.existsSync(path.join(__dirname, "..", "static",
-            `${foundPostForDeleting.dataValues.userId}`, "posts",
+          if (fs.existsSync(path.join(__dirname, '..', 'static',
+            `${foundPostForDeleting.dataValues.userId}`, 'posts',
             `${foundPostForDeleting.dataValues.id}`))) {
-            fs.rmdirSync(path.join(__dirname, "..", "static",
-              `${foundPostForDeleting.dataValues.userId}`, "posts",
+            fs.rmdirSync(path.join(__dirname, '..', 'static',
+              `${foundPostForDeleting.dataValues.userId}`, 'posts',
               `${foundPostForDeleting.dataValues.id}`),
               { recursive: true }
             );
@@ -326,8 +329,8 @@ class PostController {
         } else {
           return response.status(204).json({
             message:
-              lang === "ru"
-                ? "Указанный пост не найден"
+              lang === 'ru' ?
+                "Указанный пост не найден"
                 : "The specified post was not found",
           });
         }
@@ -339,7 +342,8 @@ class PostController {
     }
   }
 
-  async update(request: IRequestModified, response: Response, next: NextFunction): Promise<void | Response> {
+  async update(request: IRequestModified, response: Response,
+    next: NextFunction): Promise<void | Response> {
     try {
       const { requesterId } = request;
       const { lang } = request.query;
@@ -359,7 +363,7 @@ class PostController {
       if (postHeading.length > 200) {
         return next(
           ApiError.badRequest(
-            lang === "ru" ?
+            lang === 'ru' ?
               "Максимальное количество символов в заголовке поста - 200" :
               "The maximum number of characters in the title of a post is 200"
           )
@@ -368,7 +372,7 @@ class PostController {
       if (postText.length > 1000) {
         return next(
           ApiError.badRequest(
-            lang === "ru" ?
+            lang === 'ru' ?
               "Максимальное количество символов в тексте поста - 1000" :
               "The maximum number of characters in the text of the post is 1000"
           )
