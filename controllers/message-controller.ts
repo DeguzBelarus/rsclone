@@ -6,7 +6,8 @@ import { IRequestModified } from '../types/types';
 import { ApiError } from '../error-handler/error-handler';
 
 class MessageController {
-  async send(request: IRequestModified, response: Response, next: NextFunction): Promise<void | Response> {
+  async send(request: IRequestModified, response: Response,
+    next: NextFunction): Promise<void | Response> {
     try {
       const { requesterId } = request;
       const { lang } = request.query;
@@ -25,7 +26,7 @@ class MessageController {
       if (messageText.length > 255) {
         return next(
           ApiError.badRequest(
-            lang === "ru" ?
+            lang === 'ru' ?
               "Максимальное количество символов в сообщении - 255" :
               "The maximum number of characters in a message is 255"
           )
@@ -112,7 +113,8 @@ class MessageController {
     }
   }
 
-  async getDialogMessages(request: IRequestModified, response: Response, next: NextFunction): Promise<void | Response> {
+  async getDialogMessages(request: IRequestModified, response: Response,
+    next: NextFunction): Promise<void | Response> {
     try {
       const { requesterId } = request;
       const { lang } = request.query;
@@ -204,7 +206,8 @@ class MessageController {
     }
   }
 
-  async delete(request: IRequestModified, response: Response, next: NextFunction): Promise<void | Response> {
+  async delete(request: IRequestModified, response: Response,
+    next: NextFunction): Promise<void | Response> {
     try {
       const { requesterId } = request;
       const { id } = request.params;
@@ -248,7 +251,7 @@ class MessageController {
       } else {
         return response.status(204).json({
           message:
-            lang === "ru"
+            lang === 'ru'
               ? "Указанное сообщение не найдено"
               : "The specified message was not found",
         });
