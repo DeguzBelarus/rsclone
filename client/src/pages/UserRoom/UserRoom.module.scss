@@ -32,9 +32,6 @@
       .nickname {
         display: flex;
         align-items: center;
-        // .nick {
-        //   opacity: 0.7;
-        // }
       }
       .additional {
         display: flex;
@@ -56,6 +53,10 @@
   }
 
   @media screen and (min-width: $mobile-breakpoint) {
+    .posts {
+      margin-bottom: 4rem;
+    }
+
     .user {
       grid-row: span 2;
     }

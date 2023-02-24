@@ -149,23 +149,23 @@ export const Post = ({ data, single, ownHighlight, onDelete, onEdit, socket }: P
           </Tooltip>
         )}
 
-        {!single && (
-          <Tooltip title={language(lng.postOpen)}>
-            <IconButton
-              sx={{ marginLeft: 'auto' }}
-              component="label"
-              onClick={() => navigate(postURL)}
-            >
-              <OpenIcon />
-            </IconButton>
-          </Tooltip>
-        )}
         {data.comments && (
           <Tooltip title={language(lng.commentsHeading)}>
-            <IconButton component="a" href="#comments" sx={{ marginLeft: 'auto' }}>
+            <IconButton
+              component="a"
+              href={single ? '#comments' : `${postURL}#comments`}
+              sx={{ marginLeft: 'auto' }}
+            >
               <Badge badgeContent={data.comments.length} color="warning">
                 <CommentsIcon />
               </Badge>
+            </IconButton>
+          </Tooltip>
+        )}
+        {!single && (
+          <Tooltip title={language(lng.postOpen)}>
+            <IconButton component="label" onClick={() => navigate(postURL)}>
+              <OpenIcon />
             </IconButton>
           </Tooltip>
         )}
