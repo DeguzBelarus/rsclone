@@ -7,7 +7,7 @@ import jwt from 'jsonwebtoken';
 import formidable from 'formidable';
 
 import { User, Post, Comment, Message } from '../db-models/db-models';
-import { CurrentLanguageType, IUserModel, IRequestModified, FormidableFile, IFoundUserData, ISearchUsersResponse, IMessageModel, IUserDialog } from '../types/types';
+import { CurrentLanguageType, IUserModel, IRequestModified, FormidableFile, IFoundUserData, ISearchUsersResponse, IMessageModel, IUserDialog, IPostModel } from '../types/types';
 import { ApiError } from '../error-handler/error-handler';
 import { Undefinable } from '../client/src/types/types';
 
@@ -316,24 +316,42 @@ class UserController {
           ],
         });
 
-        if (foundUser) {
+        if (foundUser && Comment) {
           const { id, age, city, country, email, firstName, lastName, nickname, role: userRole, avatar
           } = foundUser.dataValues;
-          let { posts, dialogs } = foundUser.dataValues
+          let { dialogs } = foundUser.dataValues
 
-          if (posts) {
-            posts = posts.sort((prevPost, nextPost) => {
-              if (prevPost.id && nextPost.id) {
-                if (prevPost.id > nextPost.id) {
-                  return 1;
+          const foundPosts = await Post.findAll({ where: {userId} ,include: [{ model: Comment, as: "comments" }] });
+          let posts: Array<IPostModel> = [];
+          if (foundPosts) {
+            posts = foundPosts
+              .map((post) => {
+                return {
+                  id: post.dataValues.id,
+                  date: post.dataValues.date,
+                  editDate: post.dataValues.editDate,
+                  postHeading: post.dataValues.postHeading,
+                  postText: post.dataValues.postText,
+                  media: post.dataValues.media,
+                  userId: post.dataValues.userId,
+                  ownerNickname: post.dataValues.ownerNickname,
+                  ownerAvatar: post.dataValues.ownerAvatar,
+                  ownerRole: post.dataValues.ownerRole,
+                  comments: post.dataValues.comments,
                 }
-                if (prevPost.id < nextPost.id) {
-                  return 1;
+              })
+              .sort((prevPost, nextPost) => {
+                if (prevPost.id && nextPost.id) {
+                  if (prevPost.id > nextPost.id) {
+                    return -1;
+                  }
+                  if (prevPost.id < nextPost.id) {
+                    return 1;
+                  }
                 }
-              }
-              return 0;
-            }).reverse()
-          };
+                return 0;
+              });
+          }
 
           if (Number(userId) === requesterId) {
             const incomingMessages = await Message.findAll({ where: { recipientId: userId } }) as unknown as Array<IMessageModel>;
