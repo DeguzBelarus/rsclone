@@ -32,12 +32,9 @@
       .nickname {
         display: flex;
         align-items: center;
-        font-size: 3rem;
-        font-weight: bold;
-        text-transform: uppercase;
-        .nick {
-          opacity: 0.7;
-        }
+        // .nick {
+        //   opacity: 0.7;
+        // }
       }
       .additional {
         display: flex;

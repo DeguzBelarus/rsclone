@@ -47,6 +47,7 @@ import { ProcessingPage } from 'pages/ProcessingPage/ProcessingPage';
 import joinStrings from 'lib/joinStrings';
 import LocationIcon from '@mui/icons-material/LocationOn';
 import { SHOW_MAX_USERS_ONLINE } from 'consts';
+import combineClasses from 'lib/combineClasses';
 
 interface Props {
   socket: Socket<DefaultEventsMap, DefaultEventsMap>;
@@ -184,12 +185,12 @@ export const UserRoom: FC<Props> = ({ socket }) => {
         )}
         <div className={styles.info}>
           <Avatar size="min(40vw, 20rem)" user={id || undefined} avatarSrc={avatar || undefined} />
-          <span className={styles.nickname}>
+          <h3 className={combineClasses(styles.nickname, 'user-nickname')}>
             <span className={styles.nick}>{nick}</span>
             <Tooltip arrow title={language(online ? lng.online : lng.offline)}>
               <DotIcon color={online ? 'success' : 'disabled'} />
             </Tooltip>
-          </span>
+          </h3>
           <div className={styles.additional}>
             {admin && <span>({language(lng.admin)})</span>}
             {(firstName || lastName || age) && (

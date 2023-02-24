@@ -109,13 +109,9 @@ export const Post = ({ data, single, ownHighlight, onDelete, onEdit, socket }: P
         <div className={styles.media}>
           <MediaContainer src={mediaURL} audioMargin />
         </div>
-        {single ? (
-          <div className={styles.heading}>{heading}</div>
-        ) : (
-          <Link to={postURL} className={styles.heading}>
-            {heading}
-          </Link>
-        )}
+        <h4 className={styles.heading}>
+          {single ? heading : <Link to={postURL}>{heading} </Link>}
+        </h4>
 
         <div className={styles.subHeading}>
           <Link to={`/user/${userId}`} className={styles.author}>

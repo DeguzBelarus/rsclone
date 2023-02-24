@@ -1,9 +1,11 @@
 @import '../../styles/variables';
 .logo {
-  @include flex-line-start-vertical-center;
+  display: flex;
   gap: 0.5rem;
 
   .logo_text {
+    display: flex;
+    flex-direction: column;
     font-size: 1rem;
     text-align: end;
     font-weight: normal;

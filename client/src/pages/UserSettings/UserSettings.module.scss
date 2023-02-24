@@ -16,12 +16,7 @@
     flex-direction: column;
     align-items: center;
     .nickname {
-      line-height: 1;
       margin-bottom: 3rem;
-      font-size: clamp(2rem, 12vw, 4rem);
-      font-weight: 600;
-      opacity: 0.6;
-      text-transform: uppercase;
     }
   }
 

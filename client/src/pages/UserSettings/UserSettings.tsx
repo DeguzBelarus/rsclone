@@ -57,6 +57,7 @@ import { Socket } from 'socket.io-client';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import { ConfirmModal } from 'components/ConfirmModal/ConfirmModal';
 import { AvatarModal } from 'components/AvatarModal/AvatarModal';
+import combineClasses from 'lib/combineClasses';
 
 interface Props {
   socket: Socket<DefaultEventsMap, DefaultEventsMap>;
@@ -294,11 +295,11 @@ export const UserSettings: FC<Props> = ({ socket }) => {
             </span>
           </Tooltip>
         </div>
-        <div className={styles.nickname}>{nickname}</div>
+        <h3 className={combineClasses(styles.nickname, 'user-nickname')}>{nickname}</h3>
       </div>
 
       <div className={styles.danger}>
-        <h3 className={styles.dangerTitle}>{language(lng.dangerZone)}</h3>
+        <h5 className={styles.dangerTitle}>{language(lng.dangerZone)}</h5>
         {role === 'ADMIN' && (
           <>
             <Button onClick={() => setRoleModalOpen(true)} variant="contained">
