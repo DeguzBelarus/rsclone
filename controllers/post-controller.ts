@@ -184,15 +184,14 @@ class PostController {
               .sort((prevPost, nextPost) => {
                 if (prevPost.id && nextPost.id) {
                   if (prevPost.id > nextPost.id) {
-                    return 1;
+                    return -1;
                   }
                   if (prevPost.id < nextPost.id) {
                     return 1;
                   }
                 }
                 return 0;
-              })
-              .reverse(),
+              }),
             message: lang === 'ru' ?
               "Данные о всех постах успешно получены" :
               "Data on all posts has been successfully received",
