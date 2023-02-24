@@ -671,9 +671,9 @@ class UserController {
                     }
                   }
 
-                  await foundUserForUpdating.update({
-                    role,
-                  });
+                  await foundUserForUpdating.update({ role });
+                  await Comment.update({ authorRole: role }, { where: { userId: Number(id) } });
+                  await Post.update({ ownerRole: role }, { where: { userId: Number(id) } });
 
                   return response.json({
                     message: lang === 'ru' ?
