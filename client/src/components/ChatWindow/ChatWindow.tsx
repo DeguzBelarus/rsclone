@@ -12,7 +12,7 @@ import {
   getOneUserInfoAsync,
   setCurrentDialogMessages,
 } from 'app/mainSlice';
-import Avatar from 'components/Avatar';
+import Avatar from 'components/Avatar/Avatar';
 import { CommentInput } from 'components/CommentInput/CommentInput';
 import { PostDate } from 'components/PostDate/PostDate';
 import useLanguage from 'hooks/useLanguage';
@@ -27,12 +27,12 @@ import {
   IGetOneUserRequestData,
   IMessageModel,
   ISendMessageRequest,
-  Undefinable,
 } from 'types/types';
 import styles from './ChatWindow.module.scss';
 import DeleteIcon from '@mui/icons-material/DeleteForever';
-import cryptoJS from 'crypto-js';
+import CheckIcon from '@mui/icons-material/OfflinePin';
 import { Spinner } from 'components/Spinner/Spinner';
+import { decodeMessage, encodeMessage } from 'lib/codeMessage';
 
 interface ChatWindowProps {
   recipientId?: number;
@@ -64,13 +64,7 @@ export const ChatWindow = ({
 
   const handleSend = async (messageText: string) => {
     if (!token || !authorId || !authorNickname || !recipientId || !recipientNickname) return;
-    let cryptedMessage: Undefinable<string>;
-    if (process.env.REACT_APP_CRYPT_KEY) {
-      cryptedMessage = cryptoJS.AES.encrypt(
-        messageText,
-        process.env.REACT_APP_CRYPT_KEY
-      ).toString();
-    }
+
     const request: ISendMessageRequest = {
       lang,
       token,
@@ -79,7 +73,7 @@ export const ChatWindow = ({
         authorNickname,
         recipientId,
         recipientNickname,
-        messageText: cryptedMessage || messageText,
+        messageText: encodeMessage(messageText),
       },
     };
     await dispatch(sendMessageAsync(request));
@@ -149,54 +143,52 @@ export const ChatWindow = ({
       <div className={styles.messages}>
         {messages && !isLoading ? (
           <ul className={styles.messages} ref={messagesRef}>
-            {messages.map(({ id, messageText, userId, authorNickname, authorAvatarSrc, date }) => {
-              const self = userId === authorId;
-              return (
-                <li
-                  key={id}
-                  className={combineClasses(styles.message, [styles.self, self])}
-                  style={{
-                    backgroundColor: alpha(
-                      self ? palette.primary.main : palette.secondary.main,
-                      0.1
-                    ),
-                  }}
-                >
-                  {self && (
-                    <Paper className={styles.delete}>
-                      <Tooltip title={language(lng.postDelete)}>
-                        <IconButton
-                          size="small"
-                          color="warning"
-                          onClick={() => handleDelete(id, userId, recipientId)}
-                        >
-                          <DeleteIcon fontSize="small" />
-                        </IconButton>
-                      </Tooltip>
-                    </Paper>
-                  )}
-                  <Avatar user={userId} avatarSrc={authorAvatarSrc} />
-                  <div className={styles.text}>
-                    <div className={styles.name}>
-                      <span className={styles.nickname}> {authorNickname}</span>
-                      <span className={styles.date}>
-                        <PostDate date={date} />
-                      </span>
+            {messages.map(
+              ({ id, messageText, userId, authorNickname, authorAvatarSrc, date, isRead }) => {
+                const self = userId === authorId;
+                return (
+                  <li
+                    key={id}
+                    className={combineClasses(styles.message, [styles.self, self])}
+                    style={{
+                      backgroundColor: alpha(
+                        self ? palette.primary.main : palette.secondary.main,
+                        0.1
+                      ),
+                    }}
+                  >
+                    {self && (
+                      <Paper className={styles.delete}>
+                        <Tooltip title={language(lng.postDelete)}>
+                          <IconButton
+                            size="small"
+                            color="warning"
+                            onClick={() => handleDelete(id, userId, recipientId)}
+                          >
+                            <DeleteIcon fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                      </Paper>
+                    )}
+                    <Avatar user={userId} avatarSrc={authorAvatarSrc} />
+                    <div className={styles.text}>
+                      <div className={styles.name}>
+                        <span className={styles.nickname}> {authorNickname}</span>
+                        <span className={styles.date}>
+                          <PostDate date={date} />
+                        </span>
+                      </div>
+                      <div className={styles.messageBody}>{decodeMessage(messageText)}</div>
+                      {self && isRead && (
+                        <Tooltip title={language(lng.messageIsRead)}>
+                          <CheckIcon fontSize="small" color="success" className={styles.read} />
+                        </Tooltip>
+                      )}
                     </div>
-                    <div className={styles.messageBody}>
-                      {`${
-                        process.env.REACT_APP_CRYPT_KEY
-                          ? cryptoJS.AES.decrypt(
-                              messageText,
-                              process.env.REACT_APP_CRYPT_KEY
-                            ).toString(cryptoJS.enc.Utf8)
-                          : messageText
-                      }`}
-                    </div>
-                  </div>
-                </li>
-              );
-            })}
+                  </li>
+                );
+              }
+            )}
           </ul>
         ) : (
           <Spinner size={42} />

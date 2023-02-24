@@ -37,7 +37,7 @@ import { Chip, ClickAwayListener, Tooltip } from '@mui/material';
 import FaceIcon from '@mui/icons-material/Face';
 import DotIcon from '@mui/icons-material/FiberManualRecord';
 import MessageIcon from '@mui/icons-material/QuestionAnswerRounded';
-import Avatar from 'components/Avatar';
+import Avatar from 'components/Avatar/Avatar';
 import { lng } from 'hooks/useLanguage/types';
 import { FabButton } from 'components/FabButton/FabButton';
 import { EditPostModal } from 'components/EditPostModal/EditPostModal';
@@ -225,7 +225,12 @@ export const UserRoom: FC<Props> = ({ socket }) => {
             role === 'ADMIN',
             true
           )}
-          <Posts data={posts} socket={socket} className={styles.posts} />
+          <h2>{language(lng.postTitleMsg)}</h2>
+          {posts.length ? (
+            <Posts data={posts} socket={socket} className={styles.posts} />
+          ) : (
+            <p>{language(lng.postSelfUser)}</p>
+          )}
           <FabButton value={language(lng.userAddPost)} onClick={() => setNewPostModalOpen(true)} />
         </>
       ) : (
@@ -244,7 +249,12 @@ export const UserRoom: FC<Props> = ({ socket }) => {
               guestUserData.role === 'ADMIN',
               usersOnline.find((nickname) => nickname === guestUserData.nickname) !== undefined
             )}
-            {guestUserData.posts && <Posts data={guestUserData.posts} socket={socket} />}
+            <h2>{language(lng.postTitleMsg)}</h2>
+            {guestUserData.posts?.length ? (
+              <Posts data={guestUserData.posts} socket={socket} />
+            ) : (
+              <p>{language(lng.postGuestUser)}</p>
+            )}
           </>
         )
       )}

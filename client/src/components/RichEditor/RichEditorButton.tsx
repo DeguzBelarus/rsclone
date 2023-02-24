@@ -42,7 +42,7 @@ export const RichEditorButton = ({
   }, [editorState, style, block, isDisabled]);
 
   return (
-    <Tooltip title={title}>
+    <Tooltip title={title} placement="top">
       <span>
         <IconButton
           size="small"

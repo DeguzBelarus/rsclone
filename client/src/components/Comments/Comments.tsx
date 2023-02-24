@@ -25,7 +25,7 @@ import {
   useTheme,
 } from '@mui/material';
 import { DeleteForever as DeleteIcon, Edit as EditIcon } from '@mui/icons-material';
-import Avatar from 'components/Avatar';
+import Avatar from 'components/Avatar/Avatar';
 import { PostDate } from 'components/PostDate/PostDate';
 import { CommentInput } from 'components/CommentInput/CommentInput';
 import { Link } from 'react-router-dom';

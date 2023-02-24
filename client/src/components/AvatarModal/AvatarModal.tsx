@@ -31,7 +31,9 @@ import avatarImage13 from 'assets/avatars/13.jpg';
 import avatarImage14 from 'assets/avatars/14.jpg';
 import avatarImage15 from 'assets/avatars/15.jpg';
 import avatarImage16 from 'assets/avatars/16.jpg';
-import Avatar from 'components/Avatar';
+import avatarImage17 from 'assets/avatars/17.jpg';
+import avatarImage18 from 'assets/avatars/18.jpg';
+import Avatar from 'components/Avatar/Avatar';
 import combineClasses from 'lib/combineClasses';
 
 const defaultAvatars = [
@@ -51,6 +53,8 @@ const defaultAvatars = [
   { id: 14, src: avatarImage14 },
   { id: 15, src: avatarImage15 },
   { id: 16, src: avatarImage16 },
+  { id: 17, src: avatarImage17 },
+  { id: 18, src: avatarImage18 },
 ];
 
 export interface AvatarModalProps {

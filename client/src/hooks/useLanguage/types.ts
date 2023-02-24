@@ -97,6 +97,12 @@ export enum lng {
   postOpen,
   postNotFound,
 
+  postTitleMsg,
+  postGuestUser,
+  postSelfUser,
+  postsAllTitle,
+  postsAllNoneMsg,
+
   commentWrite,
   commentPublish,
   commentEdit,
@@ -126,6 +132,7 @@ export enum lng {
   messagesLastMsg,
   messagesUnread,
   messagesClickToChat,
+  messageIsRead,
 
   loadingMsg,
 

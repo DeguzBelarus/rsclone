@@ -97,6 +97,11 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.postCopyLinkSuccess]: 'The link was copied to clipboard (%)',
     [lng.postOpen]: 'Open post page',
     [lng.postNotFound]: 'The post with the id of % was not found.',
+    [lng.postTitleMsg]: 'Posts',
+    [lng.postGuestUser]: `The user doesn't have any posts yet. You can get in touch with them by clicking on the Chat button.`,
+    [lng.postSelfUser]: `You don't have any posts yet. Click the button below to add the first one.`,
+    [lng.postsAllTitle]: 'All Posts',
+    [lng.postsAllNoneMsg]: `No posts have been found on the server. Create your first one by selecting the option from the header menu or from the user page.`,
 
     [lng.commentWrite]: 'Write your comment here...',
     [lng.commentPublish]: 'Send',
@@ -130,6 +135,7 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.messagesLastMsg]: 'Last message',
     [lng.messagesUnread]: 'Unread',
     [lng.messagesClickToChat]: 'Click to chat',
+    [lng.messageIsRead]: 'Message was read',
 
     [lng.chats]: 'Chats',
     [lng.chatWith]: 'Chat with',
@@ -250,6 +256,15 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.postOpen]: 'Открыть пост',
     [lng.postNotFound]: 'Пост с id % не найден на сервере.',
 
+    [lng.postTitleMsg]: 'Посты',
+    [lng.postGuestUser]:
+      'У этого пользователя нет постов. Воспользуйтесь функцией чата, чтобы связаться с ними.',
+    [lng.postSelfUser]:
+      'У Вас еще нет постов. Чтобы добавить пост, нажмите на кнопку "Добавить пост" внизу страницы.',
+
+    [lng.postsAllTitle]: 'Все посты',
+    [lng.postsAllNoneMsg]: `Посты не были найдены на сервере. Вы можете добавить новый пост, выбрав соответствующую опцию из меню выше или на странице пользователя.`,
+
     [lng.commentWrite]: 'Напишите Ваш комментарий...',
     [lng.commentPublish]: 'Отправить',
     [lng.commentEdit]: 'Изменить комментарий',
@@ -282,6 +297,7 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.messagesLastMsg]: 'Последнее',
     [lng.messagesUnread]: 'Непрочитанные',
     [lng.messagesClickToChat]: 'Начать чат',
+    [lng.messageIsRead]: 'Прочитано',
 
     [lng.chats]: 'Чаты',
     [lng.chatWith]: 'Чат с',

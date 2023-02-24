@@ -19,7 +19,7 @@
       border-radius: 0.5em;
       text-align: center;
       backdrop-filter: blur(4px);
-    }     
+    }
 
     .people {
       display: flex;
@@ -42,7 +42,7 @@
 
       & .active {
         .avatar {
-         transform: scale(1.2);
+          transform: scale(1.2);
         }
       }
 
@@ -59,14 +59,13 @@
     }
   }
 
-
   .window {
     position: relative;
     display: flex;
     flex-flow: column;
     max-width: 400px;
     max-height: calc(min(800px, 65vh));
-    margin: 0 1rem;    
+    margin: 0 1rem;
     padding: 1rem;
     border-radius: 0.5rem;
     transform: scale(0);
@@ -90,12 +89,13 @@
   }
 
   &.collapsed {
-    .side .people, .window {
+    .side .people,
+    .window {
       display: none;
     }
 
     .side .heading .collapseBtn {
-      transform: rotate(180deg); 
+      transform: rotate(180deg);
     }
   }
 }
@@ -104,7 +104,7 @@
   .wrapper {
     flex-direction: column;
     right: 0rem;
-    bottom: calc(var(--footer-height) + 5rem);    
+    bottom: calc(var(--footer-height) + 5rem);
 
     .side {
       flex-direction: row-reverse;
@@ -118,13 +118,12 @@
         flex-direction: row;
       }
     }
-    
+
     .window {
       max-height: calc(min(500px, 60vh));
     }
   }
 }
-
 
 @keyframes window-animation {
   to {

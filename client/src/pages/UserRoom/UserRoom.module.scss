@@ -3,14 +3,15 @@
 .wrapper {
   display: grid;
   gap: 2rem 4rem;
-  
+  align-content: start;
+
   .user {
     display: flex;
     align-items: center;
     flex-direction: column;
     isolation: isolate;
     position: relative;
-    
+
     .online {
       align-self: flex-start;
       position: absolute;
@@ -51,18 +52,18 @@
         }
       }
     }
-    
-    }
+  }
 
-    .posts {
-      margin-bottom: 3rem;
-    }
+  .posts {
+    margin-bottom: 3rem;
+  }
 
   @media screen and (min-width: $mobile-breakpoint) {
-    grid-template-areas: 
-      "settings-avatar settings-inputs"
-      "settings-danger settings-inputs";
+    .user {
+      grid-row: span 2;
+    }
 
     grid-template-columns: auto 1fr;
+    grid-template-rows: auto 1fr;
   }
 }

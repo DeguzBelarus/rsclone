@@ -36,7 +36,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { IPostModel } from 'types/types';
 
 import styles from './Post.module.scss';
-import Avatar from 'components/Avatar';
+import Avatar from 'components/Avatar/Avatar';
 import { USER_ROLE_ADMIN } from 'consts';
 import CommentsIcon from '@mui/icons-material/SpeakerNotes';
 import { RichEditor } from 'components/RichEditor/RichEditor';

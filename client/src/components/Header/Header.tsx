@@ -40,7 +40,7 @@ import {
   setUserNickname,
   setUserRole,
 } from 'app/mainSlice';
-import { LanguageSwitch } from 'components/LanguageSwitch';
+import { LanguageSwitch } from 'components/LanguageSwitch/LanguageSwitch';
 import React, { useState, FC, useEffect } from 'react';
 import styles from './Header.module.scss';
 import {
@@ -57,7 +57,7 @@ import useLanguage from 'hooks/useLanguage';
 import { lng } from 'hooks/useLanguage/types';
 import { CustomMenu } from 'components/CustomMenu/CustomMenu';
 import { USER_ROLE_ADMIN } from 'consts';
-import Avatar from 'components/Avatar';
+import Avatar from 'components/Avatar/Avatar';
 import { Socket } from 'socket.io-client';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import { HeaderSearch } from 'components/HeaderSearch/HeaderSearch';

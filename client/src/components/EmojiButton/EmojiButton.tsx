@@ -9,10 +9,11 @@ import './EmojiButton.scss';
 
 interface EmojiButtonProps {
   small?: boolean;
+  toolTipOnTop?: boolean;
   onEmojiAdded?: (emoji: string) => void;
 }
 
-export const EmojiButton = ({ small, onEmojiAdded }: EmojiButtonProps) => {
+export const EmojiButton = ({ small, toolTipOnTop, onEmojiAdded }: EmojiButtonProps) => {
   const language = useLanguage();
   const theme = useTheme();
 
@@ -33,7 +34,7 @@ export const EmojiButton = ({ small, onEmojiAdded }: EmojiButtonProps) => {
   };
   return (
     <>
-      <Tooltip title={language(lng.emoji)}>
+      <Tooltip title={language(lng.emoji)} placement={toolTipOnTop ? 'top' : 'bottom'}>
         <span>
           <IconButton size={small ? 'small' : 'medium'} onClick={handleMenuOpen}>
             <MoodIcon />

@@ -4,7 +4,7 @@ import styles from './HeaderSearch.module.scss';
 import { Search as SearchIcon } from '@mui/icons-material';
 import { alpha, Box } from '@mui/system';
 import joinStrings from 'lib/joinStrings';
-import Avatar from 'components/Avatar';
+import Avatar from 'components/Avatar/Avatar';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from 'app/hooks';

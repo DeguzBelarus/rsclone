@@ -8,7 +8,7 @@ import {
 } from '@mui/material';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { getChats, getDialogs, getUserId, setActiveChatId, setChats } from 'app/mainSlice';
-import Avatar from 'components/Avatar';
+import Avatar from 'components/Avatar/Avatar';
 import { PostDate } from 'components/PostDate/PostDate';
 import useLanguage from 'hooks/useLanguage';
 import { lng } from 'hooks/useLanguage/types';
@@ -16,8 +16,8 @@ import React from 'react';
 import { IUserDialog } from 'types/types';
 import UnreadIcon from '@mui/icons-material/MarkUnreadChatAlt';
 import MessageIcon from '@mui/icons-material/Message';
-import cryptoJS from 'crypto-js';
 import styles from './MessagesPage.module.scss';
+import { decodeMessage } from 'lib/codeMessage';
 
 export const MessagesPage = () => {
   const language = useLanguage();
@@ -75,14 +75,7 @@ export const MessagesPage = () => {
                       <span className={styles.secondary}>
                         <span className={styles.unread}>
                           <MessageIcon fontSize="small" />
-                          {`${language(lng.messagesLastMsg)}: ${`${
-                            process.env.REACT_APP_CRYPT_KEY
-                              ? cryptoJS.AES.decrypt(
-                                  lastMessageText,
-                                  process.env.REACT_APP_CRYPT_KEY
-                                ).toString(cryptoJS.enc.Utf8)
-                              : lastMessageText
-                          }`}`}
+                          {`${language(lng.messagesLastMsg)}: ${decodeMessage(lastMessageText)}`}
                         </span>
                         <span
                           className={styles.unread}

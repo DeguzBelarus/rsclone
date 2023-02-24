@@ -17,7 +17,7 @@ import {
   setActiveChatId,
   setChats,
 } from 'app/mainSlice';
-import Avatar from 'components/Avatar';
+import Avatar from 'components/Avatar/Avatar';
 import React, { useEffect, useState, FC } from 'react';
 import DeleteIcon from '@mui/icons-material/HighlightOffRounded';
 import CollapseIcon from '@mui/icons-material/ExpandCircleDown';
@@ -31,6 +31,7 @@ import { lng } from 'hooks/useLanguage/types';
 import useLanguage from 'hooks/useLanguage';
 import { getLocalStorageData, setLocalStorageData } from 'app/storage';
 import truncateString from 'lib/truncateString';
+import { decodeMessage } from 'lib/codeMessage';
 
 interface Props {
   socket: Socket<DefaultEventsMap, DefaultEventsMap>;
@@ -88,7 +89,7 @@ export const Chats: FC<Props> = ({ socket }) => {
 
   const getUnreadMessage = (partnerId?: number) => {
     const dialog = findDialog(partnerId);
-    return dialog?.unreadMessages ? dialog.lastMessageText : '';
+    return dialog?.unreadMessages ? decodeMessage(dialog.lastMessageText) : '';
   };
 
   useEffect(() => {

@@ -290,6 +290,7 @@ export const EditPostModal = ({
           <MediaContainer
             fileName={mediaFileName}
             src={URL.createObjectURL(mediaValue)}
+            autoPlay
             contain
             maxHeight="min(250px, 30vh)"
           />
