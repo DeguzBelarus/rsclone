@@ -3,15 +3,12 @@ import { useEffect, useState } from 'react';
 import { createTheme, Theme } from '@mui/material';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { getCurrentColorTheme, setCurrentColorTheme } from 'app/mainSlice';
+import { USER_PREFERRED_COLOR_MODE } from 'consts';
 
 const THEMES = {
   light: createTheme({ palette: { mode: 'light' } }),
   dark: createTheme({ palette: { mode: 'dark' } }),
 };
-
-export const USER_PREFERRED_COLOR_MODE = matchMedia('(prefers-color-scheme: dark)').matches
-  ? 'dark'
-  : 'light';
 
 export default function useThemeChanger(): Theme {
   const dispatch = useAppDispatch();
