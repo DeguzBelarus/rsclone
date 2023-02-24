@@ -16,7 +16,6 @@ import {
   getGuestUserData,
   getAllPosts,
   getAllPostsAsync,
-  setChats,
   getDialogMessagesAsync,
   getCurrentDialogMessages,
 } from 'app/mainSlice';
@@ -107,7 +106,7 @@ export const App: FC<Props> = ({ socket }): JSX.Element => {
   };
 
   useEffect(() => {
-    const { token, currentLanguage, currentTheme, activeChats } = getLocalStorageData();
+    const { token, currentLanguage, currentTheme } = getLocalStorageData();
 
     if (token) {
       dispatch(authCheckUserAsync({ token, lang: currentLanguageFromStore }));
@@ -117,9 +116,6 @@ export const App: FC<Props> = ({ socket }): JSX.Element => {
     }
     if (currentTheme) {
       dispatch(setCurrentColorTheme(currentTheme));
-    }
-    if (activeChats) {
-      dispatch(setChats(activeChats));
     }
   }, [dispatch]);
 

@@ -104,6 +104,25 @@ export const Chats: FC<Props> = ({ socket }) => {
     setLocalStorageData({ chatsCollapsed: collapsed });
   }, [collapsed]);
 
+  useEffect(() => {
+    let { activeChats } = getLocalStorageData();
+    if (!activeChats) activeChats = [];
+
+    const newChats = activeChats.map((chat) => {
+      const dialog = dialogs.find(({ authorId, recipientId }) => {
+        return authorId === chat.partnerId || recipientId === chat.partnerId;
+      });
+      if (dialog) {
+        if (dialog.authorId === chat.partnerId) {
+          return { ...chat, partnerAvatar: dialog.authorAvatarSrc };
+        }
+        return { ...chat, partnerAvatar: dialog.recipientAvatarSrc };
+      }
+      return { ...chat };
+    });
+    dispatch(setChats(newChats));
+  }, [dispatch, dialogs, collapsed, windowCollapsed]);
+
   return isAuthorized && chats.length > 0 ? (
     <div className={combineClasses(styles.wrapper, [styles.collapsed, collapsed])}>
       {activeChat && (
@@ -112,10 +131,10 @@ export const Chats: FC<Props> = ({ socket }) => {
           elevation={6}
         >
           <Tooltip title={language(windowCollapsed ? lng.expand : lng.collapse)}>
-            <h4
+            <h5
               className={styles.heading}
               onClick={() => setWindowCollapsed((current) => !current)}
-            >{`${language(lng.chatWith)} ${activeChat?.partnerNickname}`}</h4>
+            >{`${language(lng.chatWith)} ${activeChat?.partnerNickname}`}</h5>
           </Tooltip>
           <div className={styles.windowButtons}>
             <Tooltip title={language(windowCollapsed ? lng.expand : lng.collapse)}>
