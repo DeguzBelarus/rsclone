@@ -1,4 +1,4 @@
-import { Op } from "sequelize";
+import { Op } from 'sequelize';
 import { Response, NextFunction } from 'express';
 import fs from 'fs';
 import path from 'path';
@@ -7,28 +7,38 @@ import jwt from 'jsonwebtoken';
 import formidable from 'formidable';
 
 import { User, Post, Comment, Message } from '../db-models/db-models';
-import { CurrentLanguageType, IUserModel, IRequestModified, FormidableFile, IFoundUserData, ISearchUsersResponse, IMessageModel, IUserDialog, IPostModel } from '../types/types';
+import {
+  CurrentLanguageType,
+  IUserModel,
+  IRequestModified,
+  FormidableFile,
+  ISearchUsersResponse,
+  IMessageModel,
+  IUserDialog,
+  IPostModel
+} from '../types/types';
 import { ApiError } from '../error-handler/error-handler';
 import { Undefinable } from '../client/src/types/types';
 
 const forbiddenCharactersChecker = (string: string): boolean => {
-  if (string.includes("*") ||
-    string.includes("/") ||
-    string.includes("\\") ||
-    string.includes(":") ||
-    string.includes("?") ||
-    string.includes("|") ||
+  if (string.includes('*') ||
+    string.includes('/') ||
+    string.includes('\\') ||
+    string.includes(':') ||
+    string.includes('?') ||
+    string.includes('|') ||
     string.includes('"') ||
     string.includes("'") ||
-    string.includes("`") ||
-    string.includes("<") ||
-    string.includes(">")) {
+    string.includes('`') ||
+    string.includes('<') ||
+    string.includes('>')) {
     return true;
   }
   return false;
 };
 class UserController {
-  async registration(request: IRequestModified, response: Response, next: NextFunction): Promise<void | Response> {
+  async registration(request: IRequestModified, response: Response,
+    next: NextFunction): Promise<void | Response> {
     try {
       const {
         email,
@@ -227,7 +237,8 @@ class UserController {
     }
   }
 
-  async getAll(request: IRequestModified, response: Response, next: NextFunction): Promise<void | Response> {
+  async getAll(request: IRequestModified, response: Response,
+    next: NextFunction): Promise<void | Response> {
     try {
       if (User) {
         const { searchKey, lang } = request.query;
@@ -279,7 +290,7 @@ class UserController {
                 role: user.dataValues.role,
               }
             }),
-            message: lang === "ru" ?
+            message: lang === 'ru' ?
               "Поиск пользователей успешно выполнен" :
               "User search completed successfully"
           }
@@ -287,7 +298,7 @@ class UserController {
         } else {
           return next(
             ApiError.badRequest(
-              lang === "ru" ?
+              lang === 'ru' ?
                 "Недостаточно данных для выполнения операции" :
                 "Not enough data to perform the operation"
             )
@@ -311,8 +322,8 @@ class UserController {
         const foundUser = await User.findOne({
           where: { id: Number(userId) },
           include: [
-            { model: Post, as: "posts" },
-            { model: Message, as: "dialogs" },
+            { model: Post, as: 'posts' },
+            { model: Message, as: 'dialogs' },
           ],
         });
 
@@ -321,7 +332,9 @@ class UserController {
           } = foundUser.dataValues;
           let { dialogs } = foundUser.dataValues
 
-          const foundPosts = await Post.findAll({ where: {userId} ,include: [{ model: Comment, as: "comments" }] });
+          const foundPosts = await Post.findAll({
+            where: { userId }, include: [{ model: Comment, as: 'comments' }]
+          });
           let posts: Array<IPostModel> = [];
           if (foundPosts) {
             posts = foundPosts
@@ -354,7 +367,9 @@ class UserController {
           }
 
           if (Number(userId) === requesterId) {
-            const incomingMessages = await Message.findAll({ where: { recipientId: userId } }) as unknown as Array<IMessageModel>;
+            const incomingMessages = await Message.findAll({
+              where: { recipientId: userId }
+            }) as unknown as Array<IMessageModel>;
             const outgoingMessages = dialogs as unknown as Array<IMessageModel>;
             const allMessages = [...incomingMessages, ...outgoingMessages];
             allMessages.sort((prevMessage, nextMessage) => {
@@ -368,6 +383,7 @@ class UserController {
               }
               return 0;
             });
+
             const modifiedDialogs = allMessages
               .map((message, i, array) => {
                 const authorId = message.userId;
@@ -382,14 +398,22 @@ class UserController {
                       return sum += 1;
                     } else return sum;
                   }, 0),
-                  lastMessageText: array.find((message) => ((message.userId === authorId && message.recipientId === recipientId)
-                    || (message.recipientId === authorId && message.userId === recipientId)))?.messageText,
-                  lastMessageId: array.find((message) => ((message.userId === authorId && message.recipientId === recipientId)
-                    || (message.recipientId === authorId && message.userId === recipientId)))?.id,
-                  lastMessageDate: array.find((message) => ((message.userId === authorId && message.recipientId === recipientId)
-                    || (message.recipientId === authorId && message.userId === recipientId)))?.date,
-                  lastMessageAuthorNickname: array.find((message) => ((message.userId === authorId && message.recipientId === recipientId)
-                    || (message.recipientId === authorId && message.userId === recipientId)))?.authorNickname,
+                  lastMessageText: array.find((message) => ((message.userId === authorId
+                    && message.recipientId === recipientId)
+                    || (message.recipientId === authorId
+                      && message.userId === recipientId)))?.messageText,
+                  lastMessageId: array.find((message) => ((message.userId === authorId
+                    && message.recipientId === recipientId)
+                    || (message.recipientId === authorId
+                      && message.userId === recipientId)))?.id,
+                  lastMessageDate: array.find((message) => ((message.userId === authorId
+                    && message.recipientId === recipientId)
+                    || (message.recipientId === authorId
+                      && message.userId === recipientId)))?.date,
+                  lastMessageAuthorNickname: array.find((message) => ((message.userId === authorId
+                    && message.recipientId === recipientId)
+                    || (message.recipientId === authorId
+                      && message.userId === recipientId)))?.authorNickname,
                   authorAvatarSrc: message.authorAvatarSrc,
                   recipientAvatarSrc: message.recipientAvatarSrc,
                 }
@@ -411,7 +435,8 @@ class UserController {
               return 0;
             });
 
-            userDialogs = userDialogs.filter((dialog) => dialog.recipientId === Number(userId) || dialog.authorId === Number(userId))
+            userDialogs = userDialogs.filter((dialog) => dialog.recipientId === Number(userId)
+              || dialog.authorId === Number(userId))
             response.json({
               userData: {
                 id, age, city, country, email, firstName, lastName, nickname, role: userRole,
@@ -423,7 +448,10 @@ class UserController {
             });
           } else if (role === 'ADMIN') {
             response.json({
-              userData: { id, age, city, country, email, firstName, lastName, nickname, role: userRole, avatar, posts },
+              userData: {
+                id, age, city, country, email, firstName, lastName, nickname,
+                role: userRole, avatar, posts
+              },
               message: lang === 'ru' ?
                 "Данные пользователя получены администратором" :
                 "The user's data was received by the administrator",
@@ -453,7 +481,8 @@ class UserController {
     }
   }
 
-  async delete(request: IRequestModified, response: Response, next: NextFunction): Promise<void | Response> {
+  async delete(request: IRequestModified, response: Response,
+    next: NextFunction): Promise<void | Response> {
     try {
       if (User && Post && Comment && Message) {
         const { id } = request.params;
@@ -515,8 +544,8 @@ class UserController {
           }
 
           await User.destroy({ where: { id } });
-          if (fs.existsSync(path.join(__dirname, "..", "static", `${id}`))) {
-            fs.rmdirSync(path.join(__dirname, "..", "static", `${id}`),
+          if (fs.existsSync(path.join(__dirname, '..', 'static', `${id}`))) {
+            fs.rmdirSync(path.join(__dirname, '..', 'static', `${id}`),
               { recursive: true }
             );
           }
@@ -541,7 +570,8 @@ class UserController {
     }
   }
 
-  async authCheck(request: IRequestModified, response: Response, next: NextFunction): Promise<void | Response> {
+  async authCheck(request: IRequestModified, response: Response,
+    next: NextFunction): Promise<void | Response> {
     try {
       if (process.env.JWT_SECRET) {
         const {
@@ -574,17 +604,18 @@ class UserController {
     }
   }
 
-  async update(request: IRequestModified, response: Response, next: NextFunction): Promise<void | Response> {
+  async update(request: IRequestModified, response: Response,
+    next: NextFunction): Promise<void | Response> {
     try {
       const { id } = request.params;
       const { requesterId } = request;
-      if (!fs.existsSync(path.join(__dirname, "..", "temp"))) {
-        fs.mkdirSync(path.join(__dirname, "..", "temp"),
+      if (!fs.existsSync(path.join(__dirname, '..', 'temp'))) {
+        fs.mkdirSync(path.join(__dirname, '..', 'temp'),
           { recursive: true }
         );
         console.log('temp folder has been created');
       }
-      const tempFolderPath = path.join(__dirname, "..", "temp");
+      const tempFolderPath = path.join(__dirname, '..', 'temp');
 
       const form = formidable({ multiples: true, uploadDir: tempFolderPath });
       form.parse(request, async (error: Error, fields: formidable.Fields, files: formidable.Files) => {
@@ -595,7 +626,7 @@ class UserController {
         } = fields as formidable.Fields & IUserModel & { lang: CurrentLanguageType };
 
         if (User && Comment && Post && Message) {
-          const foundUserForUpdating = await User.findOne({ where: { id }, });
+          const foundUserForUpdating = await User.findOne({ where: { id } });
           if (foundUserForUpdating) {
             if (typeof email !== 'string' &&
               typeof nickname !== 'string' &&
@@ -619,8 +650,8 @@ class UserController {
                 }
 
                 if (typeof avatar === 'string' && !avatarFile) {
-                  if (fs.existsSync(path.join(__dirname, "..", "static", `${id}`, "avatar"))) {
-                    fs.rmdirSync(path.join(__dirname, "..", "static", `${id}`, "avatar"),
+                  if (fs.existsSync(path.join(__dirname, '..', 'static', `${id}`, 'avatar'))) {
+                    fs.rmdirSync(path.join(__dirname, '..', 'static', `${id}`, 'avatar'),
                       { recursive: true }
                     );
                   }
@@ -637,8 +668,8 @@ class UserController {
                   });
                 }
                 if (avatarFile && typeof avatar !== 'string') {
-                  if (fs.existsSync(path.join(__dirname, "..", "static", `${id}`, "avatar"))) {
-                    fs.rmdirSync(path.join(__dirname, "..", "static", `${id}`, "avatar"),
+                  if (fs.existsSync(path.join(__dirname, '..', 'static', `${id}`, 'avatar'))) {
+                    fs.rmdirSync(path.join(__dirname, '..', 'static', `${id}`, 'avatar'),
                       { recursive: true }
                     );
                   }
@@ -646,16 +677,16 @@ class UserController {
                   let avatarNewFullName: Undefinable<string>;
                   avatarNewFullName = `${avatarFile.newFilename}.${avatarFile.mimetype?.split('/')[1]}`;
                   if (avatarFile.newFilename) {
-                    if (fs.existsSync(path.join(__dirname, "..", "static", `${id}`, "avatar"))) {
-                      fs.rmdirSync(path.join(__dirname, "..", "static", `${id}`, "avatar"),
+                    if (fs.existsSync(path.join(__dirname, '..', 'static', `${id}`, 'avatar'))) {
+                      fs.rmdirSync(path.join(__dirname, '..', 'static', `${id}`, 'avatar'),
                         { recursive: true }
                       );
                     }
-                    fs.mkdirSync(path.join(__dirname, "..", "static", `${id}`, "avatar"),
+                    fs.mkdirSync(path.join(__dirname, '..', 'static', `${id}`, 'avatar'),
                       { recursive: true }
                     );
                     fs.rename(path.join(tempFolderPath, avatarFile.newFilename), path.join(__dirname,
-                      "..", "static", `${id}`, "avatar", avatarNewFullName),
+                      '..', 'static', `${id}`, 'avatar', avatarNewFullName),
                       (error) => {
                         if (error) {
                           console.log(error);
@@ -702,7 +733,7 @@ class UserController {
               } else {
                 return next(
                   ApiError.badRequest(
-                    lang === "ru" ?
+                    lang === 'ru' ?
                       "Недостаточно данных для выполнения операции" :
                       "Not enough data to perform the operation"
                   )
@@ -916,8 +947,8 @@ class UserController {
               // email checking
               if (email) {
                 if (email.length < 8 ||
-                  !email.includes("@") ||
-                  !email.includes(".") ||
+                  !email.includes('@') ||
+                  !email.includes('.') ||
                   email.length > 255) {
                   return next(
                     ApiError.badRequest(
@@ -977,8 +1008,8 @@ class UserController {
               }
 
               // creating individual folder if it doesn't exist
-              if (!fs.existsSync(path.join(__dirname, "..", "static", `${id}`))) {
-                fs.mkdirSync(path.join(__dirname, "..", "static", `${id}`,),
+              if (!fs.existsSync(path.join(__dirname, '..', 'static', `${id}`))) {
+                fs.mkdirSync(path.join(__dirname, '..', 'static', `${id}`,),
                   { recursive: true }
                 );
               }

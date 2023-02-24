@@ -5,7 +5,8 @@ import { IRequestModified } from '../types/types';
 import { ApiError } from '../error-handler/error-handler';
 
 class CommentController {
-  async create(request: IRequestModified, response: Response, next: NextFunction): Promise<void | Response> {
+  async create(request: IRequestModified, response: Response,
+    next: NextFunction): Promise<void | Response> {
     try {
       const { requesterId } = request;
       const { lang } = request.query;
@@ -25,7 +26,7 @@ class CommentController {
       if (commentText.length > 200) {
         return next(
           ApiError.badRequest(
-            lang === "ru" ?
+            lang === 'ru' ?
               "Максимальное количество символов в комментарии - 200" :
               "The maximum number of characters in a comment is 200"
           )
@@ -87,7 +88,8 @@ class CommentController {
     }
   }
 
-  async delete(request: IRequestModified, response: Response, next: NextFunction): Promise<void | Response> {
+  async delete(request: IRequestModified, response: Response,
+    next: NextFunction): Promise<void | Response> {
     try {
       const { requesterId, role } = request;
       const { id } = request.params;
@@ -106,8 +108,8 @@ class CommentController {
             if ((requesterId !== foundCommentForDeleting.dataValues.userId)
               && role === 'ADMIN' && foundCommentForDeleting.dataValues.authorRole === 'ADMIN') {
               return next(
-                ApiError.forbidden(lang === 'ru'
-                  ? "Админам не разрешено удалять комментарии других админов"
+                ApiError.forbidden(lang === 'ru' ?
+                  "Админам не разрешено удалять комментарии других админов"
                   : "Admins are not allowed to delete comments of other admins"));
             }
           } else {
@@ -127,8 +129,8 @@ class CommentController {
         } else {
           return response.status(204).json({
             message:
-              lang === "ru"
-                ? "Указанный комментарий не найден"
+              lang === 'ru' ?
+                "Указанный комментарий не найден"
                 : "The specified comment was not found",
           });
         }
@@ -140,7 +142,8 @@ class CommentController {
     }
   }
 
-  async update(request: IRequestModified, response: Response, next: NextFunction): Promise<void | Response> {
+  async update(request: IRequestModified, response: Response,
+    next: NextFunction): Promise<void | Response> {
     try {
       const { requesterId, role } = request;
       const { id } = request.params;
@@ -174,7 +177,7 @@ class CommentController {
         } else {
           return response.status(204).json({
             message:
-              lang === "ru"
+              lang === 'ru'
                 ? "Указанный комментарий не найден"
                 : "The specified comment was not found",
           });

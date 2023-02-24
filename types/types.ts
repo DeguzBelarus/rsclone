@@ -1,5 +1,5 @@
-import { NextFunction, Request, Response } from "express";
-import { Nullable } from "../client/src/types/types";
+import { NextFunction, Request, Response } from 'express';
+import { Nullable } from '../client/src/types/types';
 
 // types
 export type CurrentLanguageType = 'en' | 'ru';

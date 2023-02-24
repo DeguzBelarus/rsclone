@@ -3,25 +3,25 @@ import jwt from 'jsonwebtoken';
 import { IUserModel, ControllerMethod } from '../types/types';
 
 export const roleAndIdAccessMiddleware: ControllerMethod = function (request, response, next) {
-  if (request.method === "OPTIONS") {
+  if (request.method === 'OPTIONS') {
     next();
   }
   try {
     if (!request.headers.authorization) {
-      request.role = "USER";
+      request.role = 'USER';
 
       next();
     } else {
-      const token = request.headers.authorization.split(" ")[1];
+      const token = request.headers.authorization.split(' ')[1];
       if (!token) {
-        request.role = "USER";
+        request.role = 'USER';
         next();
       }
 
       if (process.env.JWT_SECRET) {
         jwt.verify(token, process.env.JWT_SECRET, (error, decoded) => {
           if (error) {
-            request.role = "USER";
+            request.role = 'USER';
             next();
           }
 
@@ -37,7 +37,7 @@ export const roleAndIdAccessMiddleware: ControllerMethod = function (request, re
 
   } catch (exception: unknown) {
     if (exception instanceof Error) {
-      console.log("\x1b[40m\x1b[31m\x1b[1m", exception.message);
+      console.log('\x1b[40m\x1b[31m\x1b[1m', exception.message);
       response.status(401).json({
         message: exception.message
       });

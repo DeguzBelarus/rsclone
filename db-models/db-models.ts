@@ -4,7 +4,7 @@ import { sequelizeConfig } from '../sequelizeConfig';
 import { ICommentModel, IMessageModel, IPostModel, IUserModel } from '../types/types';
 
 export const User: Nullable<ModelDefined<IUserModel, IUserModel>> = sequelizeConfig
-  ? sequelizeConfig.define("user", {
+  ? sequelizeConfig.define('user', {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
@@ -23,7 +23,7 @@ export const User: Nullable<ModelDefined<IUserModel, IUserModel>> = sequelizeCon
     },
     role: {
       type: DataTypes.STRING,
-      defaultValue: "USER",
+      defaultValue: 'USER',
     },
     age: {
       type: DataTypes.INTEGER,
@@ -52,7 +52,7 @@ export const User: Nullable<ModelDefined<IUserModel, IUserModel>> = sequelizeCon
   }) : null;
 
 export const Post: Nullable<ModelDefined<IPostModel, IPostModel>> = sequelizeConfig
-  ? sequelizeConfig.define("posts", {
+  ? sequelizeConfig.define('posts', {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
@@ -87,7 +87,7 @@ export const Post: Nullable<ModelDefined<IPostModel, IPostModel>> = sequelizeCon
   }) : null;
 
 export const Comment: Nullable<ModelDefined<ICommentModel, ICommentModel>> = sequelizeConfig
-  ? sequelizeConfig.define("comments", {
+  ? sequelizeConfig.define('comments', {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
@@ -115,7 +115,7 @@ export const Comment: Nullable<ModelDefined<ICommentModel, ICommentModel>> = seq
   }) : null;
 
 export const Message: Nullable<ModelDefined<IMessageModel, IMessageModel>> = sequelizeConfig
-  ? sequelizeConfig.define("messages", {
+  ? sequelizeConfig.define('messages', {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
@@ -152,26 +152,26 @@ export const Message: Nullable<ModelDefined<IMessageModel, IMessageModel>> = seq
 
 if (User && Post && Comment && Message) {
   User.hasMany(Post, {
-    as: "posts",
-    foreignKey: "userId",
+    as: 'posts',
+    foreignKey: 'userId',
   });
   Post.belongsTo(User);
 
   User.hasMany(Message, {
-    as: "dialogs",
-    foreignKey: "userId",
+    as: 'dialogs',
+    foreignKey: 'userId',
   });
   Message.belongsTo(User);
 
   User.hasMany(Comment, {
-    as: "comments",
-    foreignKey: "userId",
+    as: 'comments',
+    foreignKey: 'userId',
   });
   Comment.belongsTo(User);
 
   Post.hasMany(Comment, {
-    as: "comments",
-    foreignKey: "postId",
+    as: 'comments',
+    foreignKey: 'postId',
   });
   Comment.belongsTo(Post);
 }
