@@ -987,6 +987,9 @@ class UserController {
                   firstName,
                   lastName,
                 });
+                await Comment.update({ authorNickname: nickname }, { where: { userId: Number(id) } });
+                await Post.update({ ownerNickname: nickname }, { where: { userId: Number(id) } });
+                await Message.update({ authorNickname: nickname }, { where: { userId: Number(id) } });
               }
               return response.json({
                 message: lang === 'ru' ?
