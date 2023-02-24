@@ -1292,6 +1292,13 @@ export const mainSlice = createSlice({
               message: payload.message,
               severity: 'success',
             };
+          } else {
+            if (payload && payload.message) {
+              state.alert = {
+                message: payload.message,
+                severity: 'error',
+              };
+            }
           }
         }
       })
