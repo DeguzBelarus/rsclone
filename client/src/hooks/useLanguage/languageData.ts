@@ -9,7 +9,7 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.passwordHint]: 'Please enter your password',
     [lng.register]: 'Register',
     [lng.login]: 'Log in',
-    [lng.loginWelcome]: 'Enter your login and password',
+    [lng.loginWelcome]: 'Log in',
     [lng.loginSuccess]: 'You have been successfully logged in',
     [lng.loginError]: 'Wrong email or password. Try again!',
 
@@ -18,7 +18,7 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.repeatPassword]: 'Repeat password',
     [lng.repeatPasswordHint]: 'The passwords should match',
 
-    [lng.registerWelcome]: 'Create a new account',
+    [lng.registerWelcome]: 'New account',
     [lng.registerSuccess]: 'You have been registered',
     [lng.registerError]: 'Regisration error. Try again later!',
 
@@ -165,7 +165,7 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.passwordHint]: 'Минимальная длина пароля - 8 символов',
     [lng.register]: 'Регистрация',
     [lng.login]: 'Войти',
-    [lng.loginWelcome]: 'Введите ваши данные для входа',
+    [lng.loginWelcome]: 'Вход',
     [lng.loginSuccess]: 'Вы успешно вошли!',
     [lng.loginError]: 'Неправильный адрес электронной почты или пароль!',
 

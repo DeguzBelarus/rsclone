@@ -160,7 +160,7 @@ export const Post = ({ data, single, ownHighlight, onDelete, onEdit, socket }: P
             </IconButton>
           </Tooltip>
         )}
-        {single && data.comments && (
+        {data.comments && (
           <Tooltip title={language(lng.commentsHeading)}>
             <IconButton component="a" href="#comments" sx={{ marginLeft: 'auto' }}>
               <Badge badgeContent={data.comments.length} color="warning">

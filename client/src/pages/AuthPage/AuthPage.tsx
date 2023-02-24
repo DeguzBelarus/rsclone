@@ -53,7 +53,7 @@ export const AuthPage = () => {
         <form onSubmit={handleSubmit} noValidate>
           <CardContent className={styles.content}>
             <Logo className={styles.logo} />
-            <h3 className={styles.heading}>{language(lng.loginWelcome)}</h3>
+            <h4 className={styles.heading}>{language(lng.loginWelcome)}</h4>
             <TextField
               value={emailValue}
               label={language(lng.email)}
