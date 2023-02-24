@@ -30,6 +30,7 @@ import {
 } from 'types/types';
 import styles from './ChatWindow.module.scss';
 import DeleteIcon from '@mui/icons-material/DeleteForever';
+import CheckIcon from '@mui/icons-material/OfflinePin';
 import { Spinner } from 'components/Spinner/Spinner';
 import { decodeMessage, encodeMessage } from 'lib/codeMessage';
 
@@ -178,6 +179,11 @@ export const ChatWindow = ({
                         </span>
                       </div>
                       <div className={styles.messageBody}>{decodeMessage(messageText)}</div>
+                      {self && isRead && (
+                        <Tooltip title={language(lng.messageIsRead)}>
+                          <CheckIcon fontSize="small" color="success" className={styles.read} />
+                        </Tooltip>
+                      )}
                     </div>
                   </li>
                 );

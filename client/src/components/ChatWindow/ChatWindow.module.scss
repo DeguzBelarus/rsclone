@@ -60,6 +60,10 @@
             opacity: 0.7;
           }
         }
+        .read {
+          align-self: flex-end;
+          transform: scale(0.8);
+        }
       }
       &.self {
         margin-left: var(--message-margin);

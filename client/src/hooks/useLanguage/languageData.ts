@@ -130,6 +130,7 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.messagesLastMsg]: 'Last message',
     [lng.messagesUnread]: 'Unread',
     [lng.messagesClickToChat]: 'Click to chat',
+    [lng.messageIsRead]: 'Message was read',
 
     [lng.chats]: 'Chats',
     [lng.chatWith]: 'Chat with',
@@ -282,6 +283,7 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.messagesLastMsg]: 'Последнее',
     [lng.messagesUnread]: 'Непрочитанные',
     [lng.messagesClickToChat]: 'Начать чат',
+    [lng.messageIsRead]: 'Прочитано',
 
     [lng.chats]: 'Чаты',
     [lng.chatWith]: 'Чат с',
