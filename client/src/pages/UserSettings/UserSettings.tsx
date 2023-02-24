@@ -235,7 +235,6 @@ export const UserSettings: FC<Props> = ({ socket }) => {
       requestData: {
         lang: currentLanguage,
         id: ownId,
-        ownId: ownId,
       },
     };
 

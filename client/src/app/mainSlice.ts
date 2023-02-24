@@ -137,6 +137,7 @@ const userReset = (state: WritableDraft<MainState>) => {
   state.guestUserData = null;
   state.isLoginNotificationSent = false;
   state.chats = [];
+  state.dialogs = [];
   state.activeChatId = null;
   setLocalStorageData({ token: undefined });
 };
@@ -382,7 +383,7 @@ export const deleteUserAsync = createAsyncThunk(
     if (deleteUserResponse) {
       const deleteUserResponseData: IDeleteUserResponse = await deleteUserResponse.json();
       deleteUserResponseData.statusCode = deleteUserResponse.status;
-      deleteUserResponseData.ownId = data.requestData.ownId;
+      deleteUserResponseData.deletedUserId = data.requestData.id;
       return deleteUserResponseData;
     }
     return null;
@@ -1283,7 +1284,7 @@ export const mainSlice = createSlice({
 
         if (payload) {
           if (payload.statusCode === 200) {
-            if (state.userId === payload.ownId) {
+            if (state.userId === payload.deletedUserId) {
               userReset(state);
             }
 
