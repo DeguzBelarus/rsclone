@@ -106,16 +106,13 @@ export const App: FC<Props> = ({ socket }): JSX.Element => {
   };
 
   useEffect(() => {
-    const { token, currentLanguage, currentTheme } = getLocalStorageData();
+    const { token, currentLanguage } = getLocalStorageData();
 
     if (token) {
       dispatch(authCheckUserAsync({ token, lang: currentLanguageFromStore }));
     }
     if (currentLanguage) {
       dispatch(setCurrentLanguage(currentLanguage));
-    }
-    if (currentTheme) {
-      dispatch(setCurrentColorTheme(currentTheme));
     }
   }, [dispatch]);
 

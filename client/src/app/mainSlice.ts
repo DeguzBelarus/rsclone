@@ -54,6 +54,7 @@ import {
 } from 'types/types';
 import { requestData, requestMethods } from './dataAPI';
 import { setLocalStorageData } from './storage';
+import { USER_PREFERRED_COLOR_MODE } from 'hooks/useThemeChanger';
 
 interface MainState {
   posts: Array<IPostModel>;
@@ -110,7 +111,7 @@ const initialState: MainState = {
   foundUsers: null,
   guestUserData: null,
   currentLanguage: 'en',
-  currentColorTheme: 'light',
+  currentColorTheme: USER_PREFERRED_COLOR_MODE,
   usersOnline: [],
   isLoginNotificationSent: false,
   alert: null,
