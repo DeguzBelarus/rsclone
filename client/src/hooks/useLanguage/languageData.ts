@@ -80,6 +80,7 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.online]: 'Online',
     [lng.offline]: 'Offline',
     [lng.onlineAndMore]: 'and % more',
+    [lng.chat]: 'Сhat',
 
     [lng.newPostTitle]: 'New post',
     [lng.editPostTitle]: 'Edit post',
@@ -141,6 +142,7 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.chatWith]: 'Chat with',
     [lng.chatWrote]: 'wrote',
     [lng.chatsInputEmpty]: 'Message',
+    [lng.chatWriteMessage]: 'Write message',
 
     [lng.formatBold]: 'Bold',
     [lng.formatItalic]: 'Italic',
@@ -237,6 +239,7 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.online]: 'Онлайн',
     [lng.offline]: 'Оффлайн',
     [lng.onlineAndMore]: 'и % других',
+    [lng.chat]: 'Чат',
 
     [lng.newPostTitle]: 'Новый пост',
     [lng.editPostTitle]: 'Редактировать пост',
@@ -303,6 +306,7 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.chatWith]: 'Чат с',
     [lng.chatWrote]: 'написал(a)',
     [lng.chatsInputEmpty]: 'Сообщение',
+    [lng.chatWriteMessage]: 'Написать сообщение',
 
     [lng.formatBold]: 'Жирный',
     [lng.formatItalic]: 'Курсив',

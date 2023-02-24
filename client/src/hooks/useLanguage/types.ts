@@ -79,6 +79,7 @@ export enum lng {
   online,
   offline,
   onlineAndMore,
+  chat,
 
   newPostTitle,
   editPostTitle,
@@ -140,6 +141,7 @@ export enum lng {
   chatWith,
   chatWrote,
   chatsInputEmpty,
+  chatWriteMessage,
 
   formatBold,
   formatItalic,

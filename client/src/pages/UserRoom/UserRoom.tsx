@@ -46,7 +46,7 @@ import { Page404 } from 'pages/Page404/Page404';
 import { ProcessingPage } from 'pages/ProcessingPage/ProcessingPage';
 import joinStrings from 'lib/joinStrings';
 import LocationIcon from '@mui/icons-material/LocationOn';
-import { SHOW_MAX_USERS_ONLINE } from 'consts';
+import { SHOW_MAX_USERS_ONLINE, USER_ROLE_ADMIN } from 'consts';
 import combineClasses from 'lib/combineClasses';
 
 interface Props {
@@ -166,18 +166,18 @@ export const UserRoom: FC<Props> = ({ socket }) => {
                 className={styles.online}
                 color="success"
                 icon={<FaceIcon />}
-                label={`online: ${usersOnline.length}`}
+                label={`${language(lng.online)}: ${usersOnline.length}`}
                 onClick={() => setUsersOnlineOpen((current) => !current)}
               />
             </Tooltip>
           </ClickAwayListener>
         )}
         {!isOwnPage && (
-          <Tooltip title="Write message">
+          <Tooltip title={language(lng.chatWriteMessage)}>
             <Chip
               className={styles.message}
               color="primary"
-              label="chat"
+              label={language(lng.chat)}
               icon={<MessageIcon />}
               onClick={handleStartChat}
             />
@@ -223,7 +223,7 @@ export const UserRoom: FC<Props> = ({ socket }) => {
             userFirstName,
             userLastName,
             avatarSrc,
-            role === 'ADMIN',
+            role === USER_ROLE_ADMIN,
             true
           )}
           <h2>{language(lng.postTitleMsg)}</h2>
@@ -240,14 +240,14 @@ export const UserRoom: FC<Props> = ({ socket }) => {
             {renderUser(
               Number(id),
               guestUserData.nickname,
-              role === 'ADMIN' ? guestUserData.email : null,
+              role === USER_ROLE_ADMIN ? guestUserData.email : null,
               String(guestUserData.age || ''),
               guestUserData.city,
               guestUserData.country,
               guestUserData.firstName,
               guestUserData.lastName,
               guestUserData.avatar,
-              guestUserData.role === 'ADMIN',
+              guestUserData.role === USER_ROLE_ADMIN,
               usersOnline.find((nickname) => nickname === guestUserData.nickname) !== undefined
             )}
             <h2>{language(lng.postTitleMsg)}</h2>

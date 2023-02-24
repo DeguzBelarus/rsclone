@@ -55,9 +55,9 @@ import {
 import { IDeleteUserRequestData, IUpdateUserRequestData } from 'types/types';
 import { Socket } from 'socket.io-client';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
-import { ConfirmModal } from 'components/ConfirmModal/ConfirmModal';
 import { AvatarModal } from 'components/AvatarModal/AvatarModal';
 import combineClasses from 'lib/combineClasses';
+import useConfirmModal from 'hooks/useConfirmModal';
 
 interface Props {
   socket: Socket<DefaultEventsMap, DefaultEventsMap>;
@@ -100,11 +100,10 @@ export const UserSettings: FC<Props> = ({ socket }) => {
   const [cityError, setCityError] = useState(false);
   const [firstNameError, setFirstNameError] = useState(false);
   const [lastNameError, setLastNameError] = useState(false);
-
   const [touched, setTouched] = useState(false);
 
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [roleModalOpen, setRoleModalOpen] = useState(false);
+  const [DeleteModal, openDeleteModal] = useConfirmModal();
+  const [RoleModal, openRoleModal] = useConfirmModal();
   const [avatarModalOpen, setAvatarModalOpen] = useState(false);
 
   const validateNickname = useValidateInput(
@@ -302,31 +301,21 @@ export const UserSettings: FC<Props> = ({ socket }) => {
         <h5 className={styles.dangerTitle}>{language(lng.dangerZone)}</h5>
         {role === 'ADMIN' && (
           <>
-            <Button onClick={() => setRoleModalOpen(true)} variant="contained">
+            <Button onClick={openRoleModal} variant="contained">
               {language(lng.giveUpAdmin)}
             </Button>
-            <ConfirmModal
-              open={roleModalOpen}
-              title={language(lng.giveUpAdmin)}
-              onClose={() => setRoleModalOpen(false)}
-              onSuccess={roleDowngrade}
-            >
+            <RoleModal title={language(lng.giveUpAdmin)} onSuccess={roleDowngrade}>
               {language(lng.giveUpAdminMsg)}
-            </ConfirmModal>
+            </RoleModal>
           </>
         )}
 
-        <Button onClick={() => setDeleteModalOpen(true)} variant="contained" color="error">
+        <Button onClick={openDeleteModal} variant="contained" color="error">
           {language(lng.deleteAccount)}
         </Button>
-        <ConfirmModal
-          open={deleteModalOpen}
-          title={language(lng.deleteAccount)}
-          onClose={() => setDeleteModalOpen(false)}
-          onSuccess={userDelete}
-        >
+        <DeleteModal title={language(lng.deleteAccount)} onSuccess={userDelete}>
           {language(lng.deleteAccountMsg)}
-        </ConfirmModal>
+        </DeleteModal>
       </div>
 
       <form className={styles.inputs} onSubmit={infoUpdate} noValidate>
