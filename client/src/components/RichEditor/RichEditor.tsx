@@ -21,9 +21,9 @@ import useLanguage from 'hooks/useLanguage';
 import { editorActions } from './RichEditor.consts';
 import styles from './RichEditor.module.scss';
 import './RichEditor.scss';
-import { ConfirmModal } from 'components/ConfirmModal/ConfirmModal';
 import { RichEditorButton } from './RichEditorButton';
 import { LinkEditorState, RichLinkInfo } from './RichLink';
+import useConfirmModal from 'hooks/useConfirmModal';
 
 interface RichEditorProps {
   className?: string;
@@ -48,11 +48,14 @@ export const RichEditor = ({
   const language = useLanguage();
   const [editorState, setEditorState] = useState(LinkEditorState.createEmpty());
   const [editorFocused, setEditorFocused] = useState(false);
-  const [linkModalOpen, setLinkModalOpen] = useState(false);
   const [linkInfo, setLinkInfo] = useState<RichLinkInfo>({});
   const editorRef: React.LegacyRef<Editor> = useRef(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const isEmpty = editorState.getCurrentContent().hasText();
+
+  // const [linkModalOpen, setLinkModalOpen] = useState(false);
+
+  const [LinkModal, openLinkModal] = useConfirmModal();
 
   const customStyleMap = {
     HIGHLIGHT: {
@@ -83,7 +86,7 @@ export const RichEditor = ({
   };
 
   const handleLinkClick = () => {
-    if (linkInfo?.url) setLinkModalOpen(true);
+    if (linkInfo?.url) openLinkModal();
   };
 
   const handleKeyCommand = (command: string, editorState: EditorState) => {
@@ -230,16 +233,14 @@ export const RichEditor = ({
               )
             )}
           </div>
-          <ConfirmModal
-            open={linkModalOpen}
+          <LinkModal
             title={language(lng.formatEditLinkTitle)}
             inputLabel={language(lng.formatLinkAddress)}
             inputInitial={linkInfo.url}
-            onClose={() => setLinkModalOpen(false)}
             onSuccess={handleAddLink}
           >
             {language(lng.formatEditLinkMsg)}
-          </ConfirmModal>
+          </LinkModal>
         </>
       )}
       <div className={styles.editor}>

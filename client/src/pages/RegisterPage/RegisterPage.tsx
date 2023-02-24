@@ -73,7 +73,7 @@ export const RegisterPage = () => {
         <form onSubmit={handleSubmit} noValidate>
           <CardContent className={styles.content}>
             <Logo className={styles.logo} />
-            <h3 className={styles.heading}>{language(lng.registerWelcome)}</h3>
+            <h4 className={styles.heading}>{language(lng.registerWelcome)}</h4>
             <TextField
               value={nicknameValue}
               label={language(lng.nickname)}

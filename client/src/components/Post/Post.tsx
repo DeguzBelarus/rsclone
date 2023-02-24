@@ -25,7 +25,6 @@ import {
   getUserRole,
   setAlert,
 } from 'app/mainSlice';
-import { ConfirmModal } from 'components/ConfirmModal/ConfirmModal';
 import { EditPostModal } from 'components/EditPostModal/EditPostModal';
 import { MediaContainer } from 'components/MediaContainer/MediaContainer';
 import useLanguage from 'hooks/useLanguage';
@@ -40,6 +39,7 @@ import Avatar from 'components/Avatar/Avatar';
 import { USER_ROLE_ADMIN } from 'consts';
 import CommentsIcon from '@mui/icons-material/SpeakerNotes';
 import { RichEditor } from 'components/RichEditor/RichEditor';
+import useConfirmModal from 'hooks/useConfirmModal';
 
 interface PostProps {
   data: IPostModel;
@@ -62,7 +62,7 @@ export const Post = ({ data, single, ownHighlight, onDelete, onEdit, socket }: P
   const theme = useTheme();
 
   const [editPostModalOpen, setEditPostModalOpen] = useState(false);
-  const [deletePostModalOpen, setDeletePostModalOpen] = useState(false);
+  const [DeletePostModal, openDeletePostModal] = useConfirmModal();
 
   const [heading, setHeading] = useState(data.postHeading);
   const [text, setText] = useState(data.postText);
@@ -109,13 +109,9 @@ export const Post = ({ data, single, ownHighlight, onDelete, onEdit, socket }: P
         <div className={styles.media}>
           <MediaContainer src={mediaURL} audioMargin />
         </div>
-        {single ? (
-          <div className={styles.heading}>{heading}</div>
-        ) : (
-          <Link to={postURL} className={styles.heading}>
-            {heading}
-          </Link>
-        )}
+        <h4 className={styles.heading}>
+          {single ? heading : <Link to={postURL}>{heading} </Link>}
+        </h4>
 
         <div className={styles.subHeading}>
           <Link to={`/user/${userId}`} className={styles.author}>
@@ -143,33 +139,29 @@ export const Post = ({ data, single, ownHighlight, onDelete, onEdit, socket }: P
         </Tooltip>
         {isDeletable && (
           <Tooltip title={language(lng.postDelete)}>
-            <IconButton
-              component="label"
-              color="warning"
-              onClick={() => setDeletePostModalOpen(true)}
-            >
+            <IconButton component="label" color="warning" onClick={openDeletePostModal}>
               <DeleteIcon />
             </IconButton>
           </Tooltip>
         )}
 
-        {!single && (
-          <Tooltip title={language(lng.postOpen)}>
-            <IconButton
-              sx={{ marginLeft: 'auto' }}
-              component="label"
-              onClick={() => navigate(postURL)}
-            >
-              <OpenIcon />
-            </IconButton>
-          </Tooltip>
-        )}
-        {single && data.comments && (
+        {data.comments && (
           <Tooltip title={language(lng.commentsHeading)}>
-            <IconButton component="a" href="#comments" sx={{ marginLeft: 'auto' }}>
+            <IconButton
+              component="a"
+              href={single ? '#comments' : `${postURL}#comments`}
+              sx={{ marginLeft: 'auto' }}
+            >
               <Badge badgeContent={data.comments.length} color="warning">
                 <CommentsIcon />
               </Badge>
+            </IconButton>
+          </Tooltip>
+        )}
+        {!single && (
+          <Tooltip title={language(lng.postOpen)}>
+            <IconButton component="label" onClick={() => navigate(postURL)}>
+              <OpenIcon />
             </IconButton>
           </Tooltip>
         )}
@@ -187,14 +179,9 @@ export const Post = ({ data, single, ownHighlight, onDelete, onEdit, socket }: P
           if (onEdit) onEdit();
         }}
       />
-      <ConfirmModal
-        open={deletePostModalOpen}
-        title={language(lng.postDelete)}
-        onClose={() => setDeletePostModalOpen(false)}
-        onSuccess={handleDelete}
-      >
+      <DeletePostModal title={language(lng.postDelete)} onSuccess={handleDelete}>
         {language(lng.postDeleteMsg)}
-      </ConfirmModal>
+      </DeletePostModal>
     </Card>
   );
 };

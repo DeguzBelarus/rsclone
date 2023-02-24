@@ -29,11 +29,13 @@ import {
   setChats,
   getChats,
   setActiveChatId,
+  deleteUserAsync,
+  updateUserAsync,
 } from 'app/mainSlice';
-import { IGetOneUserRequestData, Nullable, RoleType } from 'types/types';
+import { IGetOneUserRequestData, IUpdateUserRequestData, Nullable, RoleType } from 'types/types';
 import styles from './UserRoom.module.scss';
 import useLanguage from 'hooks/useLanguage';
-import { Chip, ClickAwayListener, Tooltip } from '@mui/material';
+import { Button, Chip, ClickAwayListener, Tooltip } from '@mui/material';
 import FaceIcon from '@mui/icons-material/Face';
 import DotIcon from '@mui/icons-material/FiberManualRecord';
 import MessageIcon from '@mui/icons-material/QuestionAnswerRounded';
@@ -46,7 +48,9 @@ import { Page404 } from 'pages/Page404/Page404';
 import { ProcessingPage } from 'pages/ProcessingPage/ProcessingPage';
 import joinStrings from 'lib/joinStrings';
 import LocationIcon from '@mui/icons-material/LocationOn';
-import { SHOW_MAX_USERS_ONLINE } from 'consts';
+import { SHOW_MAX_USERS_ONLINE, USER_ROLE_ADMIN } from 'consts';
+import combineClasses from 'lib/combineClasses';
+import useConfirmModal from 'hooks/useConfirmModal';
 
 interface Props {
   socket: Socket<DefaultEventsMap, DefaultEventsMap>;
@@ -61,6 +65,9 @@ export const UserRoom: FC<Props> = ({ socket }) => {
   const [isOwnPage, setIsOwnPage] = useState<boolean>(true);
   const [newPostModalOpen, setNewPostModalOpen] = useState(false);
   const [usersOnlineOpen, setUsersOnlineOpen] = useState(false);
+  const [DeleteUserModal, openDeleteUserModal] = useConfirmModal();
+  const [UserRoleModal, openUserRoleModal] = useConfirmModal();
+
   const isAuthorized = useAppSelector(getIsAuthorized);
   const userId = useAppSelector<Nullable<number>>(getUserId);
   const token = useAppSelector<Nullable<string>>(getToken);
@@ -100,6 +107,38 @@ export const UserRoom: FC<Props> = ({ socket }) => {
       dispatch(setChats([...chats, { partnerId, partnerAvatar, partnerNickname }]));
     }
     dispatch(setActiveChatId(partnerId));
+  };
+
+  const handleUserDelete = async () => {
+    if (!token || !userId || !guestUserData?.id) return;
+    const request = {
+      token,
+      requestData: {
+        lang,
+        ownId: userId,
+        id: guestUserData.id,
+      },
+    };
+
+    const { meta } = await dispatch(deleteUserAsync(request));
+    if (meta?.requestStatus === 'fulfilled') navigate('/');
+  };
+
+  const handleUserDowngrade = () => {
+    if (!token || !userId || !guestUserData?.id) return;
+    const formData = new FormData();
+    formData.append('lang', lang);
+    formData.append('id', String(guestUserData.id));
+    formData.append('role', 'USER');
+
+    const request: IUpdateUserRequestData = {
+      type: 'role',
+      ownId: userId,
+      token,
+      requestData: formData,
+    };
+
+    dispatch(updateUserAsync(request));
   };
 
   useEffect(() => {
@@ -165,18 +204,18 @@ export const UserRoom: FC<Props> = ({ socket }) => {
                 className={styles.online}
                 color="success"
                 icon={<FaceIcon />}
-                label={`online: ${usersOnline.length}`}
+                label={`${language(lng.online)}: ${usersOnline.length}`}
                 onClick={() => setUsersOnlineOpen((current) => !current)}
               />
             </Tooltip>
           </ClickAwayListener>
         )}
         {!isOwnPage && (
-          <Tooltip title="Write message">
+          <Tooltip title={language(lng.chatWriteMessage)}>
             <Chip
               className={styles.message}
               color="primary"
-              label="chat"
+              label={language(lng.chat)}
               icon={<MessageIcon />}
               onClick={handleStartChat}
             />
@@ -184,12 +223,12 @@ export const UserRoom: FC<Props> = ({ socket }) => {
         )}
         <div className={styles.info}>
           <Avatar size="min(40vw, 20rem)" user={id || undefined} avatarSrc={avatar || undefined} />
-          <span className={styles.nickname}>
+          <h3 className={combineClasses(styles.nickname, 'user-nickname')}>
             <span className={styles.nick}>{nick}</span>
             <Tooltip arrow title={language(online ? lng.online : lng.offline)}>
-              <DotIcon color={online ? 'success' : 'disabled'} />
+              <DotIcon className={styles.dot} color={online ? 'success' : 'disabled'} />
             </Tooltip>
-          </span>
+          </h3>
           <div className={styles.additional}>
             {admin && <span>({language(lng.admin)})</span>}
             {(firstName || lastName || age) && (
@@ -204,6 +243,29 @@ export const UserRoom: FC<Props> = ({ socket }) => {
             <span>{email}</span>
           </div>
         </div>
+        {!isOwnPage && role === USER_ROLE_ADMIN && (
+          <div className={styles.danger}>
+            {admin ? (
+              <>
+                <Button onClick={openUserRoleModal} variant="contained">
+                  {language(lng.downgradeRole)}
+                </Button>
+                <UserRoleModal title={language(lng.downgradeRole)} onSuccess={handleUserDowngrade}>
+                  {language(lng.downgradeRoleMsg)}
+                </UserRoleModal>
+              </>
+            ) : (
+              <>
+                <Button onClick={openDeleteUserModal} variant="contained" color="error">
+                  {language(lng.deleteAccount)}
+                </Button>
+                <DeleteUserModal title={language(lng.deleteAccount)} onSuccess={handleUserDelete}>
+                  {language(lng.deleteAccountOtherMsg)}
+                </DeleteUserModal>
+              </>
+            )}
+          </div>
+        )}
       </div>
     );
   };
@@ -222,7 +284,7 @@ export const UserRoom: FC<Props> = ({ socket }) => {
             userFirstName,
             userLastName,
             avatarSrc,
-            role === 'ADMIN',
+            role === USER_ROLE_ADMIN,
             true
           )}
           <h2>{language(lng.postTitleMsg)}</h2>
@@ -239,14 +301,14 @@ export const UserRoom: FC<Props> = ({ socket }) => {
             {renderUser(
               Number(id),
               guestUserData.nickname,
-              role === 'ADMIN' ? guestUserData.email : null,
+              role === USER_ROLE_ADMIN ? guestUserData.email : null,
               String(guestUserData.age || ''),
               guestUserData.city,
               guestUserData.country,
               guestUserData.firstName,
               guestUserData.lastName,
               guestUserData.avatar,
-              guestUserData.role === 'ADMIN',
+              guestUserData.role === USER_ROLE_ADMIN,
               usersOnline.find((nickname) => nickname === guestUserData.nickname) !== undefined
             )}
             <h2>{language(lng.postTitleMsg)}</h2>

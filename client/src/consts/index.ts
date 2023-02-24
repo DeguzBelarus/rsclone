@@ -23,3 +23,9 @@ export const USER_ROLE_ADMIN = 'ADMIN';
 export const SHOW_MAX_USERS_ONLINE = 10;
 
 export const APP_TITLE = 'RS Social';
+
+export const USER_PREFFERED_LANGUAGE = navigator.language.startsWith('ru') ? 'ru' : 'en';
+
+export const USER_PREFERRED_COLOR_MODE = matchMedia('(prefers-color-scheme: dark)').matches
+  ? 'dark'
+  : 'light';

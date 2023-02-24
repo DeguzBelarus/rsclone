@@ -56,10 +56,13 @@ export enum lng {
   goToHome,
 
   dangerZone,
-  giveUpAdmin,
-  giveUpAdminMsg,
   deleteAccount,
   deleteAccountMsg,
+  deleteAccountOtherMsg,
+  giveUpAdmin,
+  giveUpAdminMsg,
+  downgradeRole,
+  downgradeRoleMsg,
 
   confirm,
   cancel,
@@ -79,6 +82,7 @@ export enum lng {
   online,
   offline,
   onlineAndMore,
+  chat,
 
   newPostTitle,
   editPostTitle,
@@ -140,6 +144,7 @@ export enum lng {
   chatWith,
   chatWrote,
   chatsInputEmpty,
+  chatWriteMessage,
 
   formatBold,
   formatItalic,

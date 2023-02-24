@@ -42,6 +42,7 @@ import { Recorder } from 'components/Recorder/Recorder';
 import { RichEditor } from 'components/RichEditor/RichEditor';
 import { compressToUTF16 } from 'async-lz-string';
 import { getLocalStorageData, setLocalStorageData } from 'app/storage';
+import { Spinner } from 'components/Spinner/Spinner';
 
 export interface EditPostModalProps {
   open: boolean;
@@ -72,6 +73,7 @@ export const EditPostModal = ({
   const [touched, setTouched] = useState(false);
   const [recording, setRecording] = useState<'video' | 'audio'>();
   const [mediaLoading, setMediaLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [fullScreen, setFullScreen] = useState<FullScreenMode>(
     getLocalStorageData()?.fullScreenPostEdit || 'auto'
   );
@@ -105,7 +107,7 @@ export const EditPostModal = ({
   };
 
   const handleClose = () => {
-    if (mediaLoading) return;
+    if (mediaLoading || isSaving) return;
     if (onClose) onClose();
   };
 
@@ -146,21 +148,25 @@ export const EditPostModal = ({
     const isValid = touched && validateTitle(titleValue) && validateBody(bodyValue);
     if (!isValid || !token || userId === null) return;
     const postText = await compressToUTF16(bodyRaw);
-
-    const result =
-      id === undefined
-        ? await createPost(userId, token, postText)
-        : await editPost(id, token, postText);
-
-    if (result) {
-      handleClose();
-      if (onSuccess) onSuccess(titleValue, postText);
-      const path = window.location.pathname;
-      if (path === '/posts') {
-        dispatch(getAllPostsAsync({ lang }));
+    let result = false;
+    try {
+      setIsSaving(true);
+      result =
+        id === undefined
+          ? await createPost(userId, token, postText)
+          : await editPost(id, token, postText);
+    } finally {
+      setIsSaving(false);
+      if (result) {
+        handleClose();
+        if (onSuccess) onSuccess(titleValue, postText);
+        const path = window.location.pathname;
+        if (path === '/posts') {
+          dispatch(getAllPostsAsync({ lang }));
+        }
+        if (['/posts', '/user'].some((item) => path.startsWith(item))) return;
+        navigate(`/posts/`);
       }
-      if (['/posts', '/user'].some((item) => path.startsWith(item))) return;
-      navigate(`/posts/`);
     }
   };
 
@@ -304,8 +310,16 @@ export const EditPostModal = ({
         />
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose}>{language(lng.cancel)}</Button>
-        <Button color="success" variant="contained" onClick={handleSave} disabled={!touched}>
+        {isSaving && <Spinner size={24} />}
+        <Button disabled={isSaving || mediaLoading} onClick={handleClose}>
+          {language(lng.cancel)}
+        </Button>
+        <Button
+          color="success"
+          variant="contained"
+          onClick={handleSave}
+          disabled={!touched || isSaving || mediaLoading}
+        >
           {language(lng.save)}
         </Button>
       </DialogActions>

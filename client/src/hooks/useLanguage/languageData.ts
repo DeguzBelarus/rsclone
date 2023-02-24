@@ -9,7 +9,7 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.passwordHint]: 'Please enter your password',
     [lng.register]: 'Register',
     [lng.login]: 'Log in',
-    [lng.loginWelcome]: 'Enter your login and password',
+    [lng.loginWelcome]: 'Log in',
     [lng.loginSuccess]: 'You have been successfully logged in',
     [lng.loginError]: 'Wrong email or password. Try again!',
 
@@ -18,7 +18,7 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.repeatPassword]: 'Repeat password',
     [lng.repeatPasswordHint]: 'The passwords should match',
 
-    [lng.registerWelcome]: 'Create a new account',
+    [lng.registerWelcome]: 'New account',
     [lng.registerSuccess]: 'You have been registered',
     [lng.registerError]: 'Regisration error. Try again later!',
 
@@ -61,6 +61,9 @@ const LANGUAGE_DATA: LangaugeData = {
       'Are you sure you want to give up your admin rights? This cannot be undone.',
     [lng.deleteAccount]: 'Delete account',
     [lng.deleteAccountMsg]: 'Are you sure you want to delete your account? This cannot be undone.',
+    [lng.deleteAccountOtherMsg]: `Are you sure you want to delete this user's account? This cannot be undone.`,
+    [lng.downgradeRole]: 'Downgrade role',
+    [lng.downgradeRoleMsg]: `Are you sure you want to downgrade this user's rights? This cannot be undone.`,
 
     [lng.confirm]: 'Confirm',
     [lng.cancel]: 'Cancel',
@@ -80,6 +83,7 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.online]: 'Online',
     [lng.offline]: 'Offline',
     [lng.onlineAndMore]: 'and % more',
+    [lng.chat]: 'Сhat',
 
     [lng.newPostTitle]: 'New post',
     [lng.editPostTitle]: 'Edit post',
@@ -141,6 +145,7 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.chatWith]: 'Chat with',
     [lng.chatWrote]: 'wrote',
     [lng.chatsInputEmpty]: 'Message',
+    [lng.chatWriteMessage]: 'Write message',
 
     [lng.formatBold]: 'Bold',
     [lng.formatItalic]: 'Italic',
@@ -165,7 +170,7 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.passwordHint]: 'Минимальная длина пароля - 8 символов',
     [lng.register]: 'Регистрация',
     [lng.login]: 'Войти',
-    [lng.loginWelcome]: 'Введите ваши данные для входа',
+    [lng.loginWelcome]: 'Вход',
     [lng.loginSuccess]: 'Вы успешно вошли!',
     [lng.loginError]: 'Неправильный адрес электронной почты или пароль!',
 
@@ -218,6 +223,10 @@ const LANGUAGE_DATA: LangaugeData = {
       'Вы уверены, что хотите отказаться от прав администратора? Это действие необратимо.',
     [lng.deleteAccount]: 'Удалить аккаунт',
     [lng.deleteAccountMsg]: 'Вы уверены, что хотите удалить Ваш аккаунт? Это действие необратимо.',
+    [lng.deleteAccountOtherMsg]:
+      'Вы уверены, что хотите удалить аккаунт этого пользователя? Это действие необратимо.',
+    [lng.downgradeRole]: 'Понизить права',
+    [lng.downgradeRoleMsg]: `Вы уверены, что хотите понизить права этого пользователя? Это действие необратимо.`,
 
     [lng.confirm]: 'Подтвердить',
     [lng.cancel]: 'Отменить',
@@ -237,6 +246,7 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.online]: 'Онлайн',
     [lng.offline]: 'Оффлайн',
     [lng.onlineAndMore]: 'и % других',
+    [lng.chat]: 'Чат',
 
     [lng.newPostTitle]: 'Новый пост',
     [lng.editPostTitle]: 'Редактировать пост',
@@ -303,6 +313,7 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.chatWith]: 'Чат с',
     [lng.chatWrote]: 'написал(a)',
     [lng.chatsInputEmpty]: 'Сообщение',
+    [lng.chatWriteMessage]: 'Написать сообщение',
 
     [lng.formatBold]: 'Жирный',
     [lng.formatItalic]: 'Курсив',
