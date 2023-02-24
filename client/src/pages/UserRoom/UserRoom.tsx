@@ -226,7 +226,7 @@ export const UserRoom: FC<Props> = ({ socket }) => {
           <h3 className={combineClasses(styles.nickname, 'user-nickname')}>
             <span className={styles.nick}>{nick}</span>
             <Tooltip arrow title={language(online ? lng.online : lng.offline)}>
-              <DotIcon color={online ? 'success' : 'disabled'} />
+              <DotIcon className={styles.dot} color={online ? 'success' : 'disabled'} />
             </Tooltip>
           </h3>
           <div className={styles.additional}>

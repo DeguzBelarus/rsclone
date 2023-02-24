@@ -30,8 +30,13 @@
       align-items: center;
 
       .nickname {
+        position: relative;
         display: flex;
         align-items: center;
+        .dot {
+          position: absolute;
+          right: -1em;
+        }
       }
       .additional {
         display: flex;
