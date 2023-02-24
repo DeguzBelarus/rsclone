@@ -56,10 +56,13 @@ export enum lng {
   goToHome,
 
   dangerZone,
-  giveUpAdmin,
-  giveUpAdminMsg,
   deleteAccount,
   deleteAccountMsg,
+  deleteAccountOtherMsg,
+  giveUpAdmin,
+  giveUpAdminMsg,
+  downgradeRole,
+  downgradeRoleMsg,
 
   confirm,
   cancel,

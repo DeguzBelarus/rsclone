@@ -51,6 +51,7 @@ import {
   LAST_NAME_PATTERN,
   NICKNAME_PATTERN,
   PASSWORD_OR_EMPTY_PATTERN,
+  USER_ROLE_ADMIN,
 } from 'consts';
 import { IDeleteUserRequestData, IUpdateUserRequestData } from 'types/types';
 import { Socket } from 'socket.io-client';
@@ -299,7 +300,7 @@ export const UserSettings: FC<Props> = ({ socket }) => {
 
       <div className={styles.danger}>
         <h5 className={styles.dangerTitle}>{language(lng.dangerZone)}</h5>
-        {role === 'ADMIN' && (
+        {role === USER_ROLE_ADMIN && (
           <>
             <Button onClick={openRoleModal} variant="contained">
               {language(lng.giveUpAdmin)}

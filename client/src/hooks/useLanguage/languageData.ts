@@ -61,6 +61,9 @@ const LANGUAGE_DATA: LangaugeData = {
       'Are you sure you want to give up your admin rights? This cannot be undone.',
     [lng.deleteAccount]: 'Delete account',
     [lng.deleteAccountMsg]: 'Are you sure you want to delete your account? This cannot be undone.',
+    [lng.deleteAccountOtherMsg]: `Are you sure you want to delete this user's account? This cannot be undone.`,
+    [lng.downgradeRole]: 'Downgrade role',
+    [lng.downgradeRoleMsg]: `Are you sure you want to downgrade this user's rights? This cannot be undone.`,
 
     [lng.confirm]: 'Confirm',
     [lng.cancel]: 'Cancel',
@@ -220,6 +223,10 @@ const LANGUAGE_DATA: LangaugeData = {
       'Вы уверены, что хотите отказаться от прав администратора? Это действие необратимо.',
     [lng.deleteAccount]: 'Удалить аккаунт',
     [lng.deleteAccountMsg]: 'Вы уверены, что хотите удалить Ваш аккаунт? Это действие необратимо.',
+    [lng.deleteAccountOtherMsg]:
+      'Вы уверены, что хотите удалить аккаунт этого пользователя? Это действие необратимо.',
+    [lng.downgradeRole]: 'Понизить права',
+    [lng.downgradeRoleMsg]: `Вы уверены, что хотите понизить права этого пользователя? Это действие необратимо.`,
 
     [lng.confirm]: 'Подтвердить',
     [lng.cancel]: 'Отменить',
