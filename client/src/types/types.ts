@@ -48,7 +48,6 @@ export interface IDeleteUserRequestData {
   requestData: {
     lang: CurrentLanguageType;
     id: number;
-    ownId: number;
   };
   token: string;
 }
@@ -108,7 +107,7 @@ export interface IGetOneUserResponse {
 export interface IDeleteUserResponse {
   message?: string;
   statusCode?: number;
-  ownId: number;
+  deletedUserId: number;
 }
 
 export interface IDeletePostResponse {

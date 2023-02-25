@@ -39,6 +39,7 @@ import {
   setUserLastName,
   setUserNickname,
   setUserRole,
+  setDialogs,
 } from 'app/mainSlice';
 import { LanguageSwitch } from 'components/LanguageSwitch/LanguageSwitch';
 import React, { useState, FC, useEffect } from 'react';
@@ -108,6 +109,7 @@ export const Header: FC<Props> = ({ socket }) => {
     dispatch(setAvatarSrc(null));
     dispatch(setGuestUserData(null));
     dispatch(setChats([]));
+    dispatch(setDialogs([]));
 
     socket.emit('userOffline', userName);
     navigate('/login');

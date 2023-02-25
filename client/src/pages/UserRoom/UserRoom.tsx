@@ -124,12 +124,12 @@ export const UserRoom: FC<Props> = ({ socket }) => {
     if (meta?.requestStatus === 'fulfilled') navigate('/');
   };
 
-  const handleUserDowngrade = () => {
+  const handleUserUpgrade = () => {
     if (!token || !userId || !guestUserData?.id) return;
     const formData = new FormData();
     formData.append('lang', lang);
     formData.append('id', String(guestUserData.id));
-    formData.append('role', 'USER');
+    formData.append('role', 'ADMIN');
 
     const request: IUpdateUserRequestData = {
       type: 'role',
@@ -245,25 +245,19 @@ export const UserRoom: FC<Props> = ({ socket }) => {
         </div>
         {!isOwnPage && role === USER_ROLE_ADMIN && (
           <div className={styles.danger}>
-            {admin ? (
-              <>
-                <Button onClick={openUserRoleModal} variant="contained">
-                  {language(lng.downgradeRole)}
-                </Button>
-                <UserRoleModal title={language(lng.downgradeRole)} onSuccess={handleUserDowngrade}>
-                  {language(lng.downgradeRoleMsg)}
-                </UserRoleModal>
-              </>
-            ) : (
-              <>
-                <Button onClick={openDeleteUserModal} variant="contained" color="error">
-                  {language(lng.deleteAccount)}
-                </Button>
-                <DeleteUserModal title={language(lng.deleteAccount)} onSuccess={handleUserDelete}>
-                  {language(lng.deleteAccountOtherMsg)}
-                </DeleteUserModal>
-              </>
-            )}
+            <Button onClick={openUserRoleModal} variant="contained">
+              {language(lng.upgradeRole)}
+            </Button>
+            <UserRoleModal title={language(lng.upgradeRole)} onSuccess={handleUserUpgrade}>
+              {language(lng.upgradeRoleMsg)}
+            </UserRoleModal>
+
+            <Button onClick={openDeleteUserModal} variant="contained" color="error">
+              {language(lng.deleteAccount)}
+            </Button>
+            <DeleteUserModal title={language(lng.deleteAccount)} onSuccess={handleUserDelete}>
+              {language(lng.deleteAccountOtherMsg)}
+            </DeleteUserModal>
           </div>
         )}
       </div>
