@@ -1,7 +1,7 @@
 import { DataTypes, ModelDefined } from 'sequelize';
 import { Nullable } from '../client/src/types/types';
 import { sequelizeConfig } from '../sequelizeConfig';
-import { ICommentModel, IMessageModel, IPostModel, IUserModel } from '../types/types';
+import { ICommentModel, ILikeModel, IMessageModel, IPostModel, IUserModel } from '../types/types';
 
 export const User: Nullable<ModelDefined<IUserModel, IUserModel>> = sequelizeConfig
   ? sequelizeConfig.define('user', {
@@ -114,6 +114,18 @@ export const Comment: Nullable<ModelDefined<ICommentModel, ICommentModel>> = seq
     },
   }) : null;
 
+export const Like: Nullable<ModelDefined<ILikeModel, ILikeModel>> = sequelizeConfig
+  ? sequelizeConfig.define('likes', {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
+    },
+    ownerNickname: {
+      type: DataTypes.STRING,
+    },
+  }) : null;
+
 export const Message: Nullable<ModelDefined<IMessageModel, IMessageModel>> = sequelizeConfig
   ? sequelizeConfig.define('messages', {
     id: {
@@ -150,7 +162,7 @@ export const Message: Nullable<ModelDefined<IMessageModel, IMessageModel>> = seq
     },
   }) : null;
 
-if (User && Post && Comment && Message) {
+if (User && Post && Comment && Message && Like) {
   User.hasMany(Post, {
     as: 'posts',
     foreignKey: 'userId',
@@ -169,9 +181,21 @@ if (User && Post && Comment && Message) {
   });
   Comment.belongsTo(User);
 
+  User.hasMany(Like, {
+    as: 'likes',
+    foreignKey: 'userId',
+  });
+  Like.belongsTo(User);
+
   Post.hasMany(Comment, {
     as: 'comments',
     foreignKey: 'postId',
   });
   Comment.belongsTo(Post);
+
+  Post.hasMany(Like, {
+    as: 'likes',
+    foreignKey: 'postId',
+  });
+  Like.belongsTo(Post);
 }
