@@ -7,6 +7,7 @@ export type CurrentLanguageType = 'en' | 'ru';
 export type CurrentColorTheme = 'light' | 'dark';
 export type RoleType = 'USER' | 'ADMIN';
 export type UpdateUserType = 'info' | 'avatar' | 'role';
+export type LikeThunkLocationType = 'user-room' | 'post-page' | 'all-posts-page';
 
 // event handler type
 export type EventHandler<T, K = void> = (event: T, param?: K) => void;
@@ -192,6 +193,7 @@ export interface ICreateLikeRequest {
   token: string;
   postId: number;
   userId: number;
+  locationType: LikeThunkLocationType;
 }
 
 export interface ICreateLikeResponse {
@@ -346,6 +348,7 @@ export interface IDeleteLikeRequest {
   lang: CurrentLanguageType;
   id: number;
   token: string;
+  locationType: LikeThunkLocationType;
 }
 
 export interface IDeleteLikeResponse {
