@@ -6,7 +6,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import formidable from 'formidable';
 
-import { User, Post, Comment, Message } from '../db-models/db-models';
+import { User, Post, Comment, Message, Like } from '../db-models/db-models';
 import {
   CurrentLanguageType,
   IUserModel,
@@ -484,7 +484,7 @@ class UserController {
   async delete(request: IRequestModified, response: Response,
     next: NextFunction): Promise<void | Response> {
     try {
-      if (User && Post && Comment && Message) {
+      if (User && Post && Comment && Message && Like) {
         const { id } = request.params;
         const { lang } = request.query;
         const { requesterId, role } = request;
@@ -511,6 +511,19 @@ class UserController {
           })
           if (foundMessagesForDeleting) {
             await Message.destroy({
+              where: {
+                userId: deletedUser.dataValues.id,
+              }
+            });
+          }
+
+          const foundLikesForDeleting = await Like.findOne({
+            where: {
+              userId: deletedUser.dataValues.id,
+            }
+          })
+          if (foundLikesForDeleting) {
+            await Like.destroy({
               where: {
                 userId: deletedUser.dataValues.id,
               }
@@ -625,7 +638,7 @@ class UserController {
         let { lang, email, nickname, password, age, country, city, firstName, avatar, lastName, role,
         } = fields as formidable.Fields & IUserModel & { lang: CurrentLanguageType };
 
-        if (User && Comment && Post && Message) {
+        if (User && Comment && Post && Message && Like) {
           const foundUserForUpdating = await User.findOne({ where: { id } });
           if (foundUserForUpdating) {
             if (typeof email !== 'string' &&
@@ -1039,6 +1052,8 @@ class UserController {
                 await Comment.update({ authorNickname: nickname }, { where: { userId: Number(id) } });
                 await Post.update({ ownerNickname: nickname }, { where: { userId: Number(id) } });
                 await Message.update({ authorNickname: nickname }, { where: { userId: Number(id) } });
+                await Like.update({ ownerNickname: nickname }, { where: { userId: Number(id) } });
+
               }
               return response.json({
                 message: lang === 'ru' ?
