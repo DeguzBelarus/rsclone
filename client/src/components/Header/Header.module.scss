@@ -24,7 +24,7 @@
   &.authorized {
     .toolbar {
       grid-template-columns: auto 1fr repeat(6, auto);
-      @media screen and (max-width: $mobile-breakpoint) {
+      @media screen and (max-width: ($mobile-breakpoint - 1px)) {
         & {
           grid-template-columns: auto 1fr repeat(3, auto);
         }
@@ -40,7 +40,7 @@
         display: none;
       }
     }
-    @media screen and (max-width: $mobile-breakpoint) {
+    @media screen and (max-width: ($mobile-breakpoint - 1px)) {
       .toolbar {
         grid-template-columns: 1fr;
       }
