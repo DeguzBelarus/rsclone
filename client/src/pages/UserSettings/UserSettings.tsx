@@ -298,7 +298,6 @@ export const UserSettings: FC<Props> = ({ socket }) => {
       </div>
 
       <div className={styles.danger}>
-        <h5 className={styles.dangerTitle}>{language(lng.dangerZone)}</h5>
         {role === USER_ROLE_ADMIN && (
           <>
             <Button onClick={openRoleModal} variant="contained">

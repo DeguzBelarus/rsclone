@@ -24,7 +24,6 @@
     grid-area: settings-danger;
     display: flex;
     flex-direction: column;
-    max-width: 16rem;
     justify-self: center;
     gap: 1rem;
     margin-bottom: 4rem;
@@ -51,5 +50,6 @@
       'settings-danger settings-inputs';
 
     grid-template-columns: auto 1fr;
+    grid-template-rows: auto 1fr;
   }
 }
