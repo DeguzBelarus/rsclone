@@ -52,8 +52,10 @@
       }
     }
     .danger {
-      @include flex-column-all-center;
-      gap: 8px;
+      display: flex;
+      flex-direction: column;
+      justify-self: center;
+      gap: 1rem;
       margin-top: 3rem;
     }
   }

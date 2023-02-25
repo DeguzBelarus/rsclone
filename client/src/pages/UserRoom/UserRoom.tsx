@@ -124,21 +124,24 @@ export const UserRoom: FC<Props> = ({ socket }) => {
     if (meta?.requestStatus === 'fulfilled') navigate('/');
   };
 
-  const handleUserUpgrade = () => {
+  const handleUserUpgrade = async () => {
     if (!token || !userId || !guestUserData?.id) return;
-    const formData = new FormData();
-    formData.append('lang', lang);
-    formData.append('id', String(guestUserData.id));
-    formData.append('role', 'ADMIN');
+    const requestData = new FormData();
+    requestData.append('lang', lang);
+    requestData.append('id', String(guestUserData.id));
+    requestData.append('role', 'ADMIN');
 
     const request: IUpdateUserRequestData = {
       type: 'role',
       ownId: userId,
       token,
-      requestData: formData,
+      requestData,
     };
 
-    dispatch(updateUserAsync(request));
+    const { meta } = await dispatch(updateUserAsync(request));
+    if (meta?.requestStatus === 'fulfilled') {
+      dispatch(getOneUserInfoAsync({ token, requestData: { id: guestUserData.id, lang } }));
+    }
   };
 
   useEffect(() => {
@@ -243,7 +246,7 @@ export const UserRoom: FC<Props> = ({ socket }) => {
             <span>{email}</span>
           </div>
         </div>
-        {!isOwnPage && role === USER_ROLE_ADMIN && (
+        {!isOwnPage && role === USER_ROLE_ADMIN && !admin && (
           <div className={styles.danger}>
             <Button onClick={openUserRoleModal} variant="contained">
               {language(lng.upgradeRole)}
