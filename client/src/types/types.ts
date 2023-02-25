@@ -187,6 +187,18 @@ export interface ICreateCommentResponse {
   statusCode?: number;
 }
 
+export interface ICreateLikeRequest {
+  lang: CurrentLanguageType;
+  token: string;
+  postId: number;
+  userId: number;
+}
+
+export interface ICreateLikeResponse {
+  message: string;
+  statusCode?: number;
+}
+
 export interface ISendMessageRequest {
   lang: CurrentLanguageType;
   token: string;
@@ -327,6 +339,19 @@ export interface IDeleteCommentResponse {
   message: string;
   postId: number;
   commentOwnerId: number;
+  statusCode?: number;
+}
+
+export interface IDeleteLikeRequest {
+  lang: CurrentLanguageType;
+  id: number;
+  token: string;
+}
+
+export interface IDeleteLikeResponse {
+  message: string;
+  postId: number;
+  likeOwnerId: number;
   statusCode?: number;
 }
 
