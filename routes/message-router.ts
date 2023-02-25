@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { messageController } from '../controllers/message-controller'
+import { messageController } from '../controllers/message-controller';
 import { roleAndIdAccessMiddleware } from '../middleware/role-id-access';
 
 export const messageRouter = express.Router();

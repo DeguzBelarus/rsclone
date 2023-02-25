@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { commentController } from '../controllers/comment-controller'
+import { commentController } from '../controllers/comment-controller';
 import { roleAndIdAccessMiddleware } from '../middleware/role-id-access';
 
 export const commentRouter = express.Router();
