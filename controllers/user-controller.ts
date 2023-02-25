@@ -327,13 +327,17 @@ class UserController {
           ],
         });
 
-        if (foundUser && Comment) {
+        if (foundUser && Comment && Like) {
           const { id, age, city, country, email, firstName, lastName, nickname, role: userRole, avatar
           } = foundUser.dataValues;
           let { dialogs } = foundUser.dataValues
 
           const foundPosts = await Post.findAll({
-            where: { userId }, include: [{ model: Comment, as: 'comments' }]
+            where: { userId },
+            include: [
+              { model: Comment, as: 'comments' },
+              { model: Like, as: 'likes' }
+            ]
           });
           let posts: Array<IPostModel> = [];
           if (foundPosts) {
@@ -351,6 +355,7 @@ class UserController {
                   ownerAvatar: post.dataValues.ownerAvatar,
                   ownerRole: post.dataValues.ownerRole,
                   comments: post.dataValues.comments,
+                  likes: post.dataValues.likes,
                 }
               })
               .sort((prevPost, nextPost) => {

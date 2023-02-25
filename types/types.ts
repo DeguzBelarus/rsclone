@@ -57,6 +57,7 @@ export interface IPostModel {
   ownerAvatar?: string | FormidableFile;
   ownerRole: RoleType;
   comments?: Array<ICommentModel>;
+  likes?: Array<ILikeModel>;
 }
 
 export interface IMessageModel {
