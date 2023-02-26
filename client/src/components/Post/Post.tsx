@@ -18,8 +18,11 @@ import {
 } from '@mui/material';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import {
+  createLikeAsync,
+  deleteLikeAsync,
   deletePostAsync,
   getCurrentLanguage,
+  getGuestUserData,
   getToken,
   getUserId,
   getUserRole,
@@ -32,7 +35,12 @@ import { lng } from 'hooks/useLanguage/types';
 import { PostDate } from 'components/PostDate/PostDate';
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { IPostModel } from 'types/types';
+import {
+  ICreateLikeRequest,
+  IDeleteLikeRequest,
+  IPostModel,
+  LikeThunkLocationType,
+} from 'types/types';
 
 import styles from './Post.module.scss';
 import Avatar from 'components/Avatar/Avatar';
@@ -40,9 +48,11 @@ import { USER_ROLE_ADMIN } from 'consts';
 import CommentsIcon from '@mui/icons-material/SpeakerNotes';
 import { RichEditor } from 'components/RichEditor/RichEditor';
 import useConfirmModal from 'hooks/useConfirmModal';
+import { LikeButton } from 'components/LikeButton/LikeButton';
 
 interface PostProps {
   data: IPostModel;
+  origin: LikeThunkLocationType;
   single?: boolean;
   ownHighlight?: boolean;
   onDelete?: () => void;
@@ -50,7 +60,15 @@ interface PostProps {
   socket: Socket<DefaultEventsMap, DefaultEventsMap>;
 }
 
-export const Post = ({ data, single, ownHighlight, onDelete, onEdit, socket }: PostProps) => {
+export const Post = ({
+  data,
+  origin,
+  single,
+  ownHighlight,
+  onDelete,
+  onEdit,
+  socket,
+}: PostProps) => {
   const language = useLanguage();
   const dispatch = useAppDispatch();
   const token = useAppSelector(getToken);
@@ -58,6 +76,7 @@ export const Post = ({ data, single, ownHighlight, onDelete, onEdit, socket }: P
   const ownId = useAppSelector(getUserId);
   const role = useAppSelector(getUserRole);
   const userNickname = useAppSelector(getUserRole);
+  const guestUserData = useAppSelector(getGuestUserData);
   const navigate = useNavigate();
   const theme = useTheme();
 
@@ -97,6 +116,34 @@ export const Post = ({ data, single, ownHighlight, onDelete, onEdit, socket }: P
     );
   };
 
+  const handleLike = () => {
+    if (!token || !userId || !data.id) return;
+    const request: ICreateLikeRequest = {
+      token,
+      userId,
+      lang,
+      guestId: guestUserData?.id,
+      postId: data.id,
+      locationType: origin,
+    };
+    dispatch(createLikeAsync(request));
+  };
+
+  const handleUnlike = (id: number) => {
+    if (!token || !userId || !data.id) return;
+    console.log(id);
+    const request: IDeleteLikeRequest = {
+      id,
+      token,
+      userId,
+      guestId: guestUserData?.id,
+      lang,
+      postId: data.id,
+      locationType: origin,
+    };
+    dispatch(deleteLikeAsync(request));
+  };
+
   return (
     <Card
       className={styles.post}
@@ -125,6 +172,7 @@ export const Post = ({ data, single, ownHighlight, onDelete, onEdit, socket }: P
         </div>
       </CardContent>
       <CardActions disableSpacing>
+        <LikeButton data={data.likes} onLike={handleLike} onUnlike={handleUnlike} />
         {isOwnPost && (
           <Tooltip title={language(lng.postEdit)}>
             <IconButton component="label" onClick={() => setEditPostModalOpen(true)}>

@@ -160,6 +160,9 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.formatEditLinkTitle]: 'Edit Link',
     [lng.formatEditLinkMsg]: 'Please provide hyperlink address:',
     [lng.formatLinkAddress]: 'Address',
+
+    [lng.likeFirst]: 'Be the first one to like',
+    [lng.you]: 'You',
   },
 
   ru: {
@@ -328,6 +331,9 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.formatEditLinkTitle]: 'Редактировать ссылку',
     [lng.formatEditLinkMsg]: 'Введите адрес гиперссылки:',
     [lng.formatLinkAddress]: 'Адрес',
+
+    [lng.likeFirst]: 'Добавьте первый лайк',
+    [lng.you]: 'Вы',
   },
 };
 

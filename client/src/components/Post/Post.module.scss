@@ -1,4 +1,5 @@
 .post {
+  isolation: isolate;
   .content {
     padding: 0;
     display: flex;

@@ -20,7 +20,7 @@ export const LANGUAGE_NAMES = ['English', 'Русский'];
 
 export const USER_ROLE_ADMIN = 'ADMIN';
 
-export const SHOW_MAX_USERS_ONLINE = 10;
+export const MAX_USERS_TO_DISPLAY = 10;
 
 export const APP_TITLE = 'RS Social';
 

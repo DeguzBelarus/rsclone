@@ -1,0 +1,7 @@
+.likes {
+  display: flex;
+  align-items: center;
+  .number {
+    transform: translateX(50%);
+  }
+}

@@ -43,7 +43,7 @@ export const PostPage: FC<Props> = ({ socket }) => {
 
   return post ? (
     <div className={styles.wrapper}>
-      <Post data={post} socket={socket} single onDelete={() => navigate('/')} />
+      <Post data={post} origin="post-page" socket={socket} single onDelete={() => navigate('/')} />
       <Comments
         postId={Number(id)}
         data={post.comments}

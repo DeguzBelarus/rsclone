@@ -30,6 +30,7 @@ export const AllPostsPage: FC<Props> = ({ socket }): JSX.Element => {
       {posts.length ? (
         <Posts
           data={posts}
+          origin="all-posts-page"
           socket={socket}
           ownHighlight
           onDelete={updatePosts}
