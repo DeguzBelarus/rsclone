@@ -159,6 +159,9 @@ export enum lng {
   formatEditLinkTitle,
   formatEditLinkMsg,
   formatLinkAddress,
+
+  likeFirst,
+  you,
 }
 
 export type LangaugeData = {

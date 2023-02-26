@@ -9,6 +9,8 @@ import { ILikeModel } from 'types/types';
 import { useAppSelector } from 'app/hooks';
 import { getUserId } from 'app/mainSlice';
 import useTruncateUserList from 'hooks/useTruncateUserList';
+import useLanguage from 'hooks/useLanguage';
+import { lng } from 'hooks/useLanguage/types';
 
 interface LikeButtonProps {
   data?: ILikeModel[];
@@ -18,6 +20,7 @@ interface LikeButtonProps {
 
 export const LikeButton = ({ onLike, onUnlike, data }: LikeButtonProps) => {
   const { palette } = useTheme();
+  const language = useLanguage();
   const userId = useAppSelector(getUserId);
 
   const userLike = data?.find(({ userId: id }) => id === userId);
@@ -37,6 +40,7 @@ export const LikeButton = ({ onLike, onUnlike, data }: LikeButtonProps) => {
       if (onLike) onLike();
     }
   };
+
   return (
     <Tooltip
       title={
@@ -46,7 +50,7 @@ export const LikeButton = ({ onLike, onUnlike, data }: LikeButtonProps) => {
               return <li key={user}>{user}</li>;
             })
           ) : (
-            <li>Be the first one to like</li>
+            <li>{language(lng.likeFirst)}</li>
           )}
         </ul>
       }

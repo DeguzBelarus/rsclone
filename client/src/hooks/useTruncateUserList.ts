@@ -1,19 +1,29 @@
-import { SHOW_MAX_USERS_ONLINE } from 'consts';
-import React, { useMemo } from 'react';
+import { useAppSelector } from 'app/hooks';
+import { getUserNickname } from 'app/mainSlice';
+import { MAX_USERS_TO_DISPLAY } from 'consts';
+import { useMemo } from 'react';
 import useLanguage from './useLanguage';
 import { lng } from './useLanguage/types';
 
-export default function useTruncateUserList(userArray: string[]) {
+export default function useTruncateUserList(userArray: string[], youFirst = true) {
   const language = useLanguage();
+  const nickname = useAppSelector(getUserNickname);
 
   const userList = useMemo(() => {
-    const users = userArray.slice(0, SHOW_MAX_USERS_ONLINE);
-    if (userArray.length > SHOW_MAX_USERS_ONLINE)
+    let users = userArray.slice();
+    const you = youFirst && nickname && userArray.includes(nickname);
+    if (you) {
+      const youIndex = userArray.indexOf(nickname);
+      users.splice(youIndex, 1);
+    }
+    users = users.slice(0, MAX_USERS_TO_DISPLAY);
+    if (userArray.length > MAX_USERS_TO_DISPLAY)
       users.push(
-        language(lng.onlineAndMore).replace('%', String(userArray.length - SHOW_MAX_USERS_ONLINE))
+        language(lng.onlineAndMore).replace('%', String(userArray.length - MAX_USERS_TO_DISPLAY))
       );
+    if (you) users.unshift(language(lng.you));
     return users;
-  }, [userArray, language]);
+  }, [userArray, language, nickname, youFirst]);
 
   return userList;
 }

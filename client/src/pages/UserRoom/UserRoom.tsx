@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useMemo, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Socket } from 'socket.io-client';
@@ -48,7 +48,7 @@ import { Page404 } from 'pages/Page404/Page404';
 import { ProcessingPage } from 'pages/ProcessingPage/ProcessingPage';
 import joinStrings from 'lib/joinStrings';
 import LocationIcon from '@mui/icons-material/LocationOn';
-import { SHOW_MAX_USERS_ONLINE, USER_ROLE_ADMIN } from 'consts';
+import { USER_ROLE_ADMIN } from 'consts';
 import combineClasses from 'lib/combineClasses';
 import useConfirmModal from 'hooks/useConfirmModal';
 import useTruncateUserList from 'hooks/useTruncateUserList';
