@@ -51,6 +51,7 @@ import LocationIcon from '@mui/icons-material/LocationOn';
 import { SHOW_MAX_USERS_ONLINE, USER_ROLE_ADMIN } from 'consts';
 import combineClasses from 'lib/combineClasses';
 import useConfirmModal from 'hooks/useConfirmModal';
+import useTruncateUserList from 'hooks/useTruncateUserList';
 
 interface Props {
   socket: Socket<DefaultEventsMap, DefaultEventsMap>;
@@ -90,14 +91,7 @@ export const UserRoom: FC<Props> = ({ socket }) => {
 
   const isUserFound = isAuthorized && (isOwnPage || (id && guestUserData));
 
-  const usersOnlineToDisplay = useMemo(() => {
-    const users = usersOnline.slice(0, SHOW_MAX_USERS_ONLINE);
-    if (usersOnline.length > SHOW_MAX_USERS_ONLINE)
-      users.push(
-        language(lng.onlineAndMore).replace('%', String(usersOnline.length - SHOW_MAX_USERS_ONLINE))
-      );
-    return users;
-  }, [usersOnline, language]);
+  const usersOnlineToDisplay = useTruncateUserList(usersOnline);
 
   const handleStartChat = () => {
     if (!guestUserData) return;

@@ -2,23 +2,32 @@ import React from 'react';
 import LikedIcon from '@mui/icons-material/Favorite';
 import NotLikedIcon from '@mui/icons-material/FavoriteBorder';
 
-import { IconButton, Tooltip } from '@mui/material';
+import { IconButton, Tooltip, useTheme } from '@mui/material';
 
 import styles from './LikeButton.module.scss';
 import { ILikeModel } from 'types/types';
 import { useAppSelector } from 'app/hooks';
 import { getUserId } from 'app/mainSlice';
+import useTruncateUserList from 'hooks/useTruncateUserList';
 
 interface LikeButtonProps {
-  className?: string;
   data?: ILikeModel[];
   onLike?: () => void;
   onUnlike?: () => void;
 }
 
-export const LikeButton = ({ className, onLike, onUnlike, data }: LikeButtonProps) => {
+export const LikeButton = ({ onLike, onUnlike, data }: LikeButtonProps) => {
+  const { palette } = useTheme();
   const userId = useAppSelector(getUserId);
+
   const isLiked = data?.find(({ userId: id }) => id === userId) !== undefined;
+  const users = useTruncateUserList(
+    (
+      data?.map(({ ownerNickname, userId: ownerId }) =>
+        userId === ownerId ? 'You' : ownerNickname
+      ) || []
+    ).sort((a, b) => (b === 'You' ? 1 : 0))
+  );
 
   const handleClick = () => {
     if (isLiked) {
@@ -28,10 +37,30 @@ export const LikeButton = ({ className, onLike, onUnlike, data }: LikeButtonProp
     }
   };
   return (
-    <Tooltip title="Likes">
-      <IconButton onClick={handleClick} color="error">
-        {isLiked ? <LikedIcon /> : <NotLikedIcon />}
-      </IconButton>
+    <Tooltip
+      title={
+        <ul>
+          {users.length > 0 ? (
+            users.map((user) => {
+              return <li key={user}>{user}</li>;
+            })
+          ) : (
+            <li>Be the first one to like</li>
+          )}
+        </ul>
+      }
+      arrow
+    >
+      <div className={styles.likes}>
+        {data && data.length > 0 && (
+          <span style={{ color: palette.text.secondary }} className={styles.number}>
+            {data.length}
+          </span>
+        )}
+        <IconButton onClick={handleClick} color="error">
+          {isLiked ? <LikedIcon /> : <NotLikedIcon />}
+        </IconButton>
+      </div>
     </Tooltip>
   );
 };

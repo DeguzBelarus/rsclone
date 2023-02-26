@@ -110,7 +110,7 @@ export const Post = ({
     );
   };
 
-  const handleLikes = () => {
+  const handleLike = () => {
     if (!token || !userId || !data.id) return;
     const request: ICreateLikeRequest = {
       token,
@@ -121,6 +121,19 @@ export const Post = ({
       locationType: origin,
     };
     dispatch(createLikeAsync(request));
+  };
+
+  const handleUnlike = () => {
+    if (!token || !userId || !data.id) return;
+    const request: ICreateLikeRequest = {
+      token,
+      userId,
+      guestId: guestUserData?.id,
+      lang,
+      postId: data.id,
+      locationType: origin,
+    };
+    // dispatch(createLikeAsync(request));
   };
 
   return (
@@ -151,7 +164,7 @@ export const Post = ({
         </div>
       </CardContent>
       <CardActions disableSpacing>
-        <LikeButton data={data.likes} onLike={handleLikes} />
+        <LikeButton data={data.likes} onLike={handleLike} onUnlike={handleUnlike} />
         {isOwnPost && (
           <Tooltip title={language(lng.postEdit)}>
             <IconButton component="label" onClick={() => setEditPostModalOpen(true)}>
