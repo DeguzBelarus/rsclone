@@ -51,6 +51,8 @@ import {
   IDeleteMessageRequest,
   IDeleteMessageResponse,
   OpenChats,
+  ICreateLikeRequest,
+  ICreateLikeResponse,
 } from 'types/types';
 import { requestData, requestMethods } from './dataAPI';
 import { setLocalStorageData } from './storage';
@@ -862,6 +864,99 @@ export const deleteMessageAsync = createAsyncThunk(
   }
 );
 
+// likes thunks
+// create a new like
+export const createLikeAsync = createAsyncThunk(
+  'like/create',
+  async (
+    data: ICreateLikeRequest
+  ): Promise<
+    Nullable<ICreateLikeResponse | IGetOnePostResponse | IGetOneUserResponse | IGetAllPostsResponse>
+  > => {
+    const params = new URLSearchParams();
+    params.set('lang', data.lang);
+
+    const createLikeURL = `/api/like/${data.postId}/${data.userId}/creation?${params}`;
+    const createLikeResponse: Undefinable<Response> = await requestData(
+      createLikeURL,
+      requestMethods.post,
+      undefined,
+      data.token
+    );
+    if (createLikeResponse) {
+      if (!createLikeResponse.ok) {
+        const createLikeResponseData: ICreateLikeResponse = await createLikeResponse.json();
+        createLikeResponseData.statusCode = createLikeResponse.status;
+        return createLikeResponseData;
+      } else {
+        if (data.locationType === 'post-page') {
+          const params = new URLSearchParams();
+          params.set('lang', data.lang);
+
+          const getOnePostURL = `/api/post/${data.postId}?${params}`;
+          const getOnePostResponse: Undefinable<Response> = await requestData(
+            getOnePostURL,
+            requestMethods.get,
+            undefined,
+            undefined
+          );
+          if (getOnePostResponse) {
+            const createLikeResponseData: ICreateLikeResponse = await createLikeResponse.json();
+            const getOnePostResponseData: IGetOnePostResponse = await getOnePostResponse.json();
+            getOnePostResponseData.statusCode = createLikeResponse.status;
+            getOnePostResponseData.message = createLikeResponseData.message;
+            getOnePostResponseData.locationType = data.locationType;
+            return getOnePostResponseData;
+          }
+        }
+
+        if (data.locationType === 'all-posts-page') {
+          const params = new URLSearchParams();
+          params.set('lang', data.lang);
+
+          const getAllPostsURL = `/api/post/?${params}`;
+          const getAllPostsResponse: Undefinable<Response> = await requestData(
+            getAllPostsURL,
+            requestMethods.get,
+            undefined,
+            undefined
+          );
+          if (getAllPostsResponse) {
+            const createLikeResponseData: ICreateLikeResponse = await createLikeResponse.json();
+            const getAllPostsResponseData: IGetAllPostsResponse = await getAllPostsResponse.json();
+            getAllPostsResponseData.statusCode = createLikeResponse.status;
+            getAllPostsResponseData.message = createLikeResponseData.message;
+            getAllPostsResponseData.locationType = data.locationType;
+            return getAllPostsResponseData;
+          }
+        }
+
+        if (data.locationType === 'user-room') {
+          const params = new URLSearchParams();
+          params.set('lang', data.lang);
+
+          const getOneUserURL = `/api/user/${data.guestId || data.userId}?${params}`;
+          const getOneUserResponse: Undefinable<Response> = await requestData(
+            getOneUserURL,
+            requestMethods.get,
+            undefined,
+            data.token
+          );
+          if (getOneUserResponse) {
+            const createLikeResponseData: ICreateLikeResponse = await createLikeResponse.json();
+            const getOneUserResponseData: IGetOneUserResponse = await getOneUserResponse.json();
+            getOneUserResponseData.statusCode = createLikeResponse.status;
+            getOneUserResponseData.message = createLikeResponseData.message;
+            getOneUserResponseData.locationType = data.locationType;
+            return getOneUserResponseData;
+          }
+        }
+      }
+    }
+    return null;
+  }
+);
+
 export const mainSlice = createSlice({
   name: 'main',
   initialState,
@@ -1640,6 +1735,62 @@ export const mainSlice = createSlice({
         }
       })
       .addCase(deleteMessageAsync.rejected, (state, { error }) => {
+        state.userRequestStatus = 'failed';
+        console.error('\x1b[40m\x1b[31m\x1b[1m', error.message);
+      })
+
+      // create a new like
+      .addCase(createLikeAsync.pending, (state) => {
+        state.userRequestStatus = 'loading';
+      })
+      .addCase(createLikeAsync.fulfilled, (state, { payload }) => {
+        state.userRequestStatus = 'idle';
+
+        if (payload) {
+          if (payload.statusCode !== 200 && payload.statusCode !== 201) {
+            const failCreationLikeData = payload as ICreateLikeResponse;
+            state.alert = {
+              message: failCreationLikeData.message,
+              severity: 'error',
+            };
+          } else {
+            if (payload.locationType === 'all-posts-page' && state.allPosts.length) {
+              const getAllPostsData = payload as IGetAllPostsResponse;
+              state.allPosts = getAllPostsData.postsData;
+
+              state.alert = {
+                message: getAllPostsData.message,
+                severity: 'success',
+              };
+            }
+            if (payload.locationType === 'post-page' && state.currentPost) {
+              const getOnePostsData = payload as IGetOnePostResponse;
+              state.currentPost = getOnePostsData.postData;
+
+              state.alert = {
+                message: getOnePostsData.message,
+                severity: 'success',
+              };
+            }
+            if (payload.locationType === 'user-room') {
+              const getOneUserData = payload as IGetOneUserResponse;
+              if (state.guestUserData) {
+                state.guestUserData.posts = getOneUserData.userData?.posts;
+              } else {
+                if (getOneUserData.userData?.posts) {
+                  state.posts = getOneUserData.userData.posts;
+                }
+              }
+
+              state.alert = {
+                message: getOneUserData.message,
+                severity: 'success',
+              };
+            }
+          }
+        }
+      })
+      .addCase(createLikeAsync.rejected, (state, { error }) => {
         state.userRequestStatus = 'failed';
         console.error('\x1b[40m\x1b[31m\x1b[1m', error.message);
       });

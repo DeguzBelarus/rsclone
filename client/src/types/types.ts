@@ -103,6 +103,7 @@ export interface IGetOneUserResponse {
   ownId: number;
   token?: string;
   messages?: Array<IMessageModel>;
+  locationType?: LikeThunkLocationType;
 }
 
 export interface IDeleteUserResponse {
@@ -171,6 +172,7 @@ export interface IGetOnePostResponse {
   postData: IPostModel;
   message: string;
   statusCode?: number;
+  locationType?: LikeThunkLocationType;
 }
 
 export interface ICreateCommentRequest {
@@ -193,12 +195,14 @@ export interface ICreateLikeRequest {
   token: string;
   postId: number;
   userId: number;
+  guestId: Undefinable<number>;
   locationType: LikeThunkLocationType;
 }
 
 export interface ICreateLikeResponse {
   message: string;
   statusCode?: number;
+  locationType: LikeThunkLocationType;
 }
 
 export interface ISendMessageRequest {
@@ -268,6 +272,8 @@ export interface IDeleteMessageResponse {
 export interface IGetAllPostsResponse {
   postsData: Array<IPostModel>;
   message: string;
+  locationType?: LikeThunkLocationType;
+  statusCode?: number;
 }
 
 export interface ICommentModel {
@@ -347,6 +353,8 @@ export interface IDeleteCommentResponse {
 export interface IDeleteLikeRequest {
   lang: CurrentLanguageType;
   id: number;
+  userId: number;
+  guestId: Undefinable<number>;
   token: string;
   locationType: LikeThunkLocationType;
 }
@@ -356,6 +364,7 @@ export interface IDeleteLikeResponse {
   postId: number;
   likeOwnerId: number;
   statusCode?: number;
+  locationType: LikeThunkLocationType;
 }
 
 export interface IUpdateCommentRequest {
