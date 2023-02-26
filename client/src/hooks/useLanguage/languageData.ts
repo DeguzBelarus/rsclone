@@ -161,7 +161,7 @@ const LANGUAGE_DATA: LangaugeData = {
     [lng.formatEditLinkMsg]: 'Please provide hyperlink address:',
     [lng.formatLinkAddress]: 'Address',
 
-    [lng.likeFirst]: 'Be the first one to like',
+    [lng.likeFirst]: 'Be the first to like',
     [lng.you]: 'You',
   },
 

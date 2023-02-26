@@ -7,6 +7,7 @@
   display: flex;
   align-items: flex-end;
   gap: 2em 1em;
+  z-index: 2;
 
   .side {
     display: flex;
@@ -70,6 +71,7 @@
     border-radius: 0.5rem;
     transform: scale(0);
     animation: window-animation 0.3s forwards;
+    z-index: 2;
 
     .heading {
       cursor: pointer;
