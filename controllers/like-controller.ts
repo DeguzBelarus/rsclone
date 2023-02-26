@@ -54,6 +54,17 @@ class LikeController {
             ApiError.forbidden(lang === 'ru' ? "Нет прав" : "No rights"));
         }
 
+        const foundLike = Like.findOne({ where: { postId, userId: foundLiker.dataValues.id } });
+        if (foundLike !== undefined || foundLike !== null) {
+          return next(
+            ApiError.badRequest(
+              lang === 'ru' ?
+                "Лайк уже был поставлен" :
+                "The like has already been set"
+            )
+          );
+        }
+
         await Like.create({
           ownerNickname: foundLiker.dataValues.nickname,
           userId: foundLiker.dataValues.id,
@@ -63,7 +74,7 @@ class LikeController {
         return response.status(201).json({
           message: lang === 'ru' ?
             "Лайк успешно поставлен" :
-            "The like has been successfully delivered",
+            "The like has been successfully set",
         });
       }
     } catch (exception: unknown) {

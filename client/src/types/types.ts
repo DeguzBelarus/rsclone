@@ -353,6 +353,7 @@ export interface IDeleteCommentResponse {
 export interface IDeleteLikeRequest {
   lang: CurrentLanguageType;
   id: number;
+  postId: number;
   userId: number;
   guestId: Undefinable<number>;
   token: string;
