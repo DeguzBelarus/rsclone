@@ -38,6 +38,13 @@ export interface ICommentModel {
   userId: number;
 }
 
+export interface ILikeModel {
+  id?: number;
+  ownerNickname: string;
+  postId: number;
+  userId: number;
+}
+
 export interface IPostModel {
   id?: number;
   date: string;
@@ -50,6 +57,7 @@ export interface IPostModel {
   ownerAvatar?: string | FormidableFile;
   ownerRole: RoleType;
   comments?: Array<ICommentModel>;
+  likes?: Array<ILikeModel>;
 }
 
 export interface IMessageModel {

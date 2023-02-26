@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import formidable from 'formidable';
 
-import { Post, Comment, User } from '../db-models/db-models';
+import { Post, Comment, User, Like } from '../db-models/db-models';
 import { ApiError } from '../error-handler/error-handler';
 import { Undefinable } from '../client/src/types/types';
 import { CurrentLanguageType, IPostModel, FormidableFile, IRequestModified } from '../types/types';
@@ -161,10 +161,15 @@ class PostController {
 
   async getAllPosts(request: Request, response: Response, next: NextFunction) {
     try {
-      if (Post && Comment) {
+      if (Post && Comment && Like) {
         const { lang } = request.query;
 
-        const foundPosts = await Post.findAll({ include: [{ model: Comment, as: 'comments' }] });
+        const foundPosts = await Post.findAll({
+          include: [
+            { model: Comment, as: 'comments' },
+            { model: Like, as: 'likes' }
+          ]
+        });
         if (foundPosts) {
           return response.json({
             postsData: foundPosts
@@ -181,6 +186,7 @@ class PostController {
                   ownerAvatar: post.dataValues.ownerAvatar,
                   ownerRole: post.dataValues.ownerRole,
                   comments: post.dataValues.comments,
+                  likes: post.dataValues.likes,
                 }
               })
               .sort((prevPost, nextPost) => {
@@ -217,16 +223,20 @@ class PostController {
 
   async getOnePost(request: Request, response: Response, next: NextFunction) {
     try {
-      if (Post && Comment) {
+      if (Post && Comment && Like) {
         const { id } = request.params;
         const { lang } = request.query;
 
         const foundPost = await Post.findOne({
-          where: { id }, include: [{ model: Comment, as: 'comments' }],
+          where: { id },
+          include: [
+            { model: Comment, as: 'comments' },
+            { model: Like, as: 'likes' }
+          ],
         });
         if (foundPost) {
           const { id, date, media, postHeading, postText, userId, editDate,
-            ownerNickname, ownerAvatar, ownerRole } = foundPost.dataValues;
+            ownerNickname, ownerAvatar, ownerRole, likes } = foundPost.dataValues;
           let { comments } = foundPost.dataValues;
 
           comments = comments?.sort((prevComment, nextComment) => {
@@ -243,7 +253,7 @@ class PostController {
           return response.json({
             postData: {
               id, date, media, postHeading, postText, userId, editDate, comments,
-              ownerNickname, ownerAvatar, ownerRole
+              ownerNickname, ownerAvatar, ownerRole, likes
             },
             message: lang === 'ru' ?
               "Данные поста успешно получены" :
@@ -273,7 +283,7 @@ class PostController {
       const { id } = request.params;
       const { lang } = request.query;
 
-      if (Post && Comment) {
+      if (Post && Comment && Like) {
         const foundPostForDeleting = await Post.findOne({
           where: { id: Number(id) },
         });
@@ -302,6 +312,19 @@ class PostController {
           })
           if (foundCommentsForDeleting) {
             await Comment.destroy({
+              where: {
+                postId: foundPostForDeleting.dataValues.id,
+              }
+            });
+          }
+
+          const foundLikesForDeleting = await Like.findOne({
+            where: {
+              postId: foundPostForDeleting.dataValues.id,
+            }
+          })
+          if (foundLikesForDeleting) {
+            await Like.destroy({
               where: {
                 postId: foundPostForDeleting.dataValues.id,
               }

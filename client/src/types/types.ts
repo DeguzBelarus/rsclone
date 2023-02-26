@@ -7,6 +7,7 @@ export type CurrentLanguageType = 'en' | 'ru';
 export type CurrentColorTheme = 'light' | 'dark';
 export type RoleType = 'USER' | 'ADMIN';
 export type UpdateUserType = 'info' | 'avatar' | 'role';
+export type LikeThunkLocationType = 'user-room' | 'post-page' | 'all-posts-page';
 
 // event handler type
 export type EventHandler<T, K = void> = (event: T, param?: K) => void;
@@ -102,6 +103,7 @@ export interface IGetOneUserResponse {
   ownId: number;
   token?: string;
   messages?: Array<IMessageModel>;
+  locationType?: LikeThunkLocationType;
 }
 
 export interface IDeleteUserResponse {
@@ -170,6 +172,7 @@ export interface IGetOnePostResponse {
   postData: IPostModel;
   message: string;
   statusCode?: number;
+  locationType?: LikeThunkLocationType;
 }
 
 export interface ICreateCommentRequest {
@@ -185,6 +188,21 @@ export interface ICreateCommentRequest {
 export interface ICreateCommentResponse {
   message: string;
   statusCode?: number;
+}
+
+export interface ICreateLikeRequest {
+  lang: CurrentLanguageType;
+  token: string;
+  postId: number;
+  userId: number;
+  guestId: Undefinable<number>;
+  locationType: LikeThunkLocationType;
+}
+
+export interface ICreateLikeResponse {
+  message: string;
+  statusCode?: number;
+  locationType: LikeThunkLocationType;
 }
 
 export interface ISendMessageRequest {
@@ -254,6 +272,8 @@ export interface IDeleteMessageResponse {
 export interface IGetAllPostsResponse {
   postsData: Array<IPostModel>;
   message: string;
+  locationType?: LikeThunkLocationType;
+  statusCode?: number;
 }
 
 export interface ICommentModel {
@@ -264,6 +284,13 @@ export interface ICommentModel {
   authorNickname: string;
   authorAvatar?: string;
   authorRole: RoleType;
+  postId: number;
+  userId: number;
+}
+
+export interface ILikeModel {
+  id?: number;
+  ownerNickname: string;
   postId: number;
   userId: number;
 }
@@ -280,6 +307,7 @@ export interface IPostModel {
   ownerAvatar?: string;
   ownerRole: RoleType;
   comments?: Array<ICommentModel>;
+  likes?: Array<ILikeModel>;
 }
 
 export interface IMessageModel {
@@ -320,6 +348,23 @@ export interface IDeleteCommentResponse {
   postId: number;
   commentOwnerId: number;
   statusCode?: number;
+}
+
+export interface IDeleteLikeRequest {
+  lang: CurrentLanguageType;
+  id: number;
+  userId: number;
+  guestId: Undefinable<number>;
+  token: string;
+  locationType: LikeThunkLocationType;
+}
+
+export interface IDeleteLikeResponse {
+  message: string;
+  postId: number;
+  likeOwnerId: number;
+  statusCode?: number;
+  locationType: LikeThunkLocationType;
 }
 
 export interface IUpdateCommentRequest {
