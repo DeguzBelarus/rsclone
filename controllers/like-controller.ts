@@ -45,6 +45,8 @@ class LikeController {
         }
 
         if (requesterId) {
+          console.log(userId ,foundLiker.dataValues.id, requesterId);
+
           if (foundLiker.dataValues.id !== requesterId) {
             return next(
               ApiError.forbidden(lang === 'ru' ? "Нет прав" : "No rights"));
@@ -54,8 +56,8 @@ class LikeController {
             ApiError.forbidden(lang === 'ru' ? "Нет прав" : "No rights"));
         }
 
-        const foundLike = Like.findOne({ where: { postId, userId: foundLiker.dataValues.id } });
-        if (foundLike !== undefined || foundLike !== null) {
+        const foundLike = await Like.findOne({ where: { postId, userId: foundLiker.dataValues.id } });
+        if (foundLike) {
           return next(
             ApiError.badRequest(
               lang === 'ru' ?
