@@ -139,9 +139,20 @@ export const UserRoom: FC<Props> = ({ socket }) => {
   };
 
   useEffect(() => {
-    if (!id || (id && Number(id) === userId)) {
+    if ((id && Number(id) === userId) || !id) {
       if (!isOwnPage) {
         setIsOwnPage(true);
+        if (guestUserData) {
+          dispatch(setGuestUserData(null));
+        }
+      } else {
+        if (token && userId) {
+          const getOneUserRequestData: IGetOneUserRequestData = {
+            token,
+            requestData: { id: userId, lang },
+          };
+          dispatch(getOneUserInfoAsync(getOneUserRequestData));
+        }
       }
     }
     if (id && Number(id) !== userId) {

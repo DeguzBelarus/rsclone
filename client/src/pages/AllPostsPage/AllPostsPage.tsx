@@ -1,7 +1,7 @@
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { Socket } from 'socket.io-client';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
-import { getAllPosts, getAllPostsAsync, getCurrentLanguage } from 'app/mainSlice';
+import { getAllPosts, getAllPostsAsync, getCurrentLanguage, setAllPosts } from 'app/mainSlice';
 import { Posts } from 'components/Posts/Posts';
 import React, { FC, useEffect } from 'react';
 import styles from './AllPostsPage.module.scss';
@@ -23,6 +23,12 @@ export const AllPostsPage: FC<Props> = ({ socket }): JSX.Element => {
   useEffect(() => {
     dispatch(getAllPostsAsync({ lang }));
   }, [lang, dispatch]);
+
+  useEffect(() => {
+    return () => {
+      dispatch(setAllPosts([]));
+    };
+  }, []);
 
   return (
     <div className={styles.wrapper}>

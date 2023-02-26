@@ -118,30 +118,35 @@ export const Post = ({
 
   const handleLike = () => {
     if (!token || !userId || !data.id) return;
-    const request: ICreateLikeRequest = {
-      token,
-      userId,
-      lang,
-      guestId: guestUserData?.id,
-      postId: data.id,
-      locationType: origin,
-    };
-    dispatch(createLikeAsync(request));
+
+    if (ownId) {
+      const request: ICreateLikeRequest = {
+        token,
+        userId: ownId,
+        lang,
+        guestId: guestUserData?.id,
+        postId: data.id,
+        locationType: origin,
+      };
+      dispatch(createLikeAsync(request));
+    }
   };
 
   const handleUnlike = (id: number) => {
     if (!token || !userId || !data.id) return;
-    console.log(id);
-    const request: IDeleteLikeRequest = {
-      id,
-      token,
-      userId,
-      guestId: guestUserData?.id,
-      lang,
-      postId: data.id,
-      locationType: origin,
-    };
-    dispatch(deleteLikeAsync(request));
+
+    if (ownId) {
+      const request: IDeleteLikeRequest = {
+        id,
+        token,
+        userId: ownId,
+        guestId: guestUserData?.id,
+        lang,
+        postId: data.id,
+        locationType: origin,
+      };
+      dispatch(deleteLikeAsync(request));
+    }
   };
 
   return (

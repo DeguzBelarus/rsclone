@@ -1848,7 +1848,7 @@ export const mainSlice = createSlice({
               severity: 'error',
             };
           } else {
-            if (payload.locationType === 'all-posts-page' && state.allPosts.length) {
+            if (payload.locationType === 'all-posts-page' && state.allPosts.length > 0) {
               const getAllPostsData = payload as IGetAllPostsResponse;
               state.allPosts = getAllPostsData.postsData;
 
@@ -1904,7 +1904,7 @@ export const mainSlice = createSlice({
               severity: 'error',
             };
           } else {
-            if (payload.locationType === 'all-posts-page' && state.allPosts.length) {
+            if (payload.locationType === 'all-posts-page' && state.allPosts.length > 0) {
               const getAllPostsData = payload as IGetAllPostsResponse;
               state.allPosts = getAllPostsData.postsData;
 
