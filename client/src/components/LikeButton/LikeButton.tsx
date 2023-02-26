@@ -13,14 +13,15 @@ import useTruncateUserList from 'hooks/useTruncateUserList';
 interface LikeButtonProps {
   data?: ILikeModel[];
   onLike?: () => void;
-  onUnlike?: () => void;
+  onUnlike?: (id: number) => void;
 }
 
 export const LikeButton = ({ onLike, onUnlike, data }: LikeButtonProps) => {
   const { palette } = useTheme();
   const userId = useAppSelector(getUserId);
 
-  const isLiked = data?.find(({ userId: id }) => id === userId) !== undefined;
+  const userLike = data?.find(({ userId: id }) => id === userId);
+  const isLiked = userLike !== undefined;
   const users = useTruncateUserList(
     (
       data?.map(({ ownerNickname, userId: ownerId }) =>
@@ -31,7 +32,7 @@ export const LikeButton = ({ onLike, onUnlike, data }: LikeButtonProps) => {
 
   const handleClick = () => {
     if (isLiked) {
-      if (onUnlike) onUnlike();
+      if (onUnlike && userLike?.id) onUnlike(userLike.id);
     } else {
       if (onLike) onLike();
     }

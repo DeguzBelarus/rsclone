@@ -19,6 +19,7 @@ import {
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import {
   createLikeAsync,
+  deleteLikeAsync,
   deletePostAsync,
   getCurrentLanguage,
   getGuestUserData,
@@ -34,7 +35,12 @@ import { lng } from 'hooks/useLanguage/types';
 import { PostDate } from 'components/PostDate/PostDate';
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ICreateLikeRequest, IPostModel, LikeThunkLocationType } from 'types/types';
+import {
+  ICreateLikeRequest,
+  IDeleteLikeRequest,
+  IPostModel,
+  LikeThunkLocationType,
+} from 'types/types';
 
 import styles from './Post.module.scss';
 import Avatar from 'components/Avatar/Avatar';
@@ -115,17 +121,19 @@ export const Post = ({
     const request: ICreateLikeRequest = {
       token,
       userId,
-      guestId: guestUserData?.id,
       lang,
+      guestId: guestUserData?.id,
       postId: data.id,
       locationType: origin,
     };
     dispatch(createLikeAsync(request));
   };
 
-  const handleUnlike = () => {
+  const handleUnlike = (id: number) => {
     if (!token || !userId || !data.id) return;
-    const request: ICreateLikeRequest = {
+    console.log(id);
+    const request: IDeleteLikeRequest = {
+      id,
       token,
       userId,
       guestId: guestUserData?.id,
@@ -133,7 +141,7 @@ export const Post = ({
       postId: data.id,
       locationType: origin,
     };
-    // dispatch(createLikeAsync(request));
+    dispatch(deleteLikeAsync(request));
   };
 
   return (
