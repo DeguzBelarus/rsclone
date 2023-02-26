@@ -286,7 +286,7 @@ export const UserRoom: FC<Props> = ({ socket }) => {
           )}
           <h2>{language(lng.postTitleMsg)}</h2>
           {posts.length ? (
-            <Posts data={posts} socket={socket} className={styles.posts} />
+            <Posts data={posts} origin="user-room" socket={socket} className={styles.posts} />
           ) : (
             <p>{language(lng.postSelfUser)}</p>
           )}
@@ -310,7 +310,7 @@ export const UserRoom: FC<Props> = ({ socket }) => {
             )}
             <h2>{language(lng.postTitleMsg)}</h2>
             {guestUserData.posts?.length ? (
-              <Posts data={guestUserData.posts} socket={socket} />
+              <Posts data={guestUserData.posts} origin="user-room" socket={socket} />
             ) : (
               <p>{language(lng.postGuestUser)}</p>
             )}
