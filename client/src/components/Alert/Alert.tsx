@@ -41,6 +41,7 @@ export const Alert = () => {
         severity={alert?.severity || 'info'}
         onClose={handleClose}
         sx={{ width: '100%' }}
+        elevation={6}
       >
         {message}
       </MUIAlert>
