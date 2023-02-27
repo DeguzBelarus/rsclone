@@ -9,6 +9,7 @@ export const Alert = () => {
   const alert = useAppSelector(getAlert);
   const [message, setMessage] = useState<string>();
   const [open, setOpen] = useState(false);
+  const [timer, setTimer] = useState<NodeJS.Timeout>();
 
   const handleClose = (_: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') return;
@@ -17,17 +18,27 @@ export const Alert = () => {
 
   useEffect(() => {
     const newMessage = alert?.message;
-    setOpen(false);
     if (newMessage) {
       setMessage(newMessage);
+      clearTimeout(timer);
       setOpen(true);
-    } else setMessage(undefined);
+      setTimer(
+        setTimeout(() => {
+          setOpen(false);
+          setMessage(undefined);
+        }, ALERT_AUTO_HIDE_DURATION)
+      );
+    } else {
+      setOpen(false);
+      setMessage(undefined);
+    }
+
+    return () => clearTimeout(timer);
   }, [alert]);
 
   return (
     <Snackbar
       open={open}
-      autoHideDuration={ALERT_AUTO_HIDE_DURATION}
       onClose={handleClose}
       sx={{
         bottom: {
@@ -41,6 +52,7 @@ export const Alert = () => {
         severity={alert?.severity || 'info'}
         onClose={handleClose}
         sx={{ width: '100%' }}
+        elevation={6}
       >
         {message}
       </MUIAlert>

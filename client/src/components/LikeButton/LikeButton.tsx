@@ -25,13 +25,7 @@ export const LikeButton = ({ onLike, onUnlike, data }: LikeButtonProps) => {
 
   const userLike = data?.find(({ userId: id }) => id === userId);
   const isLiked = userLike !== undefined;
-  const users = useTruncateUserList(
-    (
-      data?.map(({ ownerNickname, userId: ownerId }) =>
-        userId === ownerId ? 'You' : ownerNickname
-      ) || []
-    ).sort((a, b) => (b === 'You' ? 1 : 0))
-  );
+  const users = useTruncateUserList(data?.map(({ ownerNickname }) => ownerNickname) || []);
 
   const handleClick = () => {
     if (isLiked) {
