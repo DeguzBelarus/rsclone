@@ -18,6 +18,8 @@
 
 #### 3. HTTP-запросы, использующие REST-API архитектуру
 
+#### 4. Приложение размещено на сервере Heroku с подключенной базой данных Heroku Postgres
+
 ### Возможности клиентской части (Front-End):
 
 #### Использованные модули: @reduxjs/toolkit, react-router-dom, node-sass, @emotion, @mui, async-lz-string, crypto-js, draft-js, emoji-picker-react, jwt-decode, socket.io-client, typescript, eslint, prettier
