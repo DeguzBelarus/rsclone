@@ -3,6 +3,7 @@
 **_yarn development_**
 
 [описание переменных .env файлов для запуска проекта](./environment-vars.md)
+
 [установка pgAdmin для запуска проекта в режиме разработки](https://www.enterprisedb.com/postgresql-tutorial-resources-training?uuid=7ce7e93f-e1eb-4e42-85fa-84c0c98859ee&campaignId=7012J000001h3GiQAI)
 
 ## Название проекта: RS Social
