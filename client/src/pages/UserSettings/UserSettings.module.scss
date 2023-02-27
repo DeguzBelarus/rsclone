@@ -1,0 +1,56 @@
+@import '../../styles/variables';
+
+.wrapper {
+  --max-page-width: 900px;
+  display: grid;
+  gap: 0rem 4rem;
+
+  grid-template-areas:
+    'settings-avatar'
+    'settings-danger'
+    'settings-inputs';
+
+  .avatar {
+    grid-area: settings-avatar;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    .nickname {
+      margin-bottom: 3rem;
+    }
+  }
+
+  .danger {
+    grid-area: settings-danger;
+    display: flex;
+    flex-direction: column;
+    justify-self: center;
+    gap: 1rem;
+    margin-bottom: 4rem;
+
+    .dangerTitle {
+      text-align: center;
+    }
+  }
+
+  .inputs {
+    grid-area: settings-inputs;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    isolation: isolate;
+
+    .updateBtn {
+      align-self: end;
+    }
+  }
+
+  @media screen and (min-width: $mobile-breakpoint) {
+    grid-template-areas:
+      'settings-avatar settings-inputs'
+      'settings-danger settings-inputs';
+
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto 1fr;
+  }
+}

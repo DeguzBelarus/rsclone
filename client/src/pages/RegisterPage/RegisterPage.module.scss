@@ -1,0 +1,24 @@
+.register {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .card {
+    padding: 1rem;
+    min-width: clamp(240px, 80vw, 380px);
+  }
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+
+    .logo,
+    .heading {
+      align-self: center;
+    }
+    .heading {
+      margin-bottom: 2rem;
+    }
+  }
+}

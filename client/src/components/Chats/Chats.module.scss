@@ -1,0 +1,134 @@
+@import '../../styles/_variables.scss';
+
+.wrapper {
+  position: fixed;
+  right: 2rem;
+  bottom: calc(var(--footer-height) + 6rem);
+  display: flex;
+  align-items: flex-end;
+  gap: 2em 1em;
+  z-index: 2;
+
+  .side {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+
+    .heading {
+      padding: 0.1rem 0.2rem;
+      border-radius: 0.5em;
+      text-align: center;
+      backdrop-filter: blur(4px);
+    }
+
+    .people {
+      display: flex;
+      flex-direction: column;
+      gap: 1em;
+      cursor: pointer;
+
+      .avatar {
+        position: relative;
+        box-shadow: 0 0 10px #bebebe;
+        transition: 0.3s;
+        transform: scale(0.8);
+
+        &::after {
+          content: '';
+          position: absolute;
+          inset: 0;
+        }
+      }
+
+      & .active {
+        .avatar {
+          transform: scale(1.2);
+        }
+      }
+
+      .person {
+        position: relative;
+        isolation: isolate;
+        .delete {
+          z-index: 2;
+          position: absolute;
+          top: -0.8em;
+          right: -0.8em;
+        }
+      }
+    }
+  }
+
+  .window {
+    position: relative;
+    display: flex;
+    flex-flow: column;
+    max-width: 400px;
+    max-height: calc(min(800px, 65vh));
+    margin: 0 1rem;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    transform: scale(0);
+    animation: window-animation 0.3s forwards;
+    z-index: 2;
+
+    .heading {
+      cursor: pointer;
+      text-align: center;
+      margin-top: 1rem;
+    }
+
+    .windowButtons {
+      position: absolute;
+      right: 0;
+      top: 0;
+    }
+
+    &.windowCollapsed .collapseBtn {
+      transform: rotate(180deg);
+    }
+  }
+
+  &.collapsed {
+    .side .people,
+    .window {
+      display: none;
+    }
+
+    .side .heading .collapseBtn {
+      transform: rotate(180deg);
+    }
+  }
+}
+
+@media screen and(max-width: $mobile-breakpoint) {
+  .wrapper {
+    flex-direction: column;
+    right: 0rem;
+    bottom: calc(var(--footer-height) + 5rem);
+
+    .side {
+      flex-direction: row-reverse;
+      gap: 0.5em;
+
+      .heading {
+        transform: rotate(90deg);
+      }
+
+      .people {
+        flex-direction: row;
+      }
+    }
+
+    .window {
+      max-height: calc(min(500px, 60vh));
+    }
+  }
+}
+
+@keyframes window-animation {
+  to {
+    transform: scale(1);
+  }
+}

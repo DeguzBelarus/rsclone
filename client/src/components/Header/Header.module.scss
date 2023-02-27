@@ -1,0 +1,54 @@
+@import '../../styles/variables';
+
+.header {
+  position: absolute;
+
+  .toolbar {
+    display: grid;
+    grid-template-columns: 1fr repeat(3, auto);
+    gap: 0.3rem;
+    .userButton {
+      display: flex;
+      gap: 0.5em;
+      margin-left: 0.5em;
+      min-width: 2rem;
+      min-height: 2rem;
+      width: auto;
+      .nickname {
+        text-transform: none;
+        font-weight: 600;
+      }
+    }
+  }
+
+  &.authorized {
+    .toolbar {
+      grid-template-columns: auto 1fr repeat(6, auto);
+      @media screen and (max-width: ($mobile-breakpoint - 1px)) {
+        & {
+          grid-template-columns: auto 1fr repeat(3, auto);
+        }
+      }
+    }
+  }
+  &.focused {
+    @media screen and (max-width: 900px) {
+      .toolbar {
+        grid-template-columns: 1fr repeat(6, auto);
+      }
+      .logo {
+        display: none;
+      }
+    }
+    @media screen and (max-width: ($mobile-breakpoint - 1px)) {
+      .toolbar {
+        grid-template-columns: 1fr;
+      }
+      .language,
+      .userButton,
+      .darkMode {
+        display: none;
+      }
+    }
+  }
+}

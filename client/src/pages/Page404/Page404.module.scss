@@ -1,0 +1,19 @@
+@import '../../styles/variables';
+
+.wrapper {
+  @include flex-column-all-center;
+  @include user-select-none;
+
+  .heading {
+    font-size: 5rem;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    opacity: 0.7;
+  }
+
+  .subHeading {
+    margin-bottom: 10vh;
+    font-weight: normal;
+    text-align: center;
+  }
+}

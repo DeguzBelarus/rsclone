@@ -1,0 +1,93 @@
+@import '../../styles/_variables.scss';
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  overflow: hidden;
+  margin-top: 1rem;
+
+  .messages {
+    --message-margin: 20%;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2em;
+    padding: 0.5rem;
+    min-width: 180px;
+    min-height: 280px;
+
+    .message {
+      position: relative;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0.5rem;
+      padding: 1em 1.2em;
+      border-radius: 1em;
+      border-bottom-left-radius: 0em;
+      margin-right: var(--message-margin);
+      isolation: isolate;
+      word-break: break-word;
+
+      .delete {
+        position: absolute;
+        z-index: 5;
+        right: 0;
+        border-radius: 50%;
+        padding: 0.2em;
+      }
+
+      &:not(:hover) .delete {
+        display: none;
+      }
+
+      .text {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5em;
+        .name {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: space-between;
+          gap: 0.5em 1em;
+
+          .nickname {
+            text-transform: uppercase;
+            font-weight: bold;
+          }
+          .date {
+            font-size: 0.7em;
+            opacity: 0.7;
+          }
+        }
+        .read {
+          align-self: flex-end;
+          transform: scale(0.8);
+        }
+      }
+      &.self {
+        margin-left: var(--message-margin);
+        margin-right: 0;
+        border-bottom-left-radius: 1em;
+        border-bottom-right-radius: 0em;
+      }
+
+      @media screen and (max-width: $mobile-breakpoint) {
+        &,
+        &.self {
+          margin-left: 0;
+          margin-right: 0;
+        }
+      }
+    }
+    @media screen and (max-width: $mobile-breakpoint) {
+      padding: 0;
+    }
+  }
+
+  &.collapsed {
+    height: 0;
+    margin-top: 0;
+    width: 0;
+  }
+}

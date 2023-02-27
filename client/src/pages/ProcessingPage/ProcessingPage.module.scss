@@ -1,0 +1,32 @@
+@import '../../styles/variables';
+
+.wrapper {
+  @include flex-column-all-center;
+  @include user-select-none;
+  --message-length: 11;
+  --letter-spacing: 5px;
+
+  .heading {
+    padding-top: 20px;
+    font-size: 3em;
+    overflow: hidden;
+    position: relative;
+    letter-spacing: var(--letter-spacing);
+    width: 0;
+    font-family: monospace;
+    animation: typing 0.2s steps(var(--message-length)) forwards,
+      blinking 1s 1s infinite alternate backwards;
+  }
+
+  @keyframes typing {
+    to {
+      width: calc(var(--message-length) * (1ch + var(--letter-spacing)));
+    }
+  }
+
+  @keyframes blinking {
+    to {
+      opacity: 0.3;
+    }
+  }
+}

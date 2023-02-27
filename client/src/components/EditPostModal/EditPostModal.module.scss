@@ -1,0 +1,27 @@
+.dialog {
+  .title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .content {
+    display: flex;
+    flex-direction: column;
+    .editor {
+      flex-grow: 1;
+    }
+
+    .media {
+      display: flex;
+      grid-template-columns: auto;
+      align-items: center;
+
+      .file {
+        margin-left: auto;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+}

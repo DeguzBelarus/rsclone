@@ -1,0 +1,17 @@
+@import 'styles/variables';
+
+.wrapper {
+  --max-page-width: 800px;
+
+  .secondary {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3em;
+    word-break: break-word;
+
+    .unread {
+      display: flex;
+      gap: 0.3em;
+    }
+  }
+}
